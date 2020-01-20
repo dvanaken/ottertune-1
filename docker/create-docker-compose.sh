@@ -1,9 +1,8 @@
 #!/bin/bash
 
-
 if [ -z "$BACKEND" ]
 then
-    echo "Variable 'BACKEND' must be set."
+    echo " >> ERROR: Variable 'BACKEND' must be set." >&2
     exit 1
 fi
 
@@ -14,16 +13,57 @@ DB_PASSWORD="${DB_PASSWORD:-ottertune}"
 
 if [ "$BACKEND" = "mysql" ]; then
     DB_USER="${DB_USER:-root}"
-    DB_PORT="${DB_PORT:-3306}"
+    DB_INTERNAL_PORT=3306
+    DB_IMAGE="mysql:5.6"
 else
     DB_USER="${DB_USER:-postgres}"
-    DB_PORT="${DB_PORT:-5432}"
+    DB_INTERNAL_PORT=5432
+    DB_IMAGE="postgres:9.6"
 fi
 
+DB_PORT="${DB_PORT:-$DB_INTERNAL_PORT}"
 WEB_ENTRYPOINT="${WEB_ENTRYPOINT:-./start.sh}"
 
-file="$(test -z "$1" && echo "docker-compose.$BACKEND.yml" || echo "$1")"
+file="docker-compose.$BACKEND.yml"
+driver_image="ottertune-driver"
+driver_env="# env_file: N/A"
+quiet=false
 
+while (( "$#" )); do
+  case "$1" in
+    -h|--help)
+      echo "Usage: $0 [-f FILE] [--dev-driver]"
+      echo ""
+      echo "Options:"
+      echo "  -h, --help        Display help"
+      echo "  -f, --file FILE   Write output to FILE (default: docker-compose.$BACKEND.yml)"
+      echo "      --dev-driver  Use the development driver image"
+      echo "  -q, --quiet       Only display the output file"
+      exit 0
+      ;;
+    -f|--file)
+      file="$2"
+      shift 2
+      ;;
+    --dev-driver)
+      driver_image="${driver_image}-internal"
+      driver_env="env_file: local_driver.env"
+      shift 1
+      ;;
+    -q|--quiet)
+      quiet=true
+      shift 1
+      ;;
+    --) # end arg parsing
+      shift
+      break
+      ;;
+    *|-*|--*=) unsupported opts
+      echo " >> ERROR: Unsupported option '$1'" >&2
+      exit 1
+      ;;
+  esac
+done
 
 cat > $file <<- EOM
 version: "3"
@@ -50,26 +90,13 @@ services:
           DB_USER: '$DB_USER'
           DB_PASSWORD: '$DB_PASSWORD'
           DB_HOST: 'backend'
-          DB_PORT: '$DB_PORT'
+          DB_PORT: '$DB_INTERNAL_PORT'
           MAX_DB_CONN_ATTEMPTS: 30
           RABBITMQ_HOST: 'rabbitmq'
         working_dir: /app/website
         entrypoint: $WEB_ENTRYPOINT
         labels:
           NAME: "ottertune-web"
-        networks:
-          - ottertune-net
-
-    driver:
-        image: ottertune-driver
-        container_name: driver
-        depends_on:
-          - web
-        environment:
-          DEBUG: '$DEBUG'
-        working_dir: /app/driver
-        labels:
-          NAME: "ottertune-driver"
         networks:
           - ottertune-net
 
@@ -93,45 +120,49 @@ services:
         networks:
           - ottertune-net
 
-EOM
+    driver:
+        image: $driver_image
+        container_name: driver
+        depends_on:
+          - web
+        environment:
+          DEBUG: '$DEBUG'
+        $driver_env
+        labels:
+          NAME: "ottertune-driver"
+        networks:
+          - ottertune-net
 
+EOM
 
 cat >> $file <<- EOM
     backend:
+        image: $DB_IMAGE
         container_name: backend
         restart: always
+        environment:
 EOM
 
-
 if [ "$BACKEND" = "mysql" ]; then
-
 cat >> $file <<- EOM
-        image: mysql:5.7
-        environment:
           MYSQL_USER: '$DB_USER'
           MYSQL_ROOT_PASSWORD: '$DB_PASSWORD'
           MYSQL_PASSWORD: '$DB_PASSWORD'
           MYSQL_DATABASE: '$DB_NAME'
-        expose:
-          - "3306"
-        ports:
-          - "3306:3306"
 EOM
 else
 cat >> $file <<- EOM
-        image: postgres:9.6
-        environment:
           POSTGRES_PASSWORD: '$DB_PASSWORD'
           POSTGRES_USER: '$DB_USER'
           POSTGRES_DB: '$DB_NAME'
-        expose:
-          - "5432"
-        ports:
-          - "5432:5432"
 EOM
 fi
 
 cat >> $file <<- EOM
+        expose:
+          - "$DB_INTERNAL_PORT"
+        ports:
+          - "$DB_PORT:$DB_INTERNAL_PORT"
         labels:
           NAME: "ottertune-backend"
         networks:
@@ -142,5 +173,9 @@ networks:
       driver: bridge
 EOM
 
-echo "Saved docker-compose file to '$file'."
+if [ "$quiet" = true ]; then
+    echo "$file"
+else
+    echo "Saved docker-compose file to '$file'."
+fi
 

@@ -1,9 +1,10 @@
 #!/bin/bash
 
-images="base web driver driver-internal"
+# Exits if any command returns a non-zero return value
+set -e
 
-for img in $images
+for service in ${DOCKER_SERVICES}
 do
-    docker push "${DOCKER_REPO}:${img}"
+    docker push "${DOCKER_REPO}:${service}"
 done
 
