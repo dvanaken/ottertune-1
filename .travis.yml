@@ -40,7 +40,7 @@ matrix:
     script:
     - echo "IN DOCKER SCRIPT"
     - docker-compose -f $pgfile run --workdir="/app" --no-deps --rm web bash -c "pip3 freeze"
-    - docker-compose -f $pgfile run --workdir="/app" --no-deps --rm web bash -c "-f /app/.git_commit && cat /app/.git_commit || echo 'File /app/.git_commit does not exist!'"
+    - docker-compose -f $pgfile run --workdir="/app" --no-deps --rm web bash -c "test -f /app/.git_commit && cat /app/.git_commit || echo 'File /app/.git_commit does not exist!'"
     #- docker-compose -f $pgfile run --workdir="/app/controller" --no-deps --rm driver gradle build
     #- docker-compose -f $pgfile run --workdir="/app" --no-deps --rm web bash -c "python3 -m unittest discover -s analysis/tests -v"
     #- docker-compose -f $pgfile run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
@@ -140,11 +140,11 @@ matrix:
     after_success: []
 
 install:
-- echo "IN MAIN INSTALL: $name"
+- echo "IN MAIN INSTALL -- $name"
 - pip install -r $WEB/requirements.txt
 - pip freeze
 before_script:
-- echo "IN MAIN BEFORE_SCRIPT: $name"
+- echo "IN MAIN BEFORE_SCRIPT -- $name"
 - env | sort
 - cd $WEB
 - sed -i  "s|\('celery', 'db.*$\)|'console', \1|" website/settings/common.py
@@ -155,14 +155,14 @@ before_script:
 - python manage.py startcelery
 - python manage.py createuser admin $ADMIN_PASSWORD --superuser
 script:
-- echo "IN MAIN SCRIPT: $name"
+- echo "IN MAIN SCRIPT -- $name"
 - cd $ROOT/server && coverage run --omit="*/tests/*" -m unittest discover -s analysis/tests -v
 - cd $WEB && coverage run manage.py test --noinput -v 2
 - cd $CONTROLLER && gradle build
 - cd $ROOT && git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git status && git
   log | head -n 1 && git lint
 after_success:
-- echo "IN MAIN AFTER_SUCCESS: $name"
+- echo "IN MAIN AFTER_SUCCESS -- $name"
 - >
   codecov -F analysis -f "${ROOT}/server/.coverage" ||
   (sleep 5 && codecov -F analysis -f "${ROOT}/server/.coverage") ||
