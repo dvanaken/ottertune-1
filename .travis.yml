@@ -42,12 +42,12 @@ matrix:
     - echo "MySQL~ $myfile, PostgreSQL~ $pgfile"
     script:
     - docker-compose -f $pgfile run --workdir="/app" --no-deps --rm web bash -c "pip3 freeze | column -x"
-    - docker-compose -f $pgfile run --workdir="/app/controller" --no-deps --rm driver gradle build
-    - docker-compose -f $pgfile run --workdir="/app" --no-deps --rm web bash -c "python3 -m unittest discover -s analysis/tests -v"
-    - docker-compose -f $pgfile run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
-    - docker-compose -f $pgfile rm -f -s -v
-    - docker-compose -f $myfile run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
-    - docker-compose -f $myfile rm -f -s -v
+    #- docker-compose -f $pgfile run --workdir="/app/controller" --no-deps --rm driver gradle build
+    #- docker-compose -f $pgfile run --workdir="/app" --no-deps --rm web bash -c "python3 -m unittest discover -s analysis/tests -v"
+    #- docker-compose -f $pgfile run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
+    #- docker-compose -f $pgfile rm -f -s -v
+    #- docker-compose -f $myfile run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
+    #- docker-compose -f $myfile rm -f -s -v
     after_success: []
     before_deploy:
     - /$ROOT/.travis/before_deploy.sh
