@@ -3,8 +3,10 @@
 # Exits if any command returns a non-zero return value
 set -e
 
-for service in ${DOCKER_SERVICES}
+for tag in base web driver
 do
-    docker push "${DOCKER_REPO}:${service}"
+    echo -n "Pushing image 'ottertune-$tag' to the registry... "
+    docker push "${DOCKER_REPO}:${tag}" > /dev/null 2>&1
+    echo "Done."
 done
 
