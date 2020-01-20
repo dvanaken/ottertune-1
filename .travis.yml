@@ -4,6 +4,8 @@ language: python
 python:
 - 3.6
 
+cache: pip
+
 env:
   global:
   - DB_NAME=ottertune

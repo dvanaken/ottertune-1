@@ -14,7 +14,7 @@ DB_PASSWORD="${DB_PASSWORD:-ottertune}"
 if [ "$BACKEND" = "mysql" ]; then
     DB_USER="${DB_USER:-root}"
     DB_INTERNAL_PORT=3306
-    DB_IMAGE="mysql:5.6"
+    DB_IMAGE="mysql:5.7"
 else
     DB_USER="${DB_USER:-postgres}"
     DB_INTERNAL_PORT=5432
