@@ -29,7 +29,7 @@ matrix:
     before_install:
     - docker --version
     - docker-compose --version
-    install: []
+    install: true
     before_script:
     - sudo service mysql stop || true
     - sudo service postgresql stop || true
@@ -47,7 +47,7 @@ matrix:
     #- docker-compose -f $myfile run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
     - docker-compose -f $pgfile rm -f -s -v
     - docker-compose -f $myfile rm -f -s -v
-    after_success: []
+    after_success: true
     before_deploy:
     - /$ROOT/.travis/before_deploy.sh
     deploy:
@@ -119,7 +119,7 @@ matrix:
     script:
     - cd $WEB && python manage.py runserver 0.0.0.0:8000 &
     - sleep 10 && cd $DRIVER && fab integration_tests
-    after_success: []
+    after_success: true
 
   - name: Integration Tests (PostgreSQL v9.6)
     env:
@@ -137,14 +137,14 @@ matrix:
     script:
     - cd $WEB && python manage.py runserver 0.0.0.0:8000 &
     - sleep 10 && cd $DRIVER && fab integration_tests
-    after_success: []
+    after_success: true
 
 install:
-- echo "IN MAIN INSTALL -- $name"
+- echo "IN MAIN INSTALL"
 - pip install -r $WEB/requirements.txt
 - pip freeze
 before_script:
-- echo "IN MAIN BEFORE_SCRIPT -- $name"
+- echo "IN MAIN BEFORE_SCRIPT"
 - env | sort
 - cd $WEB
 - sed -i  "s|\('celery', 'db.*$\)|'console', \1|" website/settings/common.py
@@ -155,14 +155,14 @@ before_script:
 - python manage.py startcelery
 - python manage.py createuser admin $ADMIN_PASSWORD --superuser
 script:
-- echo "IN MAIN SCRIPT -- $name"
+- echo "IN MAIN SCRIPT"
 - cd $ROOT/server && coverage run --omit="*/tests/*" -m unittest discover -s analysis/tests -v
 - cd $WEB && coverage run manage.py test --noinput -v 2
 - cd $CONTROLLER && gradle build
 - cd $ROOT && git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git status && git
   log | head -n 1 && git lint
 after_success:
-- echo "IN MAIN AFTER_SUCCESS -- $name"
+- echo "IN MAIN AFTER_SUCCESS"
 - >
   codecov -F analysis -f "${ROOT}/server/.coverage" ||
   (sleep 5 && codecov -F analysis -f "${ROOT}/server/.coverage") ||
