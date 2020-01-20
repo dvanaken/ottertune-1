@@ -41,10 +41,10 @@ matrix:
     - echo "IN DOCKER SCRIPT"
     - docker-compose -f $pgfile run --workdir="/app" --no-deps --rm web bash -c "pip3 freeze"
     - docker-compose -f $pgfile run --workdir="/app" --no-deps --rm web bash -c "test -f /app/.git_commit && cat /app/.git_commit || echo 'File /app/.git_commit does not exist!'"
-    #- docker-compose -f $pgfile run --workdir="/app/controller" --no-deps --rm driver gradle build
-    #- docker-compose -f $pgfile run --workdir="/app" --no-deps --rm web bash -c "python3 -m unittest discover -s analysis/tests -v"
-    #- docker-compose -f $pgfile run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
-    #- docker-compose -f $myfile run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
+    - docker-compose -f $pgfile run --workdir="/app/controller" --no-deps --rm driver gradle build
+    - docker-compose -f $pgfile run --workdir="/app" --no-deps --rm web bash -c "python3 -m unittest discover -s analysis/tests -v"
+    - docker-compose -f $pgfile run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
+    - docker-compose -f $myfile run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
     - docker-compose -f $pgfile rm -f -s -v
     - docker-compose -f $myfile rm -f -s -v
     after_success: true
