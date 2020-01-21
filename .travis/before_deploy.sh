@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exits if any command returns a non-zero return value
-set -e
+set -ex
 
 for tag in base web driver 
 do

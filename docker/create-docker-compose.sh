@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ -z "$BACKEND" ]
 then
     echo " >> ERROR: Variable 'BACKEND' must be set." >&2

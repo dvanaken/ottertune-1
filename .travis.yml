@@ -60,6 +60,7 @@ jobs:
       after_deploy:
       - curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
       - sh trigger-travis.sh --pro --branch master "$TRIGGER_USER" "$TRIGGER_REPO" "$TRIGGER_TOKEN" > /dev/null 2>&1
+      after_script: docker logout > /dev/null 2>&1
 
     - name: docker mysql
       env:
@@ -69,6 +70,7 @@ jobs:
         - WEB_ENTRYPOINT="''"
       addons: {}
       install: true
+      after_script: docker logout > /dev/null 2>&1
 
     - name: Unit Tests (PostgreSQL v9.6)
       env:
@@ -76,6 +78,9 @@ jobs:
         - BACKEND=postgresql
         - TEST_SUITE=unit
         - CODECOV=true
+      after_success:
+        - ${ROOT}/.travis/upload_coverage.sh analysis "${ROOT}/server"
+        - ${ROOT}/.travis/upload_coverage.sh website "${WEB}"
 
     - name: Unit Tests (MySQL v5.7)
       env:
@@ -109,62 +114,88 @@ before_install:
     sudo service mysql stop || true
     sudo service postgresql stop || true
   else
-    if [ "$BACKEND" = "mysql" ]; then mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}"; fi
-    if [ "$BACKEND" = "postgresql" ]; then psql -U postgres -c "CREATE DATABASE ${DB_NAME}"; fi
-    if [ "$TEST_SUITE" = "lint" ]; then env | sort; fi
+    [ "$BACKEND" = "mysql" ] && mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}" || :
+    [ "$BACKEND" = "postgresql" ] && psql -U postgres -c "CREATE DATABASE ${DB_NAME}" || :
+    [ "$CODECOV" = true ] && echo codecov >> $WEB/requirements.txt || :
+    [ "$TEST_SUITE" = "lint" ] && env | sort || :
   fi
 
 install:
-- if [ "$CODECOV" = true ]; then echo codecov >> $WEB/requirements.txt; fi
 - pip install -r $WEB/requirements.txt
 
 before_script:
 - |
-  set -ex
-  case "$TEST_CASE" in
-    unit)
-      ${ROOT}/.travis/init_website.sh
-      ;;
-    integration)
-      sed -i 's/^RUN_EVERY =.*$/RUN_EVERY = 180/' $WEB/website/settings/constants.py
-      ${ROOT}/.travis/init_website.sh
-      ;;
-    docker)
-      ${ROOT}/.travis/build_docker.sh
-      cd $ROOT/docker && ./create-docker-compose.sh -f docker-compose.yml
-      ;;
-  esac
-  set +ex
+  if [ "$TEST_CASE" = "docker" ]; then
+    ${ROOT}/.travis/build_docker.sh
+    cd $ROOT/docker && ./create-docker-compose.sh -f docker-compose.yml
+  fi
+- |
+  if [ "$TEST_CASE" = "unit" ]; then
+    ${ROOT}/.travis/init_website.sh
+  fi
+- |
+  if [ "$TEST_CASE" = "integration" ]; then
+    sed -i 's/^RUN_EVERY =.*$/RUN_EVERY = 180/' $WEB/website/settings/constants.py
+    ${ROOT}/.travis/init_website.sh
+  fi
+
+#- |
+#  set -ex
+#  case "$TEST_CASE" in
+#    unit)
+#      ${ROOT}/.travis/init_website.sh
+#      ;;
+#    integration)
+#      sed -i 's/^RUN_EVERY =.*$/RUN_EVERY = 180/' $WEB/website/settings/constants.py
+#      ${ROOT}/.travis/init_website.sh
+#      ;;
+#    docker)
+#      ${ROOT}/.travis/build_docker.sh
+#      cd $ROOT/docker && ./create-docker-compose.sh -f docker-compose.yml
+#      ;;
+#  esac
+#  set +ex
 
 script:
 - |
-  set -ex
-  case "$TEST_CASE" in
-    unit)
+  if [ "$TEST_CASE" = "docker" ]; then
+      docker-compose run --workdir="/app/controller" --no-deps --rm driver gradle build
+      docker-compose run --entrypoint "./start-test.sh" --rm web
+  fi
+- |
+  if [ "$TEST_CASE" = "unit" ]; then
       cd $ROOT/server && coverage run --omit="*/tests/*" -m unittest discover -s analysis/tests -v
       cd $WEB && coverage run manage.py test --noinput -v 2
       cd $CONTROLLER && gradle build
-      ;;
-    integration)
+  fi
+- |
+  if [ "$TEST_CASE" = "integration" ]; then
       cd $WEB && python manage.py runserver &
       sleep 10 && cd $DRIVER && fab integration_tests
-      ;;
-    lint)
-      cd $ROOT && git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git status && git log | head -n 1 && git lint
-      ;;
-    docker)
-      docker-compose run --workdir="/app/controller" --no-deps --rm driver gradle build
-      docker-compose run --entrypoint "./start-test.sh" --rm web
-      ;;
-  esac
-  set +ex
-
-after_success:
+  fi
 - |
-  if [ "$CODECOV" = true ]; then
-    cd "${ROOT}/server" && ${ROOT}/.travis/upload_coverage.sh analysis
-    cd "${WEB}" && ${ROOT}/.travis/upload_coverage.sh website
+  if [ "$TEST_CASE" = "lint" ]; then
+      cd $ROOT && git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git status && git log | head -n 1 && git lint
   fi
 
-after_script:
-- if [ "$BUILD" = "docker" ]; then docker logout > /dev/null 2>&1; fi
+#- |
+#  set -ex
+#  case "$TEST_CASE" in
+#    unit)
+#      cd $ROOT/server && coverage run --omit="*/tests/*" -m unittest discover -s analysis/tests -v
+#      cd $WEB && coverage run manage.py test --noinput -v 2
+#      cd $CONTROLLER && gradle build
+#      ;;
+#    integration)
+#      cd $WEB && python manage.py runserver &
+#      sleep 10 && cd $DRIVER && fab integration_tests
+#      ;;
+#    lint)
+#      cd $ROOT && git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git status && git log | head -n 1 && git lint
+#      ;;
+#    docker)
+#      docker-compose run --workdir="/app/controller" --no-deps --rm driver gradle build
+#      docker-compose run --entrypoint "./start-test.sh" --rm web
+#      ;;
+#  esac
+#  set +ex
