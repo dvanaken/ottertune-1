@@ -116,6 +116,9 @@ matrix:
     - psql -U postgres -c "CREATE DATABASE ${DB_NAME}"
     - echo "codecov" >> $WEB/requirements.txt
     after_success:
+    - cd $ROOT
+    - ls -al server
+    - ls -al $WEB
     - >
       codecov ||
       (sleep 5 && codecov) ||

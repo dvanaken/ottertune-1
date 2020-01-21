@@ -26,5 +26,5 @@ for tag in base web driver; do
     docker image ls
 done
 
-for tag in driver web base; do docker rm "docker/Dockerfile.${tag}"; done
+for tag in driver web base; do docker rmi "${DOCKER_REPO}:${tag}"; done
 docker image ls
