@@ -39,42 +39,6 @@ env:
 
 matrix:
   include:
-  - name: Docker (PostgreSQL v9.6)
-    env:
-    - BUILD=docker
-    - BACKEND=postgresql
-    - WEB_ENTRYPOINT="''"
-    addons: {}
-    before_install:
-    - docker --version
-    - docker-compose --version
-    - env | sort
-    install: true
-    before_script:
-    - sudo service mysql stop || true
-    - sudo service postgresql stop || true
-    - cd $ROOT/docker
-    - docker-compose -f docker-compose.build.yml build --build-arg GIT_COMMIT=$TRAVIS_COMMIT
-    - ./create-docker-compose.sh -f docker-compose.yml 
-    script:
-    - docker-compose run --workdir="/app/controller" --no-deps --rm driver gradle build
-    - docker-compose run --workdir="/app" --no-deps --rm web bash -c "python3 -m unittest discover -s analysis/tests -v"
-    - docker-compose run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
-    before_deploy:
-    - /$ROOT/.travis/before_deploy.sh
-    deploy:
-      provider: script
-      script: /$ROOT/.travis/deploy.sh 
-      on:
-        #repo: cmu-db/ottertune
-        #branch: master
-        repo: dvanaken/ottertune-fork
-        branch: travis-trigger-build
-    after_deploy:
-    - curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-    - sh trigger-travis.sh --pro --branch master "$TRIGGER_USER" "$TRIGGER_REPO" "$TRIGGER_TOKEN" > /dev/null 2>&1
-    after_script: docker logout > /dev/null 2>&1
-
   - name: Docker (MySQL v5.7)
     env:
     - BUILD=docker
@@ -89,13 +53,52 @@ matrix:
     before_script:
     - sudo service mysql stop || true
     - sudo service postgresql stop || true
-    - cd $ROOT/docker
-    - docker-compose -f docker-compose.build.yml build --build-arg GIT_COMMIT=$TRAVIS_COMMIT
-    - ./create-docker-compose.sh -f docker-compose.yml
+    #- cd $ROOT/docker
+    #- docker-compose -f docker-compose.build.yml build --build-arg GIT_COMMIT=$TRAVIS_COMMIT
+    - ${ROOT}/.travis/build_docker.sh
+    - cd $ROOT/docker && ./create-docker-compose.sh -f docker-compose.yml
     script:
     - docker-compose run --workdir="/app/controller" --no-deps --rm driver gradle build
     - docker-compose run --workdir="/app" --no-deps --rm web bash -c "python3 -m unittest discover -s analysis/tests -v"
     - docker-compose run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
+    after_script: docker logout > /dev/null 2>&1
+
+  - name: Docker (PostgreSQL v9.6)
+    env:
+    - BUILD=docker
+    - BACKEND=postgresql
+    - WEB_ENTRYPOINT="''"
+    addons: {}
+    before_install:
+    - docker --version
+    - docker-compose --version
+    - env | sort
+    install: true
+    before_script:
+    - sudo service mysql stop || true
+    - sudo service postgresql stop || true
+    #- cd $ROOT/docker
+    #- docker-compose -f docker-compose.build.yml build --build-arg GIT_COMMIT=$TRAVIS_COMMIT
+    - ${ROOT}/.travis/build_docker.sh
+    - cd $ROOT/docker ./create-docker-compose.sh -f docker-compose.yml
+    script:
+    - docker-compose run --workdir="/app/controller" --no-deps --rm driver gradle build
+    - docker-compose run --workdir="/app" --no-deps --rm web bash -c "python3 -m unittest discover -s analysis/tests -v"
+    - docker-compose run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
+    before_deploy:
+    - /$ROOT/.travis/before_deploy.sh
+    deploy:
+      provider: script
+      script: /$ROOT/.travis/deploy.sh
+      on:
+        #repo: cmu-db/ottertune
+        #branch: master
+        repo: dvanaken/ottertune-fork
+        branch: travis-trigger-build
+    after_deploy:
+    - curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
+    - sh trigger-travis.sh --pro --branch master "$TRIGGER_USER" "$TRIGGER_REPO" "$TRIGGER_TOKEN" > /dev/null 2>&1
+    after_script: docker logout > /dev/null 2>&1
 
   - name: Unit Tests (MySQL v5.7)
     env:
@@ -103,6 +106,7 @@ matrix:
     - BACKEND=mysql
     before_install:
     - mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}"
+    - echo "codecov" >> $WEB/requirements.txt
 
   - name: Unit Tests (PostgreSQL v9.6)
     env:
@@ -112,18 +116,23 @@ matrix:
     - psql -U postgres -c "CREATE DATABASE ${DB_NAME}"
     - echo "codecov" >> $WEB/requirements.txt
     after_success:
-    - file1=`realpath --relative-to="$ROOT" "${ROOT}/server/.coverage"`
-    - file2=`realpath --relative-to="$ROOT" "${WEB}/.coverage"`
     - >
-      codecov -F analysis -f "${file1}" ||
-      (sleep 5 && codecov -F analysis -f "${file1}") ||
-      (sleep 5 && codecov -F analysis -f "${file1}") &&
+      codecov ||
+      (sleep 5 && codecov) ||
+      (sleep 5 && codecov) &&
       echo "Codecov did not collect coverage reports"
-    - >
-      codecov -F website -f "${file2}" ||
-      (sleep 5 && codecov -F website -f "${file2}") ||
-      (sleep 5 && codecov -F website -f "${file2}") &&
-      echo "Codecov did not collect coverage reports"
+    #- file1=`realpath --relative-to="$ROOT" "${ROOT}/server/.coverage"`
+    #- file2=`realpath --relative-to="$ROOT" "${WEB}/.coverage"`
+    #- >
+    #  codecov -F analysis -f "${file1}" ||
+    #  (sleep 5 && codecov -F analysis -f "${file1}") ||
+    #  (sleep 5 && codecov -F analysis -f "${file1}") &&
+    #  echo "Codecov did not collect coverage reports"
+    #- >
+    #  codecov -F website -f "${file2}" ||
+    #  (sleep 5 && codecov -F website -f "${file2}") ||
+    #  (sleep 5 && codecov -F website -f "${file2}") &&
+    #  echo "Codecov did not collect coverage reports"
 
   - name: Integration Tests (MySQL v5.7)
     env:
@@ -147,7 +156,7 @@ matrix:
     - cd $WEB && python manage.py runserver 0.0.0.0:8000 &
     - sleep 10 && cd $DRIVER && fab integration_tests
 
-  - name: Linter 
+  - name: Linter
     env:
     - BUILD=lint
     addons: {}
