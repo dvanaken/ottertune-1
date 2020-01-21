@@ -37,165 +37,143 @@ env:
   - CONTROLLER=$ROOT/client/controller
   - DRIVER=$ROOT/client/driver
 
-jobs:
+matrix:
   include:
-    - name: docker postgresql
-      env:
-        - BUILD=docker
-        - BACKEND=postgresql
-        - TEST_SUITE=docker
-        - WEB_ENTRYPOINT="''"
-      addons: {}
-      install: true
-      before_deploy:
-      - /$ROOT/.travis/before_deploy.sh
-      deploy:
-        provider: script
-        script: /$ROOT/.travis/deploy.sh
-        on:
-          #repo: cmu-db/ottertune
-          #branch: master
-          repo: dvanaken/ottertune-fork
-          branch: travis-trigger-build
-      after_deploy:
-      - curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-      - sh trigger-travis.sh --pro --branch master "$TRIGGER_USER" "$TRIGGER_REPO" "$TRIGGER_TOKEN" > /dev/null 2>&1
-      after_script: docker logout > /dev/null 2>&1
+  - name: Docker (PostgreSQL v9.6)
+    env:
+    - BUILD=docker
+    - BACKEND=postgresql
+    - WEB_ENTRYPOINT="''"
+    addons: {}
+    before_install:
+    - docker --version
+    - docker-compose --version
+    - env | sort
+    install: true
+    before_script:
+    - sudo service mysql stop || true
+    - sudo service postgresql stop || true
+    - cd $ROOT/docker
+    - docker-compose -f docker-compose.build.yml build --build-arg GIT_COMMIT=$TRAVIS_COMMIT
+    - ./create-docker-compose.sh -f docker-compose.yml 
+    script:
+    - docker-compose run --workdir="/app/controller" --no-deps --rm driver gradle build
+    - docker-compose run --workdir="/app" --no-deps --rm web bash -c "python3 -m unittest discover -s analysis/tests -v"
+    - docker-compose run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
+    before_deploy:
+    - /$ROOT/.travis/before_deploy.sh
+    deploy:
+      provider: script
+      script: /$ROOT/.travis/deploy.sh 
+      on:
+        #repo: cmu-db/ottertune
+        #branch: master
+        repo: dvanaken/ottertune-fork
+        branch: travis-trigger-build
+    after_deploy:
+    - curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
+    - sh trigger-travis.sh --pro --branch master "$TRIGGER_USER" "$TRIGGER_REPO" "$TRIGGER_TOKEN" > /dev/null 2>&1
+    after_script: docker logout > /dev/null 2>&1
 
-    - name: docker mysql
-      env:
-        - BUILD=docker
-        - BACKEND=mysql
-        - TEST_SUITE=docker
-        - WEB_ENTRYPOINT="''"
-      addons: {}
-      install: true
-      after_script: docker logout > /dev/null 2>&1
+  - name: Docker (MySQL v5.7)
+    env:
+    - BUILD=docker
+    - BACKEND=mysql
+    - WEB_ENTRYPOINT="''"
+    addons: {}
+    before_install:
+    - docker --version
+    - docker-compose --version
+    - env | sort
+    install: true
+    before_script:
+    - sudo service mysql stop || true
+    - sudo service postgresql stop || true
+    - cd $ROOT/docker
+    - docker-compose -f docker-compose.build.yml build --build-arg GIT_COMMIT=$TRAVIS_COMMIT
+    - ./create-docker-compose.sh -f docker-compose.yml
+    script:
+    - docker-compose run --workdir="/app/controller" --no-deps --rm driver gradle build
+    - docker-compose run --workdir="/app" --no-deps --rm web bash -c "python3 -m unittest discover -s analysis/tests -v"
+    - docker-compose run --rm web bash -c "./wait-for-it.sh && python3 manage.py makemigrations website && python3 manage.py test --noinput -v 2"
 
-    - name: Unit Tests (PostgreSQL v9.6)
-      env:
-        - BUILD=travis
-        - BACKEND=postgresql
-        - TEST_SUITE=unit
-        - CODECOV=true
-      after_success:
-        - ${ROOT}/.travis/upload_coverage.sh analysis "${ROOT}/server"
-        - ${ROOT}/.travis/upload_coverage.sh website "${WEB}"
+  - name: Unit Tests (MySQL v5.7)
+    env:
+    - BUILD=unit
+    - BACKEND=mysql
+    before_install:
+    - mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}"
 
-    - name: Unit Tests (MySQL v5.7)
-      env:
-        - BUILD=travis
-        - BACKEND=mysql
-        - TEST_SUITE=unit
+  - name: Unit Tests (PostgreSQL v9.6)
+    env:
+    - BUILD=unit
+    - BACKEND=postgresql
+    before_install:
+    - psql -U postgres -c "CREATE DATABASE ${DB_NAME}"
+    - echo "codecov" >> $WEB/requirements.txt
+    after_success:
+    - file1=`realpath --relative-to="$ROOT" "${ROOT}/server/.coverage"`
+    - file2=`realpath --relative-to="$ROOT" "${WEB}/.coverage"`
+    - >
+      codecov -F analysis -f "${file1}" ||
+      (sleep 5 && codecov -F analysis -f "${file1}") ||
+      (sleep 5 && codecov -F analysis -f "${file1}") &&
+      echo "Codecov did not collect coverage reports"
+    - >
+      codecov -F website -f "${file2}" ||
+      (sleep 5 && codecov -F website -f "${file2}") ||
+      (sleep 5 && codecov -F website -f "${file2}") &&
+      echo "Codecov did not collect coverage reports"
 
-    - name: Integration Tests (PostgreSQL v9.6)
-      env:
-        - BUILD=travis
-        - BACKEND=postgresql
-        - TEST_SUITE=integration
+  - name: Integration Tests (MySQL v5.7)
+    env:
+    - BUILD=integration
+    - BACKEND=mysql
+    before_install:
+    - mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}"
+    - sed -i 's/^RUN_EVERY =.*$/RUN_EVERY = 180/' $WEB/website/settings/constants.py
+    script:
+    - cd $WEB && python manage.py runserver 0.0.0.0:8000 &
+    - sleep 10 && cd $DRIVER && fab integration_tests
 
-    - name: Integration Tests (MySQL v5.7)
-      env:
-        - BUILD=travis
-        - BACKEND=mysql
-        - TEST_SUITE=integration
+  - name: Integration Tests (PostgreSQL v9.6)
+    env:
+    - BUILD=integration
+    - BACKEND=postgresql
+    before_install:
+    - psql -U postgres -c "CREATE DATABASE ${DB_NAME}"
+    - sed -i 's/^RUN_EVERY =.*$/RUN_EVERY = 180/' $WEB/website/settings/constants.py
+    script:
+    - cd $WEB && python manage.py runserver 0.0.0.0:8000 &
+    - sleep 10 && cd $DRIVER && fab integration_tests
 
-    - name: Linter
-      env:
-        - BUILD=travis
-        - TEST_SUITE=lint
-
-
-before_install:
-- |
-  if [ "$BUILD" = "docker" ]; then
-    docker --version
-    docker-compose --version
-    sudo service mysql stop || true
-    sudo service postgresql stop || true
-  else
-    [ "$BACKEND" = "mysql" ] && mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}" || :
-    [ "$BACKEND" = "postgresql" ] && psql -U postgres -c "CREATE DATABASE ${DB_NAME}" || :
-    [ "$CODECOV" = true ] && echo codecov >> $WEB/requirements.txt || :
-    [ "$TEST_SUITE" = "lint" ] && env | sort || :
-  fi
+  - name: Linter 
+    env:
+    - BUILD=lint
+    addons: {}
+    before_script: true
+    script:
+    - >
+      cd $ROOT &&
+      git reset --soft ${TRAVIS_COMMIT_RANGE%...*} &&
+      git status &&
+      git log | head -n 1 &&
+      git lint
 
 install:
 - pip install -r $WEB/requirements.txt
 
 before_script:
-- |
-  if [ "$TEST_CASE" = "docker" ]; then
-    ${ROOT}/.travis/build_docker.sh
-    cd $ROOT/docker && ./create-docker-compose.sh -f docker-compose.yml
-  fi
-- |
-  if [ "$TEST_CASE" = "unit" ]; then
-    ${ROOT}/.travis/init_website.sh
-  fi
-- |
-  if [ "$TEST_CASE" = "integration" ]; then
-    sed -i 's/^RUN_EVERY =.*$/RUN_EVERY = 180/' $WEB/website/settings/constants.py
-    ${ROOT}/.travis/init_website.sh
-  fi
-
-#- |
-#  set -ex
-#  case "$TEST_CASE" in
-#    unit)
-#      ${ROOT}/.travis/init_website.sh
-#      ;;
-#    integration)
-#      sed -i 's/^RUN_EVERY =.*$/RUN_EVERY = 180/' $WEB/website/settings/constants.py
-#      ${ROOT}/.travis/init_website.sh
-#      ;;
-#    docker)
-#      ${ROOT}/.travis/build_docker.sh
-#      cd $ROOT/docker && ./create-docker-compose.sh -f docker-compose.yml
-#      ;;
-#  esac
-#  set +ex
+- cd $WEB
+- sed -i  "s|\('celery', 'db.*$\)|'console', \1|" website/settings/common.py
+- cp $ROOT/docker/credentials.py website/settings
+- cat website/settings/credentials.py
+- python manage.py makemigrations
+- python manage.py migrate
+- python manage.py startcelery
+- python manage.py createuser admin $ADMIN_PASSWORD --superuser
 
 script:
-- |
-  if [ "$TEST_CASE" = "docker" ]; then
-      docker-compose run --workdir="/app/controller" --no-deps --rm driver gradle build
-      docker-compose run --entrypoint "./start-test.sh" --rm web
-  fi
-- |
-  if [ "$TEST_CASE" = "unit" ]; then
-      cd $ROOT/server && coverage run --omit="*/tests/*" -m unittest discover -s analysis/tests -v
-      cd $WEB && coverage run manage.py test --noinput -v 2
-      cd $CONTROLLER && gradle build
-  fi
-- |
-  if [ "$TEST_CASE" = "integration" ]; then
-      cd $WEB && python manage.py runserver &
-      sleep 10 && cd $DRIVER && fab integration_tests
-  fi
-- |
-  if [ "$TEST_CASE" = "lint" ]; then
-      cd $ROOT && git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git status && git log | head -n 1 && git lint
-  fi
-
-#- |
-#  set -ex
-#  case "$TEST_CASE" in
-#    unit)
-#      cd $ROOT/server && coverage run --omit="*/tests/*" -m unittest discover -s analysis/tests -v
-#      cd $WEB && coverage run manage.py test --noinput -v 2
-#      cd $CONTROLLER && gradle build
-#      ;;
-#    integration)
-#      cd $WEB && python manage.py runserver &
-#      sleep 10 && cd $DRIVER && fab integration_tests
-#      ;;
-#    lint)
-#      cd $ROOT && git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git status && git log | head -n 1 && git lint
-#      ;;
-#    docker)
-#      docker-compose run --workdir="/app/controller" --no-deps --rm driver gradle build
-#      docker-compose run --entrypoint "./start-test.sh" --rm web
-#      ;;
-#  esac
-#  set +ex
+- cd $ROOT/server && coverage run --omit="*/tests/*" -m unittest discover -s analysis/tests -v
+- cd $WEB && coverage run manage.py test --noinput -v 2
+- cd $CONTROLLER && gradle build
