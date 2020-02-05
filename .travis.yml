@@ -149,7 +149,7 @@ before_script:
 - cat website/settings/credentials.py
 - python manage.py makemigrations
 - python manage.py migrate
-- python manage.py startcelery
+- python manage.py celery multi restart
 - python manage.py createuser admin $ADMIN_PASSWORD --superuser
 script:
 - cd $ROOT/server && coverage run --omit="*/tests/*" -m unittest discover -s analysis/tests -v

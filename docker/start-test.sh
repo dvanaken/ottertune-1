@@ -7,7 +7,7 @@
 python3 manage.py makemigrations website
 python3 manage.py migrate
 
-python3 manage.py startcelery
+python3 manage.py celery multi restart
 python3 manage.py runserver 0.0.0.0:8000 &
 
 # Wait for server
