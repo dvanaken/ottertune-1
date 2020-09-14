@@ -95,6 +95,10 @@ def create_controller_config():
     else:
         raise Exception("Database Type {} Not Implemented !".format(dconf.DB_TYPE))
 
+    workload_name = getattr(dconf, 'WORKLOAD_NAME', None)
+    if not workload_name:
+        workload_name = dconf.OLTPBENCH_BENCH
+
     config = dict(
         database_type=dconf.DB_TYPE,
         database_url=dburl_fmt(host=dconf.DB_HOST, port=dconf.DB_PORT, db=dconf.DB_NAME),
@@ -102,7 +106,7 @@ def create_controller_config():
         password=dconf.DB_PASSWORD,
         upload_code='DEPRECATED',
         upload_url='DEPRECATED',
-        workload_name=dconf.OLTPBENCH_BENCH
+        workload_name=workload_name
     )
 
     with open(dconf.CONTROLLER_CONFIG, 'w') as f:
@@ -890,9 +894,13 @@ def run_loops(max_iter=10):
             LOG.info('The %s-th Loop Ends / Total Loops %s', i + 1, max_iter)
     finally:
         tb = traceback.format_exc()
-        LOG.error(tb)
-        send_email(subject="{} DB ({}) Failed!".format(dconf.DB_TYPE, dconf.DB_HOST),
-                   body=tb)
+        if tb.startswith('NoneType'):
+            # Finished (no errors)
+            LOG.info("Finished!")
+            send_email(subject="{} DB ({}) Finished!".format(dconf.DB_TYPE, dconf.DB_HOST))
+        else:
+            LOG.error(tb)
+            send_email(subject="{} DB ({}) Failed!".format(dconf.DB_TYPE, dconf.DB_HOST), body=tb)
 
 
 @task

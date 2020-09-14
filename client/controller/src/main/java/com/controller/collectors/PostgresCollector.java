@@ -123,6 +123,9 @@ public class PostgresCollector extends DBCollector {
     try {
       for (Map<String, String> dbmap : thisViewList) {
         String jsonkey = dbmap.get(jsonKeyName);
+        if (jsonkey == null) {
+          jsonkey = "";
+        }
         thisViewObj.put(jsonkey, genMapJSONObj(dbmap));
       }
     } catch (JSONException je) {
