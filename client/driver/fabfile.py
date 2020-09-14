@@ -13,6 +13,7 @@ import json
 import os
 import re
 import time
+import traceback
 from collections import OrderedDict
 from multiprocessing import Process
 
@@ -116,8 +117,12 @@ def restart_database():
             # becaues there's no init system running and the only process running
             # in the container is postgres itself
             local('docker restart {}'.format(dconf.CONTAINER_NAME))
+            time.sleep(10)
         elif dconf.HOST_CONN == 'remote_docker':
             run('docker restart {}'.format(dconf.CONTAINER_NAME), remote_only=True)
+            time.sleep(10)
+            res = run('docker ps -a --filter "name={}" --format "{{{{.Status}}}}"'.format(dconf.CONTAINER_NAME), remote_only=True)
+            return res.stdout.startswith('Up')
         else:
             sudo('pg_ctl -D {} -w -t 600 restart -m fast'.format(
                 dconf.PG_DATADIR), user=dconf.ADMIN_USER, capture=False)
@@ -197,6 +202,7 @@ def drop_user():
 
 @task
 def reset_conf(always=True):
+    always = parse_bool(always)
     if always:
         change_conf()
         return
@@ -273,11 +279,20 @@ def load_oltpbench():
         msg = 'oltpbench config {} does not exist, '.format(dconf.OLTPBENCH_CONFIG)
         msg += 'please double check the option in driver_config.py'
         raise Exception(msg)
+
+    if dconf.DB_TYPE == 'postgres':
+        change_conf({'max_connections': 600})
+        restart_database()
+
     set_oltpbench_config()
     cmd = "./oltpbenchmark -b {} -c {} --create=true --load=true".\
           format(dconf.OLTPBENCH_BENCH, dconf.OLTPBENCH_CONFIG)
     with lcd(dconf.OLTPBENCH_HOME):  # pylint: disable=not-context-manager
         local(cmd)
+
+    if dconf.DB_TYPE == 'postgres':
+        change_conf()
+        restart_database()
 
 
 @task
@@ -823,43 +838,59 @@ def set_dynamic_knobs(recommendation, context):
 
 
 @task
-def run_loops(max_iter=10):
-    # dump database if it's not done before.
-    dump = dump_database()
-    # put the BASE_DB_CONF in the config file
-    # e.g., mysql needs to set innodb_monitor_enable to track innodb metrics
-    reset_conf(False)
-    for i in range(int(max_iter)):
-        # restart database
-        restart_succeeded = restart_database()
-        if not restart_succeeded:
-            files = {'summary': b'{"error": "DB_RESTART_ERROR"}',
-                     'knobs': b'{}',
-                     'metrics_before': b'{}',
-                     'metrics_after': b'{}'}
-            if dconf.ENABLE_UDM:
-                files['user_defined_metrics'] = b'{}'
-            response = requests.post(dconf.WEBSITE_URL + '/new_result/', files=files,
-                                     data={'upload_code': dconf.UPLOAD_CODE})
-            response = get_result()
-            result_timestamp = int(time.time())
-            save_next_config(response, t=result_timestamp)
-            change_conf(response['recommendation'])
-            continue
-
-        # reload database periodically
-        if dconf.RELOAD_INTERVAL > 0:
-            if i % dconf.RELOAD_INTERVAL == 0:
-                is_ready_db(interval_sec=10)
-                if i == 0 and dump is False:
-                    restore_database()
-                elif i > 0:
-                    restore_database()
+def prepare_database():
+    if dconf.DB_TYPE == 'postgres':
+        run('PGPASSWORD={} vacuumdb -U postgres -h {} --jobs=8 {}'.format(
+            dconf.DB_PASSWORD, dconf.DB_HOST, dconf.DB_NAME), remote_only=True)
+        assert restart_database()
         LOG.info('Wait %s seconds after restarting database', dconf.RESTART_SLEEP_SEC)
-        is_ready_db(interval_sec=10)
-        LOG.info('The %s-th Loop Starts / Total Loops %s', i + 1, max_iter)
-        loop(i % dconf.RELOAD_INTERVAL if dconf.RELOAD_INTERVAL > 0 else i)
-        LOG.info('The %s-th Loop Ends / Total Loops %s', i + 1, max_iter)
+        time.sleep(dconf.RESTART_SLEEP_SEC)
+
+
+@task
+def run_loops(max_iter=10):
+    try:
+        # dump database if it's not done before.
+        dump = dump_database()
+        # put the BASE_DB_CONF in the config file
+        # e.g., mysql needs to set innodb_monitor_enable to track innodb metrics
+        reset_conf(False)
+        for i in range(int(max_iter)):
+            # restart database
+            restart_succeeded = restart_database()
+            if not restart_succeeded:
+                files = {'summary': b'{"error": "DB_RESTART_ERROR"}',
+                         'knobs': b'{}',
+                         'metrics_before': b'{}',
+                         'metrics_after': b'{}'}
+                if dconf.ENABLE_UDM:
+                    files['user_defined_metrics'] = b'{}'
+                response = requests.post(dconf.WEBSITE_URL + '/new_result/', files=files,
+                                         data={'upload_code': dconf.UPLOAD_CODE})
+                response = get_result()
+                result_timestamp = int(time.time())
+                save_next_config(response, t=result_timestamp)
+                change_conf(response['recommendation'])
+                continue
+
+            # reload database periodically
+            if dconf.RELOAD_INTERVAL > 0:
+                if i % dconf.RELOAD_INTERVAL == 0:
+                    #is_ready_db(interval_sec=10)
+                    if i == 0 and dump is False:
+                        restore_database()
+                    elif i > 0:
+                        restore_database()
+            #is_ready_db(interval_sec=10)
+            prepare_database()
+            LOG.info('The %s-th Loop Starts / Total Loops %s', i + 1, max_iter)
+            loop(i % dconf.RELOAD_INTERVAL if dconf.RELOAD_INTERVAL > 0 else i)
+            LOG.info('The %s-th Loop Ends / Total Loops %s', i + 1, max_iter)
+    finally:
+        tb = traceback.format_exc()
+        LOG.error(tb)
+        send_email(subject="{} DB ({}) Failed!".format(dconf.DB_TYPE, dconf.DB_HOST),
+                   body=tb)
 
 
 @task
@@ -990,6 +1021,16 @@ def create_website_session(**kwargs):
 @task
 def edit_website_session(**kwargs):
     return _modify_website_object('session', 'edit', **kwargs)
+
+
+@task
+def update_session_knobs():
+    data = dict(
+        upload_code=dconf.UPLOAD_CODE,
+        session_knobs=json.dumps(dconf.KNOB_RANGES),
+    )
+    response = requests.post(dconf.WEBSITE_URL + '/edit/session/', data=data)
+    print(response)
 
 
 def wait_pipeline_data_ready(max_time_sec=800, interval_sec=10):
@@ -1217,3 +1258,12 @@ def integration_tests():
 
     # Test task status UI
     task_status_ui_test()
+
+
+@task
+def send_email(subject='', body=''):
+    if hasattr(dconf, 'ADMIN_EMAIL') and dconf.ADMIN_EMAIL:
+        local('echo -e "Subject:{}\n{}" | sendmail -t {}'.format(
+            subject, body, dconf.ADMIN_EMAIL))
+    else:
+        LOG.warning("ADMIN_EMAIL not set.")
