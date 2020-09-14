@@ -850,6 +850,8 @@ def prepare_database():
 @task
 def run_loops(max_iter=10):
     try:
+        # Update session knob ranges if KNOB_RANGES is set in driver_config.py
+        update_session_knobs()
         # dump database if it's not done before.
         dump = dump_database()
         # put the BASE_DB_CONF in the config file
@@ -1025,12 +1027,14 @@ def edit_website_session(**kwargs):
 
 @task
 def update_session_knobs():
-    data = dict(
-        upload_code=dconf.UPLOAD_CODE,
-        session_knobs=json.dumps(dconf.KNOB_RANGES),
-    )
-    response = requests.post(dconf.WEBSITE_URL + '/edit/session/', data=data)
-    print(response)
+    if hasattr(dconf, 'KNOB_RANGES'):
+        LOG.info("Updating knob ranges...")
+        data = dict(
+            upload_code=dconf.UPLOAD_CODE,
+            session_knobs=json.dumps(dconf.KNOB_RANGES),
+        )
+        response = requests.post(dconf.WEBSITE_URL + '/edit/session/', data=data)
+        print(response)
 
 
 def wait_pipeline_data_ready(max_time_sec=800, interval_sec=10):
