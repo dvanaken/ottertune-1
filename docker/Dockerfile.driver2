@@ -1,0 +1,22 @@
+FROM ottertune-base
+
+ARG GRADLE_VERSION=gradle-5.5.1
+
+ENV GRADLE_HOME=/opt/${GRADLE_VERSION}
+ENV PATH=${GRADLE_HOME}/bin:${PATH}
+
+COPY ./client /app
+
+RUN /install.sh driver \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ant git vim sendmail \
+    && rm -rf /var/lib/apt/lists/* \
+    && git clone https://github.com/oltpbenchmark/oltpbench.git /app/oltpbench \
+    && cd /app/oltpbench \
+    && ant bootstrap \
+    && ant resolve \
+    && ant build
+
+WORKDIR /app/driver
+
+ENTRYPOINT tail -n 1 /etc/hosts | awk '{printf "%s %s.localdomain %s\n", $1, $2, $2}' >> /etc/hosts && /etc/init.d/sendmail restart && /bin/bash

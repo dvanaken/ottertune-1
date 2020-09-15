@@ -1,0 +1,14 @@
+version: "3"
+services:
+
+    driver:
+        image: ottertune-driver2
+        container_name: driver
+        labels:
+            NAME: "ottertune-driver2"
+        volumes:
+         - /home/dvanaken/.ssh/id_rsa:/root/.ssh/id_rsa:ro
+         - /home/dvanaken/otter5/driver_config.py:/app/driver/driver_config.py:ro
+         - /home/dvanaken/otter5/results:/app/driver/results
+         - /home/dvanaken/otter5/log:/app/driver/log
+         - /home/dvanaken/otter5/oltpbench_configs:/app/driver/oltpbench_configs
