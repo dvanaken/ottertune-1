@@ -2,13 +2,29 @@ version: "3"
 services:
 
     driver:
-        image: ottertune-driver2
-        container_name: driver
+        image: dvanaken/ottertune:driver2
         labels:
             NAME: "ottertune-driver2"
+        environment:
+          LOGIN_NAME: ${USER}
+          LOGIN_HOST: '192...'
+          DB_NAME: 'ycsb'
+          DB_CONF: '/home/dvanaken/proposed_work/postgresql.conf'
+          DB_DUMP_DIR: '/var/lib/postgresql/data'
+          PG_DATADIR: '/var/lib/postgresql/data'
+          OVERRIDE_DB_VERSION: '9.6'
+          RELOAD_INTERVAL: 10
+          RESTART_SLEEP_SEC: 50
+          OLTPBENCH_CONFIG: "/app/driver/oltpbench_configs/config.xml"
+          OLTPBENCH_BENCH: 'ycsb'
+          ADMIN_EMAIL: 'user@gmail.com'
+          WEBSITE_URL: 'http://127.0.0.1:8008'
+          UPLOAD_CODE: '123'
+          WORKLOAD_NAME: 'ycsb_updateonly'
         volumes:
-         - /home/dvanaken/.ssh/id_rsa:/root/.ssh/id_rsa:ro
-         - /home/dvanaken/otter5/driver_config.py:/app/driver/driver_config.py:ro
-         - /home/dvanaken/otter5/results:/app/driver/results
-         - /home/dvanaken/otter5/log:/app/driver/log
-         - /home/dvanaken/otter5/oltpbench_configs:/app/driver/oltpbench_configs
+         - ${HOME}/.ssh/id_rsa:/root/.ssh/id_rsa:ro
+         - ${HOME}/.vimrc:/root/.vimrc:ro
+         - ${PWD}/driver_config.py:/app/driver/driver_config.py:ro
+         - ${PWD}/results:/app/driver/results
+         - ${PWD}/log:/app/driver/log
+         - ${PWD}/oltpbench_configs:/app/driver/oltpbench_configs

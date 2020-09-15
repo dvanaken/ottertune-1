@@ -5,6 +5,6 @@ services:
         build:
           context: ../
           dockerfile: ./docker/Dockerfile.driver2
-        image: ottertune-driver2
+        image: dvanaken/ottertune:driver2
         labels:
           NAME: "ottertune-driver2"

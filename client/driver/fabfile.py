@@ -59,6 +59,10 @@ FileHandler.setFormatter(Formatter)
 LOG.addHandler(FileHandler)
 
 
+if os.path.exists('/init.sh'):
+    local('/init.sh')
+
+
 @task
 def check_disk_usage():
     partition = dconf.DATABASE_DISK
