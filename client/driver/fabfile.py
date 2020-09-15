@@ -124,9 +124,12 @@ def restart_database():
             time.sleep(10)
         elif dconf.HOST_CONN == 'remote_docker':
             run('docker restart {}'.format(dconf.CONTAINER_NAME), remote_only=True)
-            time.sleep(10)
             res = run('docker ps -a --filter "name={}" --format "{{{{.Status}}}}"'.format(dconf.CONTAINER_NAME), remote_only=True)
-            return res.stdout.startswith('Up')
+            if res.stdout.startswith('Up'):
+                is_ready_db(5)
+                return True
+            else:
+                return False
         else:
             sudo('pg_ctl -D {} -w -t 600 restart -m fast'.format(
                 dconf.PG_DATADIR), user=dconf.ADMIN_USER, capture=False)
@@ -555,9 +558,19 @@ def dump_database():
                            dconf.DB_NAME, dconf.DB_DUMP_DIR)
 
     elif dconf.DB_TYPE == 'postgres':
-        run('PGPASSWORD={} pg_dump -U {} -h {} -F c -d {} > {}'.format(
+        if dconf.RESTORE_DB_CONF:
+            run('cp {0} {0}.restore.bak'.format(dconf.DB_CONF), remote_only=True)
+            change_conf(dconf.RESTORE_DB_CONF)
+            restart_database()
+
+        run('PGPASSWORD={} pg_dump -U {} -h {} -F c -v -d {} > {}'.format(
             dconf.DB_PASSWORD, dconf.DB_USER, dconf.DB_HOST, dconf.DB_NAME,
             dumpfile))
+
+        if dconf.RESTORE_DB_CONF:
+            run('mv {0}.restore.bak {0}'.format(dconf.DB_CONF), remote_only=True)
+            restart_database()
+
     elif dconf.DB_TYPE == 'mysql':
         sudo('mysqldump --user={} --password={} --databases {} > {}'.format(
             dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_NAME, dumpfile))
@@ -588,11 +601,23 @@ def restore_database():
             drop_user()
             create_user()
             run_sql_script('restoreOracle.sh', dconf.DB_USER, dconf.DB_NAME)
+
     elif dconf.DB_TYPE == 'postgres':
         drop_database()
         create_database()
-        run('PGPASSWORD={} pg_restore -U {} -h {} -n public -j 8 -F c -d {} {}'.format(
+
+        if dconf.RESTORE_DB_CONF:
+            run('cp {0} {0}.restore.bak'.format(dconf.DB_CONF), remote_only=True)
+            change_conf(dconf.RESTORE_DB_CONF)
+            restart_database()
+
+        run('PGPASSWORD={} pg_restore -U {} -h {} -n public -j 8 -F c -v -d {} {}'.format(
             dconf.DB_PASSWORD, dconf.DB_USER, dconf.DB_HOST, dconf.DB_NAME, dumpfile))
+
+        if dconf.RESTORE_DB_CONF:
+            run('mv {0}.restore.bak {0}'.format(dconf.DB_CONF), remote_only=True)
+            restart_database()
+
     elif dconf.DB_TYPE == 'mysql':
         run('mysql --user={} --password={} < {}'.format(dconf.DB_USER, dconf.DB_PASSWORD, dumpfile))
     else:
@@ -602,22 +627,28 @@ def restore_database():
 
 @task
 def is_ready_db(interval_sec=10):
+    interval_sec = int(interval_sec)
     if dconf.DB_TYPE == 'mysql':
-        cmd_fmt = "mysql --user={} --password={} -e 'exit'".format
+        cmd = "mysql --user={} --password={} -e 'exit'".format(dconf.DB_USER, dconf.DB_PASSWORD)
+    elif dconf.DB_TYPE == 'postgres':
+        cmd = 'PGPASSWORD={} psql -U {} -h {} -c "SELECT 1;" {}'.format(
+            dconf.DB_PASSWORD, dconf.DB_USER, dconf.DB_HOST, dconf.DB_NAME)
     else:
         LOG.info('database %s connecting function is not implemented, sleep %s seconds and return',
                  dconf.DB_TYPE, dconf.RESTART_SLEEP_SEC)
         return
 
     with hide('everything'), settings(warn_only=True):  # pylint: disable=not-context-manager
+        total_sec = 0
         while True:
-            res = run(cmd_fmt(dconf.DB_USER, dconf.DB_PASSWORD))
+            res = run(cmd, remote_only=True)
             if res.failed:
-                LOG.info('Database %s is not ready, wait for %s seconds',
-                         dconf.DB_TYPE, interval_sec)
+                LOG.info('Database %s is not ready after %s seconds, wait for %s seconds',
+                         dconf.DB_TYPE, total_sec, interval_sec)
                 time.sleep(interval_sec)
+                total_sec += interval_sec
             else:
-                LOG.info('Database %s is ready.', dconf.DB_TYPE)
+                LOG.info('Database %s is ready after %s seconds.', dconf.DB_TYPE, total_sec)
                 return
 
 def _ready_to_start_oltpbench():
@@ -852,12 +883,15 @@ def prepare_database():
 
 
 @task
-def run_loops(max_iter=10):
+def run_loops(max_iter=10, skip_restore=False):
+    skip_restore = parse_bool(skip_restore)
     try:
         # Update session knob ranges if KNOB_RANGES is set in driver_config.py
         update_session_knobs()
         # dump database if it's not done before.
         dump = dump_database()
+        if dump is False:
+            dump = skip_restore
         # put the BASE_DB_CONF in the config file
         # e.g., mysql needs to set innodb_monitor_enable to track innodb metrics
         reset_conf(False)
