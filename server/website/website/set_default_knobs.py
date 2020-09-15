@@ -14,8 +14,6 @@ LOG = logging.getLogger(__name__)
 # tunable knobs in the KnobCatalog will be used instead.
 DEFAULT_TUNABLE_KNOBS = {
     DBMSType.POSTGRES: {
-        "global.autovacuum",
-        "global.archive_mode",
         "global.effective_cache_size",
         "global.maintenance_work_mem",
         "global.max_wal_size",
