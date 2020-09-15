@@ -33,6 +33,14 @@
   },
   {
     "model":"website.DBMSCatalog",
+    "pk":124,
+    "fields":{
+        "type":2,
+        "version":"12"
+     }
+  },
+  {
+    "model":"website.DBMSCatalog",
     "pk":9,
     "fields":{
         "type":9,

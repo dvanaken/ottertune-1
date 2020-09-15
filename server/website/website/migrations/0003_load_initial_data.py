@@ -17,6 +17,8 @@ def load_initial_data(apps, schema_editor):
         "postgres-93_metrics.json",
         "postgres-94_knobs.json",
         "postgres-94_metrics.json",
+        "postgres-12_knobs.json",
+        "postgres-12_metrics.json",
         "myrocks-5.6_knobs.json",
         "myrocks-5.6_metrics.json",
         "oracle-12_knobs.json",
