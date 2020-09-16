@@ -590,7 +590,7 @@ def dump_database():
             restart_database()
 
     elif dconf.DB_TYPE == 'mysql':
-        run('mysqldump --user={} --password={} --host={} --databases {} -v | gzip > {}'.format(
+        run('mysqldump --user={} --password={} --host={} --databases {} | gzip > {}'.format(
             dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_HOST, dconf.DB_NAME, dumpfile),
             remote_only=remote_only)
     else:
@@ -642,10 +642,10 @@ def restore_database():
 
     elif dconf.DB_TYPE == 'mysql':
         #run('mysql --user={} --password={} < {}'.format(dconf.DB_USER, dconf.DB_PASSWORD, dumpfile))
-        run('cat {} <(gzip -cd {}) {} | mysql -u {} -p{} -h {} -v'.format(
+        run('cat {} <(gzip -cd {}) {} | mysql -u {} -p{} -h {}'.format(
             os.path.join(dconf.DB_DUMP_DIR, 'pre.sql'), dumpfile,
             os.path.join(dconf.DB_DUMP_DIR, 'post.sql'), dconf.DB_USER,
-            dconf.DB_PASSWORD, dconf.DB_HOST), remote_only=dbconf.DB_DUMP_MOUNT)
+            dconf.DB_PASSWORD, dconf.DB_HOST), remote_only=dconf.DB_DUMP_MOUNT)
     else:
         raise Exception("Database Type {} Not Implemented !".format(dconf.DB_TYPE))
     LOG.info('Finish restoring database')
