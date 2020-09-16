@@ -905,6 +905,7 @@ def prepare_database():
         run('PGPASSWORD={} vacuumdb -U postgres -h {} --jobs=8 {}'.format(
             dconf.DB_PASSWORD, dconf.DB_HOST, dconf.DB_NAME), remote_only=True)
         assert restart_database()
+    if dconf.RESTART_SLEEP_SEC > 0:
         LOG.info('Wait %s seconds after restarting database', dconf.RESTART_SLEEP_SEC)
         time.sleep(dconf.RESTART_SLEEP_SEC)
 
