@@ -221,7 +221,7 @@ def reset_conf(always=True):
     # i.e. OtterTune signal line is not in the config file.
     signal = "# configurations recommended by ottertune:\n"
     tmp_conf_in = os.path.join(dconf.TEMP_DIR, os.path.basename(dconf.DB_CONF) + '.in')
-    get(dconf.DB_CONF, tmp_conf_in)
+    get(dconf.DB_CONF, tmp_conf_in, remote_only=dconf.DB_CONF_MOUNT)
     with open(tmp_conf_in, 'r') as f:
         lines = f.readlines()
     if signal not in lines:
@@ -233,7 +233,7 @@ def change_conf(next_conf=None):
     next_conf = next_conf or {}
 
     tmp_conf_in = os.path.join(dconf.TEMP_DIR, os.path.basename(dconf.DB_CONF) + '.in')
-    get(dconf.DB_CONF, tmp_conf_in)
+    get(dconf.DB_CONF, tmp_conf_in, remote_only=dconf.DB_CONF_MOUNT)
     with open(tmp_conf_in, 'r') as f:
         lines = f.readlines()
 
@@ -278,8 +278,8 @@ def change_conf(next_conf=None):
     with open(tmp_conf_out, 'w') as f:
         f.write(''.join(lines))
 
-    sudo('cp {0} {0}.ottertune.bak'.format(dconf.DB_CONF), remote_only=True)
-    put(tmp_conf_out, dconf.DB_CONF, use_sudo=True)
+    sudo('cp {0} {0}.ottertune.bak'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
+    put(tmp_conf_out, dconf.DB_CONF, use_sudo=True, remote_only=dconf.DB_CONF_MOUNT)
     local('rm -f {} {}'.format(tmp_conf_in, tmp_conf_out))
 
 
@@ -536,13 +536,28 @@ def upload_batch(result_dir=None, sort=True, upload_code=None):
 
 @task
 def dump_database():
+    remote_only = dconf.DB_DUMP_MOUNT
     dumpfile = os.path.join(dconf.DB_DUMP_DIR, dconf.DB_NAME + '.dump')
+
     if dconf.DB_TYPE == 'oracle':
         if not dconf.ORACLE_FLASH_BACK and file_exists(dumpfile):
             LOG.info('%s already exists ! ', dumpfile)
             return False
+
+    elif dconf.DB_TYPE == 'mysql':
+        dumpfile += '.gz'
+        put(os.path.join(dconf.DRIVER_HOME, 'sql', 'mysql-pre-dump.sql'),
+            os.path.join(dconf.DB_DUMP_DIR, 'pre.sql'),
+            remote_only=remote_only)
+        put(os.path.join(dconf.DRIVER_HOME, 'sql', 'mysql-post-dump.sql'),
+            os.path.join(dconf.DB_DUMP_DIR, 'post.sql'),
+            remote_only=remote_only)
+
+        if file_exists(dumpfile, remote_only=remote_only):
+            LOG.info('%s already exists ! ', dumpfile)
+            return False
     else:
-        if file_exists(dumpfile):
+        if file_exists(dumpfile, remote_only=remote_only):
             LOG.info('%s already exists ! ', dumpfile)
             return False
 
@@ -562,21 +577,22 @@ def dump_database():
 
     elif dconf.DB_TYPE == 'postgres':
         if dconf.RESTORE_DB_CONF:
-            run('cp {0} {0}.restore.bak'.format(dconf.DB_CONF), remote_only=True)
+            run('cp {0} {0}.restore.bak'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
             change_conf(dconf.RESTORE_DB_CONF)
             restart_database()
 
         run('PGPASSWORD={} pg_dump -U {} -h {} -F c -v -d {} > {}'.format(
-            dconf.DB_PASSWORD, dconf.DB_USER, dconf.DB_HOST, dconf.DB_NAME,
-            dumpfile))
+            dconf.DB_PASSWORD, dconf.DB_USER, dconf.DB_HOST, dconf.DB_NAME, dumpfile),
+            remote_only=remote_only)
 
         if dconf.RESTORE_DB_CONF:
-            run('mv {0}.restore.bak {0}'.format(dconf.DB_CONF), remote_only=True)
+            run('mv {0}.restore.bak {0}'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
             restart_database()
 
     elif dconf.DB_TYPE == 'mysql':
-        sudo('mysqldump --user={} --password={} --databases {} > {}'.format(
-            dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_NAME, dumpfile))
+        run('mysqldump --user={} --password={} --host={} --databases {} -v | gzip > {}'.format(
+            dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_HOST, dconf.DB_NAME, dumpfile),
+            remote_only=remote_only)
     else:
         raise Exception("Database Type {} Not Implemented !".format(dconf.DB_TYPE))
     return True
@@ -592,6 +608,8 @@ def clean_recovery():
 @task
 def restore_database():
     dumpfile = os.path.join(dconf.DB_DUMP_DIR, dconf.DB_NAME + '.dump')
+    if dconf.DB_TYPE == 'mysql':
+        dumpfile += '.gz'
     if not dconf.ORACLE_FLASH_BACK and not file_exists(dumpfile):
         raise FileNotFoundError("Database dumpfile '{}' does not exist!".format(dumpfile))
 
@@ -610,19 +628,24 @@ def restore_database():
         create_database()
 
         if dconf.RESTORE_DB_CONF:
-            run('cp {0} {0}.restore.bak'.format(dconf.DB_CONF), remote_only=True)
+            run('cp {0} {0}.restore.bak'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
             change_conf(dconf.RESTORE_DB_CONF)
             restart_database()
 
         run('PGPASSWORD={} pg_restore -U {} -h {} -n public -j 8 -F c -v -d {} {}'.format(
-            dconf.DB_PASSWORD, dconf.DB_USER, dconf.DB_HOST, dconf.DB_NAME, dumpfile))
+            dconf.DB_PASSWORD, dconf.DB_USER, dconf.DB_HOST, dconf.DB_NAME, dumpfile),
+            remote_only=dconf.DB_CONF_MOUNT)
 
         if dconf.RESTORE_DB_CONF:
-            run('mv {0}.restore.bak {0}'.format(dconf.DB_CONF), remote_only=True)
+            run('mv {0}.restore.bak {0}'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
             restart_database()
 
     elif dconf.DB_TYPE == 'mysql':
-        run('mysql --user={} --password={} < {}'.format(dconf.DB_USER, dconf.DB_PASSWORD, dumpfile))
+        #run('mysql --user={} --password={} < {}'.format(dconf.DB_USER, dconf.DB_PASSWORD, dumpfile))
+        run('cat {} <(gzip -cd {}) {} | mysql -u {} -p{} -h {} -v'.format(
+            os.path.join(dconf.DB_DUMP_DIR, 'pre.sql'), dumpfile,
+            os.path.join(dconf.DB_DUMP_DIR, 'post.sql'), dconf.DB_USER,
+            dconf.DB_PASSWORD, dconf.DB_HOST), remote_only=dbconf.DB_DUMP_MOUNT)
     else:
         raise Exception("Database Type {} Not Implemented !".format(dconf.DB_TYPE))
     LOG.info('Finish restoring database')

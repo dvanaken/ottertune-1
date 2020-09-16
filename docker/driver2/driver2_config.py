@@ -66,6 +66,10 @@ DB_CONF_MOUNT = True
 # If DB_CONF_MOUNT is True, the path is on the host server, not docker
 DB_CONF = os.environ['DB_CONF']
 
+# If set to True, DB_DUMP_DIR is mounted to database container file
+# Only available when HOST_CONN is docker or remote_docker
+DB_DUMP_MOUNT = True
+
 # Path to the directory for storing database dump files
 DB_DUMP_DIR = os.environ['DB_DUMP_DIR']
 

@@ -67,6 +67,7 @@ def get_content(response):
 @task
 def run(cmd, capture=True, remote_only=False, **kwargs):
     capture = parse_bool(capture)
+    remote_only = parse_bool(remote_only)
 
     try:
         if dconf.HOST_CONN == 'remote':
@@ -134,8 +135,9 @@ def sudo(cmd, user=None, capture=True, remote_only=False, **kwargs):
 
 
 @task
-def get(remote_path, local_path, use_sudo=False):
+def get(remote_path, local_path, use_sudo=False, remote_only=False):
     use_sudo = parse_bool(use_sudo)
+    remote_only = parse_bool(remote_only)
 
     if dconf.HOST_CONN == 'remote':
         res = _get(remote_path, local_path, use_sudo=use_sudo)
@@ -146,14 +148,14 @@ def get(remote_path, local_path, use_sudo=False):
     else:  # docker or remote_docker
         docker_cmd = 'docker cp -L {}:{} {}'.format(dconf.CONTAINER_NAME, remote_path, local_path)
         if dconf.HOST_CONN == 'docker':
-            if dconf.DB_CONF_MOUNT is True:
+            if remote_only:
                 pre_cmd = 'sudo ' if use_sudo else ''
                 opts = '-r' if os.path.isdir(remote_path) else ''
                 res = local('{}cp {} {} {}'.format(pre_cmd, opts, remote_path, local_path))
             else:
                 res = local(docker_cmd)
         elif dconf.HOST_CONN == 'remote_docker':
-            if dconf.DB_CONF_MOUNT is True:
+            if remote_only:
                 res = _get(remote_path, local_path, use_sudo=use_sudo)
             else:
                 res = sudo(docker_cmd, remote_only=True)
@@ -164,8 +166,9 @@ def get(remote_path, local_path, use_sudo=False):
 
 
 @task
-def put(local_path, remote_path, use_sudo=False):
+def put(local_path, remote_path, use_sudo=False, remote_only=False):
     use_sudo = parse_bool(use_sudo)
+    remote_only = parse_bool(remote_only)
 
     if dconf.HOST_CONN == 'remote':
         res = _put(local_path, remote_path, use_sudo=use_sudo)
@@ -176,14 +179,14 @@ def put(local_path, remote_path, use_sudo=False):
     else:  # docker or remote_docker
         docker_cmd = 'docker cp -L {} {}:{}'.format(local_path, dconf.CONTAINER_NAME, remote_path)
         if dconf.HOST_CONN == 'docker':
-            if dconf.DB_CONF_MOUNT is True:
+            if remote_only:
                 pre_cmd = 'sudo ' if use_sudo else ''
                 opts = '-r' if os.path.isdir(local_path) else ''
                 res = local('{}cp {} {} {}'.format(pre_cmd, opts, local_path, remote_path))
             else:
                 res = local(docker_cmd)
         elif dconf.HOST_CONN == 'remote_docker':
-            if dconf.DB_CONF_MOUNT is True:
+            if remote_only:
                 res = _put(local_path, remote_path, use_sudo=use_sudo)
             else:
                 res = _put(local_path, local_path, use_sudo=use_sudo)
@@ -210,16 +213,16 @@ def run_sql_script(scriptfile, *args):
 
 
 @task
-def file_exists(filename):
+def file_exists(filename, **kwargs):
     with settings(warn_only=True), hide('warnings'):  # pylint: disable=not-context-manager
-        res = run('[ -f {} ]'.format(filename))
+        res = run('[ -f {} ]'.format(filename), **kwargs)
     return res.return_code == 0
 
 
 @task
-def dir_exists(dirname):
+def dir_exists(dirname, **kwargs):
     with settings(warn_only=True), hide('warnings'):  # pylint: disable=not-context-manager
-        res = run('[ -d {} ]'.format(dirname))
+        res = run('[ -d {} ]'.format(dirname), **kwargs)
     return res.return_code == 0
 
 
