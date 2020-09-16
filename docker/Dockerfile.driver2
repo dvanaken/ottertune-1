@@ -6,8 +6,8 @@ ENV GRADLE_HOME=/opt/${GRADLE_VERSION}
 ENV PATH=${GRADLE_HOME}/bin:${PATH}
 
 COPY ./client /app
-COPY ./docker/driver2_config.py /app/driver/driver_config.py
-COPY ./docker/driver2_init.sh /init.sh
+COPY ./docker/driver2/driver2_config.py /app/driver/driver_config.py
+COPY ./docker/driver2/driver2_init.sh /init.sh
 
 RUN /install.sh driver \
     && apt-get update \

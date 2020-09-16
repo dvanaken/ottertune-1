@@ -11,7 +11,7 @@ HOST_CONN = 'remote_docker'
 
 # The name of the Docker container for the target database
 # (only required if HOST_CONN = docker)
-CONTAINER_NAME = 'postgres'  # e.g., 'postgres_container'
+CONTAINER_NAME = os.environ.get('CONTAINER_NAME', 'container')  # e.g., 'postgres_container'
 
 # Host SSH login credentials (only required if HOST_CONN=remote)
 LOGIN_NAME = os.environ['LOGIN_NAME']
@@ -25,19 +25,29 @@ LOGIN_PORT = None  # Set when using a port other than the SSH default
 #==========================================================
 
 # Postgres, Oracle or Mysql
-DB_TYPE = 'postgres'
+DB_TYPE = os.environ['DB_TYPE']
+
+if DB_TYPE == 'mysql':
+    _DEFAULT_DB_USER = 'root'
+    _DEFAULT_DB_PORT = '3306'
+elif DB_TYPE == 'postgres':
+    _DEFAULT_DB_USER = 'postgres'
+    _DEFAULT_DB_PORT = '5432'
+else:  # oracle
+    _DEFAULT_DB_USER = 'system'
+    _DEFAULT_DB_PORT = '1521'
 
 # Database version
-DB_VERSION = '9.6'
+DB_VERSION = os.environ['DB_VERSION']
 
 # Name of the database
 DB_NAME = os.environ['DB_NAME']
 
 # Database username
-DB_USER = 'postgres'
+DB_USER = os.environ.get('DB_USER', _DEFAULT_DB_USER)
 
 # Password for DB_USER
-DB_PASSWORD = 'postgres'
+DB_PASSWORD = os.environ['DB_PASSWORD']
 
 # Database admin username (for tasks like restarting the database)
 ADMIN_USER = DB_USER
@@ -46,7 +56,7 @@ ADMIN_USER = DB_USER
 DB_HOST = os.environ.get('DB_HOST', LOGIN_HOST)
 
 # Database port
-DB_PORT = '5432'
+DB_PORT = os.environ.get('DB_PORT', _DEFAULT_DB_PORT)
 
 # If set to True, DB_CONF file is mounted to database container file
 # Only available when HOST_CONN is docker or remote_docker
@@ -98,7 +108,9 @@ DATABASE_DISK = None
 OVERRIDE_DB_VERSION = os.environ.get('OVERRIDE_DB_VERSION', None)
 
 # POSTGRES-SPECIFIC OPTIONS >>>
-PG_DATADIR = os.environ['PG_DATADIR'] 
+PG_DATADIR = os.environ.get('PG_DATADIR', None)
+if DB_TYPE == 'postgres':
+    assert PG_DATADIR
 
 # ORACLE-SPECIFIC OPTIONS >>>
 ORACLE_AWR_ENABLED = False
@@ -176,7 +188,7 @@ CONTROLLER_OBSERVE_SEC = None
 CONTROLLER_HOME = DRIVER_HOME + '/../controller'
 
 # Path to the controller configuration file
-CONTROLLER_CONFIG = os.path.join(CONTROLLER_HOME, 'config/postgres_config.json')
+CONTROLLER_CONFIG = os.path.join(CONTROLLER_HOME, 'config/{}_config.json'.format(DB_TYPE))
 
 
 #==========================================================
@@ -210,148 +222,26 @@ UPLOAD_CODE = os.environ['UPLOAD_CODE']
 # If unset or None, OLTPBENCH_BENCH is used instead
 WORKLOAD_NAME = os.environ.get('WORKLOAD_NAME', None)
 
-if DB_TYPE == 'postgres':
-    KNOB_RANGES = OrderedDict([
-        ('global.effective_cache_size', {
-            'minval': 262144,
-            'maxval': 30000000000,
-            'tunable': True,
-        }),
-        ('global.maintenance_work_mem', {
-            'minval': 2097152,
-            'maxval': 549755813,
-            'tunable': True,
-        }),
-        ('global.max_wal_size', {
-            'minval': 671088640,
-            'maxval': 17179869184,
-            'tunable': True,
-        }),
-        ('global.max_worker_processes', {
-            'minval': 0,
-            'maxval': 16,
-            'tunable': True,
-        }),
-        ('global.shared_buffers', {
-            'minval': 4194304,
-            'maxval': 27487790694,
-            'tunable': True,
-        }),
-        ('global.temp_buffers', {
-            'minval': 26214400,
-            'maxval': 549755813,
-            'tunable': True,
-        }),
-        ('global.wal_buffers', {
-            'minval': 65536,
-            'maxval': 2147475456,
-            'tunable': True,
-        }),
-        ('global.work_mem', {
-            'minval': 2097152,
-            'maxval': 549755813,
-            'tunable': True,
-        }),
-        # ('global.backend_flush_after', {
-        #     'minval': 0,
-        #     'maxval': 2097152,
-        #     'tunable': True,
-        # }),
-        ('global.bgwriter_delay', {
-            'minval': 10,
-            'maxval': 10000,
-            'tunable': True,
-        }),
-        # ('global.bgwriter_flush_after', {
-        #     'minval': 0,
-        #     'maxval': 2097152,
-        #     'tunable': True,
-        # }),
-        ('global.bgwriter_lru_maxpages', {
-            'minval': 0,
-            'maxval': 1000,
-            'tunable': True,
-        }),
-        ('global.bgwriter_lru_multiplier', {
-            'minval': 0.0,
-            'maxval': 10.0,
-            'tunable': True,
-        }),
-        ('global.checkpoint_completion_target', {
-            'minval': 0.0,
-            'maxval': 1.0,
-            'tunable': True,
-        }),
-        # ('global.checkpoint_flush_after', {
-        #     'minval': 0,
-        #     'maxval': 2097152,
-        #     'tunable': True,
-        # }),
-        ('global.checkpoint_timeout', {
-            'minval': 300000,
-            'maxval': 3600000,
-            'tunable': True,
-        }),
-        ('global.commit_delay', {
-            'minval': 0,
-            'maxval': 10000,
-            'tunable': True,
-        }),
-        ('global.commit_siblings', {
-            'minval': 0,
-            'maxval': 100,
-            'tunable': True,
-        }),
-        ('global.default_statistics_target', {
-            'minval': 1,
-            'maxval': 10000,
-            'tunable': True,
-        }),
-        ('global.effective_io_concurrency', {
-            'minval': 0,
-            'maxval': 1000,
-            'tunable': True,
-        }),
-        ('global.from_collapse_limit', {
-            'minval': 1,
-            'maxval': 100,
-            'tunable': True,
-        }),
-        ('global.join_collapse_limit', {
-            'minval': 1,
-            'maxval': 100,
-            'tunable': True,
-        }),
-        ('global.max_parallel_workers_per_gather', {
-            'minval': 0,
-            'maxval': 8,
-            'tunable': True,
-        }),
-        ('global.random_page_cost', {
-            'minval': 1.0,
-            'maxval': 4.0,
-            'tunable': True,
-        }),
-        ('global.wal_sync_method', {
-            'minval': None,
-            'maxval': None,
-            'tunable': True,
-        }),
-        ('global.wal_writer_delay', {
-            'minval': 1,
-            'maxval': 10000,
-            'tunable': True,
-        }),
-        # ('global.wal_writer_flush_after', {
-        #     'minval': 0,
-        #     'maxval': 2097152,
-        #     'tunable': True,
-        # }),
-        #('', {
-        #    'minval': ,
-        #    'maxval': ,
-        #    'tunable': True,
-        #}),
-    ])
-else:
-    KNOB_RANGES = None
+# Path to JSON dict of tunable knobs and their valid ranges
+# (for non-numeric types set minval/maxval to None).
+#
+# Example:
+#
+# {
+#     "global.random_page_cost": {
+#         "minval": 1.0,
+#         "maxval": 4.0,
+#         "tunable": true
+#     },
+#     "global.wal_sync_method": {
+#         "minval": null,
+#         "maxval": null,
+#         "tunable": true
+#     },
+#     "global.wal_writer_delay": {
+#         "minval": 1,
+#         "maxval": 10000,
+#         "tunable": true
+#     }
+# }
+KNOB_RANGES_FILE = os.environ.get('KNOB_RANGES_FILE', None)

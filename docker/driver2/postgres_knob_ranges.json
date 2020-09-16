@@ -1,0 +1,117 @@
+{
+    "global.effective_cache_size": {
+        "minval": 262144,
+        "maxval": 30000000000,
+        "tunable": true
+    },
+    "global.maintenance_work_mem": {
+        "minval": 2097152,
+        "maxval": 549755813,
+        "tunable": true
+    },
+    "global.max_wal_size": {
+        "minval": 671088640,
+        "maxval": 17179869184,
+        "tunable": true
+    },
+    "global.max_worker_processes": {
+        "minval": 0,
+        "maxval": 16,
+        "tunable": true
+    },
+    "global.shared_buffers": {
+        "minval": 4194304,
+        "maxval": 27487790694,
+        "tunable": true
+    },
+    "global.temp_buffers": {
+        "minval": 26214400,
+        "maxval": 549755813,
+        "tunable": true
+    },
+    "global.wal_buffers": {
+        "minval": 65536,
+        "maxval": 2147475456,
+        "tunable": true
+    },
+    "global.work_mem": {
+        "minval": 2097152,
+        "maxval": 549755813,
+        "tunable": true
+    },
+    "global.bgwriter_delay": {
+        "minval": 10,
+        "maxval": 10000,
+        "tunable": true
+    },
+    "global.bgwriter_lru_maxpages": {
+        "minval": 0,
+        "maxval": 1000,
+        "tunable": true
+    },
+    "global.bgwriter_lru_multiplier": {
+        "minval": 0.0,
+        "maxval": 10.0,
+        "tunable": true
+    },
+    "global.checkpoint_completion_target": {
+        "minval": 0.0,
+        "maxval": 1.0,
+        "tunable": true
+    },
+    "global.checkpoint_timeout": {
+        "minval": 300000,
+        "maxval": 3600000,
+        "tunable": true
+    },
+    "global.commit_delay": {
+        "minval": 0,
+        "maxval": 10000,
+        "tunable": true
+    },
+    "global.commit_siblings": {
+        "minval": 0,
+        "maxval": 100,
+        "tunable": true
+    },
+    "global.default_statistics_target": {
+        "minval": 1,
+        "maxval": 10000,
+        "tunable": true
+    },
+    "global.effective_io_concurrency": {
+        "minval": 0,
+        "maxval": 1000,
+        "tunable": true
+    },
+    "global.from_collapse_limit": {
+        "minval": 1,
+        "maxval": 100,
+        "tunable": true
+    },
+    "global.join_collapse_limit": {
+        "minval": 1,
+        "maxval": 100,
+        "tunable": true
+    },
+    "global.max_parallel_workers_per_gather": {
+        "minval": 0,
+        "maxval": 8,
+        "tunable": true
+    },
+    "global.random_page_cost": {
+        "minval": 1.0,
+        "maxval": 4.0,
+        "tunable": true
+    },
+    "global.wal_sync_method": {
+        "minval": null,
+        "maxval": null,
+        "tunable": true
+    },
+    "global.wal_writer_delay": {
+        "minval": 1,
+        "maxval": 10000,
+        "tunable": true
+    }
+}

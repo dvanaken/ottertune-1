@@ -119,31 +119,30 @@ def create_controller_config():
 
 @task
 def restart_database():
-    if dconf.DB_TYPE == 'postgres':
+    if dconf.DB_TYPE in ('postgres', 'mysql') and dconf.HOST_CONN in ('docker', 'remote_docker'):
+        restart_cmd = 'docker restart -t 600 {}'.format(dconf.CONTAINER_NAME)
+        check_cmd = 'docker ps -a --filter "name={}" --format "{{{{.Status}}}}"'.format(dconf.CONTAINER_NAME)
+
         if dconf.HOST_CONN == 'docker':
-            # Restarting the docker container here is the cleanest way to do it
-            # becaues there's no init system running and the only process running
-            # in the container is postgres itself
-            local('docker restart {}'.format(dconf.CONTAINER_NAME))
-            time.sleep(10)
-        elif dconf.HOST_CONN == 'remote_docker':
-            run('docker restart {}'.format(dconf.CONTAINER_NAME), remote_only=True)
-            res = run('docker ps -a --filter "name={}" --format "{{{{.Status}}}}"'.format(dconf.CONTAINER_NAME), remote_only=True)
-            if res.stdout.startswith('Up'):
-                is_ready_db(5)
-                return True
-            else:
-                return False
+            local(restart_cmd)
+            res = local(check_cmd, capture=True)
         else:
-            sudo('pg_ctl -D {} -w -t 600 restart -m fast'.format(
-                dconf.PG_DATADIR), user=dconf.ADMIN_USER, capture=False)
+            run(restart_cmd, remote_only=True)
+            res = run(check_cmd, remote_only=True)
+
+        if res.stdout.startswith('Up'):
+            is_ready_db()
+            return True
+        else:
+            return False
+
+    elif dconf.DB_TYPE == 'postgres':
+        sudo('pg_ctl -D {} -w -t 600 restart -m fast'.format(
+            dconf.PG_DATADIR), user=dconf.ADMIN_USER, capture=False)
+
     elif dconf.DB_TYPE == 'mysql':
-        if dconf.HOST_CONN == 'docker':
-            local('docker restart {}'.format(dconf.CONTAINER_NAME))
-        elif dconf.HOST_CONN == 'remote_docker':
-            run('docker restart {}'.format(dconf.CONTAINER_NAME), remote_only=True)
-        else:
-            sudo('service mysql restart')
+        sudo('service mysql restart')
+
     elif dconf.DB_TYPE == 'oracle':
         db_log_path = os.path.join(os.path.split(dconf.DB_CONF)[0], 'startup.log')
         local_log_path = os.path.join(dconf.LOG_DIR, 'startup.log')
@@ -291,8 +290,8 @@ def load_oltpbench():
         msg += 'please double check the option in driver_config.py'
         raise Exception(msg)
 
-    if dconf.DB_TYPE == 'postgres':
-        change_conf({'max_connections': 600})
+    if dconf.DB_TYPE in ('postgres', 'mysql'):
+        run("echo 'max_connections = 600' >> {}".format(dconf.DB_CONF), remote_only=True)
         restart_database()
 
     set_oltpbench_config()
@@ -301,8 +300,8 @@ def load_oltpbench():
     with lcd(dconf.OLTPBENCH_HOME):  # pylint: disable=not-context-manager
         local(cmd)
 
-    if dconf.DB_TYPE == 'postgres':
-        change_conf()
+    if dconf.DB_TYPE in ('postgres', 'mysql'):
+        run("sed -i '$ d' {}".format(dconf.DB_CONF), remote_only=True)
         restart_database()
 
 
@@ -633,7 +632,8 @@ def restore_database():
 def is_ready_db(interval_sec=10):
     interval_sec = int(interval_sec)
     if dconf.DB_TYPE == 'mysql':
-        cmd = "mysql --user={} --password={} -e 'exit'".format(dconf.DB_USER, dconf.DB_PASSWORD)
+        cmd = "mysql --user={} --password={} -h {} -e 'exit'".format(
+            dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_HOST)
     elif dconf.DB_TYPE == 'postgres':
         cmd = 'PGPASSWORD={} psql -U {} -h {} -c "SELECT 1;" {}'.format(
             dconf.DB_PASSWORD, dconf.DB_USER, dconf.DB_HOST, dconf.DB_NAME)
@@ -642,7 +642,7 @@ def is_ready_db(interval_sec=10):
                  dconf.DB_TYPE, dconf.RESTART_SLEEP_SEC)
         return
 
-    with hide('everything'), settings(warn_only=True):  # pylint: disable=not-context-manager
+    with settings(warn_only=True):  # pylint: disable=not-context-manager
         total_sec = 0
         while True:
             res = run(cmd, remote_only=True)
@@ -890,7 +890,7 @@ def prepare_database():
 def run_loops(max_iter=10, skip_restore=False):
     skip_restore = parse_bool(skip_restore)
     try:
-        # Update session knob ranges if KNOB_RANGES is set in driver_config.py
+        # Update session knob ranges if KNOB_RANGES_FILE is set in driver_config.py
         update_session_knobs()
         # dump database if it's not done before.
         dump = dump_database()
@@ -1073,14 +1073,18 @@ def edit_website_session(**kwargs):
 
 @task
 def update_session_knobs():
-    if hasattr(dconf, 'KNOB_RANGES'):
+    if hasattr(dconf, 'KNOB_RANGES_FILE') and dconf.KNOB_RANGES_FILE:
         LOG.info("Updating knob ranges...")
+        with open(dconf.KNOB_RANGES_FILE, 'r') as f:
+            knob_ranges = f.read()  # json format
         data = dict(
             upload_code=dconf.UPLOAD_CODE,
-            session_knobs=json.dumps(dconf.KNOB_RANGES),
+            session_knobs=knob_ranges,
         )
         response = requests.post(dconf.WEBSITE_URL + '/edit/session/', data=data)
         print(response)
+    else:
+        LOG.warning("Variable KNOB_RANGES_FILE is not set.")
 
 
 def wait_pipeline_data_ready(max_time_sec=800, interval_sec=10):
@@ -1313,7 +1317,9 @@ def integration_tests():
 @task
 def send_email(subject='', body=''):
     if hasattr(dconf, 'ADMIN_EMAIL') and dconf.ADMIN_EMAIL:
-        local('echo -e "Subject:{}\n{}" | sendmail -t {}'.format(
-            subject, body, dconf.ADMIN_EMAIL))
+        mailfile = os.path.join(dconf.TEMP_DIR, 'outmail')
+        with open(mailfile, 'w') as f:
+            f.write("Subject:{}\n{}\n".format(subject, body))
+        local('cat {} | sendmail -t {}'.format(mailfile, dconf.ADMIN_EMAIL))
     else:
         LOG.warning("ADMIN_EMAIL not set.")
