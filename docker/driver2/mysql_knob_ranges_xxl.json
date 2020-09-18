@@ -102,7 +102,7 @@
     "global.innodb_log_files_in_group": {
         "minval": 2,
         "maxval": 16,
-        "tunable": true
+        "tunable": false
     },
     "global.innodb_lru_scan_depth": {
         "minval": 100,
@@ -206,7 +206,7 @@
     },
     "global.max_write_lock_count": {
         "minval": 1,
-        "maxval": 18446744073709551615,
+        "maxval": 8589934590,
         "tunable": true
     },
     "global.query_alloc_block_size": {
