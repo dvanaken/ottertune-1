@@ -27,7 +27,7 @@ public class MySQLCollector extends DBCollector {
 
   private static final String PARAMETERS_SQL = "SHOW VARIABLES;";
 
-  private static final String METRICS_SQL = "SHOW STATUS";
+  private static final String METRICS_SQL = "SHOW GLOBAL STATUS";
   
   private static final String METRICS_SQL2 =
       "SELECT name, count FROM INFORMATION_SCHEMA.INNODB_METRICS where subsystem = 'transaction';";
