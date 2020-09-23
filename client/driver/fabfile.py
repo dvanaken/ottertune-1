@@ -944,12 +944,17 @@ def run_loops(max_iter=10, skip_restore=False):
             # reload database periodically
             if dconf.RELOAD_INTERVAL > 0:
                 if i % dconf.RELOAD_INTERVAL == 0:
-                    #is_ready_db(interval_sec=10)
                     if i == 0 and dump is False:
                         restore_database()
+                        if dconf.DB_TYPE == 'mysql':
+                            run_oltpbench()
+                            assert restart_database()
                     elif i > 0:
                         restore_database()
-            #is_ready_db(interval_sec=10)
+                        if dconf.DB_TYPE == 'mysql':
+                            run_oltpbench()
+                            assert restart_database()
+
             prepare_database()
             LOG.info('The %s-th Loop Starts / Total Loops %s', i + 1, max_iter)
             loop(i % dconf.RELOAD_INTERVAL if dconf.RELOAD_INTERVAL > 0 else i)

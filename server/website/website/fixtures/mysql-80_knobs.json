@@ -1168,7 +1168,7 @@
             "minval": null,
             "maxval": null,
             "unit": 3,
-            "enumvals": "fsync,O_DSYNC,,O_DIRECT",
+            "enumvals": "fsync,O_DSYNC,,O_DIRECT, O_DIRECT_NO_FSYNC",
             "context": "restart",
             "scope": "global",
             "dbms": 180,

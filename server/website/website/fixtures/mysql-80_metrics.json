@@ -6,7 +6,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of connections that were aborted because the client died without closing the connection properly.",
             "dbms": 180,
             "default": null
         }
@@ -18,7 +18,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of failed attempts to connect to the MySQL server.",
             "dbms": 180,
             "default": null
         }
@@ -28,9 +28,9 @@
         "fields": {
             "name": "global.acl_cache_items_count",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of cached privilege objects. Each object is the privilege combination of a user and its active roles.",
             "dbms": 180,
             "default": null
         }
@@ -42,7 +42,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of transactions that used the temporary binary log cache but that exceeded the value of binlog_cache_size and used a temporary file to store statements from the transaction.",
             "dbms": 180,
             "default": null
         }
@@ -54,7 +54,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of transactions that used the temporary binary log cache.",
             "dbms": 180,
             "default": null
         }
@@ -66,7 +66,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "he number of nontransaction statements that used the binary log statement cache but that exceeded the value of binlog_stmt_cache_size and used a temporary file to store those statements.",
             "dbms": 180,
             "default": null
         }
@@ -78,7 +78,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of nontransactional statements that used the binary log statement cache.",
             "dbms": 180,
             "default": null
         }
@@ -90,7 +90,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of bytes received from all clients.",
             "dbms": 180,
             "default": null
         }
@@ -102,7 +102,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of bytes sent to all clients.",
             "dbms": 180,
             "default": null
         }
@@ -114,7 +114,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The public key used by the caching_sha2_password authentication plugin for RSA key pair-based password exchange. The value is nonempty only if the server successfully initializes the private and public keys in the files named by the caching_sha2_password_private_key_path and caching_sha2_password_public_key_path system variables. The value of Caching_sha2_password_rsa_public_key comes from the latter file.",
             "dbms": 180,
             "default": null
         }
@@ -126,7 +126,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of times a COM_PING, or COM_CHANGE_USER have executed on the protocol.",
             "dbms": 180,
             "default": null
         }
@@ -138,7 +138,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ALTER DATABASE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -150,7 +150,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ALTER EVENT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -162,7 +162,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ALTER FUNCTION statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -174,7 +174,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ALTER INSTANCE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -186,7 +186,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ALTER PROCEDURE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -198,7 +198,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "he total number of ALTER RESOURCE GROUP statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -210,7 +210,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ALTER SERVER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -222,7 +222,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ALTER TABLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -234,7 +234,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ALTER TABLESPACE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -246,7 +246,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ALTER USER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -258,7 +258,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ALTER USER ... DEFAULT ROLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -270,7 +270,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ANALYZE TABLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -282,7 +282,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CACHE INDEX statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -294,7 +294,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of BEGIN statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -306,7 +306,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of BINLOG statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -318,7 +318,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CALL statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -330,7 +330,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of USE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -342,7 +342,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CHANGE MASTER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -354,7 +354,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CHANGE REPLICATION FILTER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -366,7 +366,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CHECK TABLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -378,7 +378,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CHECKSUM TABLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -390,7 +390,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CLONE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -402,7 +402,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of COMMIT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -414,7 +414,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE DATABASE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -426,7 +426,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE EVENT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -438,7 +438,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE FUNCTION statements executed for stored functions.",
             "dbms": 180,
             "default": null
         }
@@ -450,7 +450,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE INDEX statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -462,7 +462,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE PROCEDURE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -474,7 +474,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE RESOURCE GROUP statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -486,7 +486,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE ROLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -498,7 +498,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE SERVER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -510,7 +510,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE SPATIAL REFERENCE SYSTEM statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -522,7 +522,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE TABLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -534,7 +534,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE TRIGGER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -546,7 +546,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE FUNCTION statements executed for user defined functions.",
             "dbms": 180,
             "default": null
         }
@@ -558,7 +558,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE USER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -570,7 +570,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of CREATE VIEW statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -582,7 +582,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DEALLOCATE PREPARE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -594,7 +594,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DELETE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -606,7 +606,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of multi-table DELETE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -618,7 +618,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DO statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -630,7 +630,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP DATABASE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -642,7 +642,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP EVENT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -654,7 +654,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP FUNCTION statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -666,7 +666,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP INDEX statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -678,7 +678,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP PROCEDURE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -690,7 +690,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP RESOURCE GROUP statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -702,7 +702,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP ROLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -714,7 +714,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP SERVER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -726,7 +726,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP SPATIAL REFERENCE SYSTEM statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -738,7 +738,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP TABLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -750,7 +750,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP TRIGGER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -762,7 +762,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP USER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -774,7 +774,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DROP VIEW statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -786,7 +786,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of empty queries executed.",
             "dbms": 180,
             "default": null
         }
@@ -798,7 +798,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of EXECUTE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -810,7 +810,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of EXPLAIN FOR CONNECTION statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -822,7 +822,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of FLUSH statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -834,7 +834,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of GET DIAGNOSTICS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -846,7 +846,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of GRANT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -858,7 +858,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of GRANT ROLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -870,7 +870,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of START GROUP_REPLICATION statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -882,7 +882,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of STOP GROUP_REPLICATION statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -894,7 +894,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of HANDLER CLOSE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -906,7 +906,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of HANDLER OPEN statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -918,7 +918,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of HANDLER READ statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -930,7 +930,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of HELP statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -942,7 +942,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of IMPORT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -954,7 +954,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of INSERT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -966,7 +966,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of INSERT ... SELECT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -978,7 +978,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of INSTALL COMPONENT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -990,7 +990,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of INSTALL PLUGIN statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1002,7 +1002,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of KILL statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1014,7 +1014,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of LOAD DATA INFILE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1026,7 +1026,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of LOCK INSTANCE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1038,7 +1038,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of LOCK TABLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1050,7 +1050,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of OPTIMIZE TABLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1062,7 +1062,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of LOAD INDEX INTO CACHE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1074,7 +1074,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of PREPARE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1086,7 +1086,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of PURGE BINARY LOGS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1098,7 +1098,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of PURGE BINARY LOGS BEFORE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1110,7 +1110,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of RELEASE SAVEPOINT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1122,7 +1122,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of RENAME TABLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1134,7 +1134,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of RENAME USER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1146,7 +1146,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of REPAIR TABLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1158,7 +1158,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of REPLACE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1170,7 +1170,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of REPLACE ... SELECT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1182,7 +1182,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of RESET statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1194,7 +1194,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of RESIGNAL statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1206,7 +1206,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of RESTART statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1218,7 +1218,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of REVOKE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1230,7 +1230,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of REVOKE ALL statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1242,7 +1242,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of REVOKE ROLES statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1254,7 +1254,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ROLLBACK statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1266,7 +1266,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of ROLLBACK TO SAVEPOINT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1278,7 +1278,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SAVEPOINT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1290,7 +1290,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SELECT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1302,7 +1302,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SET statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1314,7 +1314,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SET PASSWORD statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1326,7 +1326,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SET RESOURCE GROUP statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1338,7 +1338,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SET ROLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1350,7 +1350,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW BINLOG EVENTS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1362,7 +1362,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW BINARY LOGS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1374,7 +1374,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW CHARACTER SET statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1386,7 +1386,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW COLLATION statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1398,7 +1398,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW CREATE DATABASE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1410,7 +1410,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW CREATE EVENT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1422,7 +1422,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW CREATE FUNCTION statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1434,7 +1434,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW CREATE PROCEDURE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1446,7 +1446,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW CREATE TABLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1458,7 +1458,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW CREATE TRIGGER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1470,7 +1470,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW CREATE USER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1482,7 +1482,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW DATABASES statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1494,7 +1494,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW ENGINE ... LOGS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1506,7 +1506,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW ENGINE ... MUTEX statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1518,7 +1518,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW ENGINE ... STATUS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1530,7 +1530,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW ERRORS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1542,7 +1542,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW EVENTS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1554,7 +1554,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW FIELDS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1566,7 +1566,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW FUNCTION CODE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1578,7 +1578,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW FUNCTION STATUS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1590,7 +1590,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW GRANTS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1602,7 +1602,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW KEYS | INDEX | INDEXES statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1614,7 +1614,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW MASTER STATUS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1626,7 +1626,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW OPEN TABLES statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1638,7 +1638,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW PLUGINS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1650,7 +1650,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW PRIVILEGES statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1662,7 +1662,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW PROCEDURE CODE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1674,7 +1674,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW PROCEDURE STATUS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1686,7 +1686,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW PROCESSLIST statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1698,7 +1698,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW PROFILE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1710,7 +1710,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW PROFILES statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1722,7 +1722,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW RELAYLOG EVENTS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1734,7 +1734,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW SLAVE HOSTS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1746,7 +1746,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW SLAVE STATUS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1758,7 +1758,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW STATUS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1770,7 +1770,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW STORAGE ENGINES statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1782,7 +1782,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW TABLE STATUS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1794,7 +1794,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW TABLES statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1806,7 +1806,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW TRIGGERS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1818,7 +1818,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW VARIABLES statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1830,7 +1830,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SHOW WARNINGS statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1842,7 +1842,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of SHUTDOWN commands executed.",
             "dbms": 180,
             "default": null
         }
@@ -1854,7 +1854,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of SIGNAL statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1866,7 +1866,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of START SLAVE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1878,7 +1878,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of STOP SLAVE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1890,7 +1890,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of DEALLOCATE PREPARE statements, or mysql_stmt_close() calls, executed.",
             "dbms": 180,
             "default": null
         }
@@ -1902,7 +1902,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of EXECUTE statements, or mysql_stmt_execute() calls, executed.",
             "dbms": 180,
             "default": null
         }
@@ -1914,7 +1914,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of mysql_stmt_fetch() calls executed.",
             "dbms": 180,
             "default": null
         }
@@ -1926,7 +1926,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of PREPARE statements, mysql_stmt_prepare() calls, executed.",
             "dbms": 180,
             "default": null
         }
@@ -1938,7 +1938,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of re-prepare operations executed for prepared statements.",
             "dbms": 180,
             "default": null
         }
@@ -1950,7 +1950,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of mysql_stmt_reset() calls executed.",
             "dbms": 180,
             "default": null
         }
@@ -1962,7 +1962,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of mysql_stmt_send_long_data calls executed.",
             "dbms": 180,
             "default": null
         }
@@ -1974,7 +1974,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of TRUNCATE TABLE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1986,7 +1986,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of UNINSTALL COMPONENT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -1998,7 +1998,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of UNINSTALL PLUGIN statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -2010,7 +2010,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of UNLOCK INSTANCE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -2022,7 +2022,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of UNLOCK TABLES statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -2034,7 +2034,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of UPDATE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -2046,7 +2046,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of multi-table UPDATE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -2058,7 +2058,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of XA COMMIT statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -2070,7 +2070,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of XA END statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -2082,7 +2082,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of XA PREPARE statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -2094,7 +2094,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of XA RECOVER statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -2106,7 +2106,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of XA ROLLBACK statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -2118,7 +2118,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of XA START statements executed.",
             "dbms": 180,
             "default": null
         }
@@ -2130,7 +2130,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "Whether the client connection uses compression in the client/server protocol.",
             "dbms": 180,
             "default": null
         }
@@ -2142,7 +2142,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of errors that occurred during calls to accept() on the listening port.",
             "dbms": 180,
             "default": null
         }
@@ -2154,7 +2154,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of connections refused due to internal errors in the server, such as failure to start a new thread or an out-of-memory condition.",
             "dbms": 180,
             "default": null
         }
@@ -2166,7 +2166,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of connections refused because the server max_connections limit was reached.",
             "dbms": 180,
             "default": null
         }
@@ -2178,7 +2178,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of errors that occurred while searching for connecting client IP addresses.",
             "dbms": 180,
             "default": null
         }
@@ -2190,7 +2190,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of errors that occurred during calls to select() or poll() on the listening port. (Failure of this operation does not necessarily means a client connection was rejected.)",
             "dbms": 180,
             "default": null
         }
@@ -2202,7 +2202,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of connections refused by the libwrap library.",
             "dbms": 180,
             "default": null
         }
@@ -2214,7 +2214,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of connection attempts (successful or not) to the MySQL server.",
             "dbms": 180,
             "default": null
         }
@@ -2226,7 +2226,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of temporary tables that were converted to disk based tables, due to exceeding either tmp_table_size or max_heap_table_size.",
             "dbms": 180,
             "default": null
         }
@@ -2238,7 +2238,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many temporary files mysqld has created.",
             "dbms": 180,
             "default": null
         }
@@ -2250,7 +2250,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of temporary tables created.",
             "dbms": 180,
             "default": null
         }
@@ -2262,7 +2262,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The active ssl_ca value in the SSL context that the server uses for new connections. This context value may differ from the current ssl_ca system variable value if the system variable has been changed but ALTER INSTANCE RELOAD TLS has not subsequently been executed to reconfigure the SSL context from the context-related system variable values and update the corresponding status variables. This variable was added in MySQL 8.0.16.",
             "dbms": 180,
             "default": null
         }
@@ -2274,7 +2274,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The active ssl_capath value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
             "dbms": 180,
             "default": null
         }
@@ -2286,7 +2286,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The active ssl_cert value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
             "dbms": 180,
             "default": null
         }
@@ -2298,7 +2298,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The active ssl_cipher value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
             "dbms": 180,
             "default": null
         }
@@ -2310,7 +2310,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The active tls_ciphersuites value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
             "dbms": 180,
             "default": null
         }
@@ -2322,7 +2322,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The active ssl_crl value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
             "dbms": 180,
             "default": null
         }
@@ -2334,7 +2334,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The active ssl_crlpath value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
             "dbms": 180,
             "default": null
         }
@@ -2346,7 +2346,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The active ssl_key value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
             "dbms": 180,
             "default": null
         }
@@ -2358,7 +2358,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The active tls_version value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
             "dbms": 180,
             "default": null
         }
@@ -2370,7 +2370,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of rows written with INSERT DELAYED for which some error occurred (probably duplicate key). This status variable is deprecated (because DELAYED inserts are deprecated), and will be removed in a future release.",
             "dbms": 180,
             "default": null
         }
@@ -2380,9 +2380,9 @@
         "fields": {
             "name": "global.delayed_insert_threads",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of INSERT DELAYED handler threads in use for nontransactional tables. This status variable is deprecated (because DELAYED inserts are deprecated), and will be removed in a future release.",
             "dbms": 180,
             "default": null
         }
@@ -2394,7 +2394,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of INSERT DELAYED rows written to nontransactional tables. This status variable is deprecated (because DELAYED inserts are deprecated), and will be removed in a future release.",
             "dbms": 180,
             "default": null
         }
@@ -2406,7 +2406,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of executed FLUSH statements.",
             "dbms": 180,
             "default": null
         }
@@ -2418,7 +2418,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of internal COMMIT statements.",
             "dbms": 180,
             "default": null
         }
@@ -2430,7 +2430,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of times that rows have been deleted from tables.",
             "dbms": 180,
             "default": null
         }
@@ -2442,7 +2442,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The MySQL server can ask the NDBCLUSTER storage engine if it knows about a table with a given name. This is called discovery. Handler_discover indicates the number of times that tables have been discovered using this mechanism.",
             "dbms": 180,
             "default": null
         }
@@ -2454,7 +2454,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The server increments this variable for each call to its external_lock() function, which generally occurs at the beginning and end of access to a table instance.",
             "dbms": 180,
             "default": null
         }
@@ -2466,7 +2466,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of times the server uses a storage engine's own Multi-Range Read implementation for table access.",
             "dbms": 180,
             "default": null
         }
@@ -2478,7 +2478,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "A counter for the prepare phase of two-phase commit operations.",
             "dbms": 180,
             "default": null
         }
@@ -2490,7 +2490,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of times the first entry in an index was read. If this value is high, it suggests that the server is doing a lot of full index scans; for example, SELECT col1 FROM foo, assuming that col1 is indexed.",
             "dbms": 180,
             "default": null
         }
@@ -2502,7 +2502,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests to read the last key in an index. If this value is high, it is a good indication that your tables are properly indexed for your queries.",
             "dbms": 180,
             "default": null
         }
@@ -2514,7 +2514,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests to read the last key in an index. With ORDER BY, the server will issue a first-key request followed by several next-key requests, whereas with With ORDER BY DESC, the server will issue a last-key request followed by several previous-key requests. This variable was added in MySQL 5.6.1.",
             "dbms": 180,
             "default": null
         }
@@ -2526,7 +2526,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests to read the next row in key order. This value is incremented if you are querying an index column with a range constraint or if you are doing an index scan.",
             "dbms": 180,
             "default": null
         }
@@ -2538,7 +2538,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests to read the previous row in key order. This read method is mainly used to optimize ORDER BY ... DESC.",
             "dbms": 180,
             "default": null
         }
@@ -2550,7 +2550,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests to read a row based on a fixed position. This value is high if you are doing a lot of queries that require sorting of the result. You probably have a lot of queries that require MySQL to scan entire tables or you have joins that do not use keys properly.",
             "dbms": 180,
             "default": null
         }
@@ -2562,7 +2562,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests to read the next row in the data file. This value is high if you are doing a lot of table scans. Generally this suggests that your tables are not properly indexed or that your queries are not written to take advantage of the indexes you have.",
             "dbms": 180,
             "default": null
         }
@@ -2574,7 +2574,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests for a storage engine to perform a rollback operation.",
             "dbms": 180,
             "default": null
         }
@@ -2586,7 +2586,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests for a storage engine to place a savepoint.",
             "dbms": 180,
             "default": null
         }
@@ -2598,7 +2598,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests for a storage engine to rollback to a savepoint.",
             "dbms": 180,
             "default": null
         }
@@ -2610,7 +2610,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests to update a row in a table.",
             "dbms": 180,
             "default": null
         }
@@ -2622,7 +2622,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests to insert a row in a table.",
             "dbms": 180,
             "default": null
         }
@@ -2632,9 +2632,9 @@
         "fields": {
             "name": "global.innodb_buffer_pool_bytes_data",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "Buffer bytes containing data (innodb_buffer_pool_bytes_data)",
             "dbms": 180,
             "default": null
         }
@@ -2644,9 +2644,9 @@
         "fields": {
             "name": "global.innodb_buffer_pool_bytes_dirty",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "Buffer bytes currently dirty (innodb_buffer_pool_bytes_dirty)",
             "dbms": 180,
             "default": null
         }
@@ -2658,7 +2658,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The progress of an operation to record the pages held in the InnoDB buffer pool, triggered by the setting of innodb_buffer_pool_dump_at_shutdown or innodb_buffer_pool_dump_now.",
             "dbms": 180,
             "default": null
         }
@@ -2667,10 +2667,10 @@
         "model": "website.MetricCatalog",
         "fields": {
             "name": "global.innodb_buffer_pool_load_status",
-            "vartype": 6,
+            "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The progress of an operation to warm up the InnoDB buffer pool by reading in a set of pages corresponding to an earlier point in time, triggered by the setting of innodb_buffer_pool_load_at_startup or innodb_buffer_pool_load_now.",
             "dbms": 180,
             "default": null
         }
@@ -2680,9 +2680,9 @@
         "fields": {
             "name": "global.innodb_buffer_pool_pages_data",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "Buffer pages containing data (innodb_buffer_pool_pages_data)",
             "dbms": 180,
             "default": null
         }
@@ -2692,9 +2692,9 @@
         "fields": {
             "name": "global.innodb_buffer_pool_pages_dirty",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "Buffer pages currently dirty (innodb_buffer_pool_pages_dirty)",
             "dbms": 180,
             "default": null
         }
@@ -2706,7 +2706,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests to flush pages from the InnoDB buffer pool.",
             "dbms": 180,
             "default": null
         }
@@ -2716,9 +2716,9 @@
         "fields": {
             "name": "global.innodb_buffer_pool_pages_free",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "Buffer pages currently free (innodb_buffer_pool_pages_free)",
             "dbms": 180,
             "default": null
         }
@@ -2728,9 +2728,9 @@
         "fields": {
             "name": "global.innodb_buffer_pool_pages_misc",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "Buffer pages for misc use such as row locks or the adaptive hash index (innodb_buffer_pool_pages_misc)",
             "dbms": 180,
             "default": null
         }
@@ -2740,9 +2740,9 @@
         "fields": {
             "name": "global.innodb_buffer_pool_pages_total",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "Total buffer pool size in pages (innodb_buffer_pool_pages_total)",
             "dbms": 180,
             "default": null
         }
@@ -2754,7 +2754,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of pages read as read ahead (innodb_buffer_pool_read_ahead)",
             "dbms": 180,
             "default": null
         }
@@ -2766,7 +2766,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Read-ahead pages evicted without being accessed (innodb_buffer_pool_read_ahead_evicted)",
             "dbms": 180,
             "default": null
         }
@@ -2778,7 +2778,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of random read-aheads initiated by InnoDB. This happens when a query scans a large portion of a table but in random order.",
             "dbms": 180,
             "default": null
         }
@@ -2790,7 +2790,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of logical read requests (innodb_buffer_pool_read_requests)",
             "dbms": 180,
             "default": null
         }
@@ -2802,7 +2802,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of reads directly from disk (innodb_buffer_pool_reads)",
             "dbms": 180,
             "default": null
         }
@@ -2814,7 +2814,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The status of an operation to resize the InnoDB buffer pool dynamically, triggered by setting the innodb_buffer_pool_size parameter dynamically.",
             "dbms": 180,
             "default": null
         }
@@ -2826,7 +2826,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of times waited for free buffer (innodb_buffer_pool_wait_free)",
             "dbms": 180,
             "default": null
         }
@@ -2838,7 +2838,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of write requests (innodb_buffer_pool_write_requests)",
             "dbms": 180,
             "default": null
         }
@@ -2850,7 +2850,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of fsync() operations so far.",
             "dbms": 180,
             "default": null
         }
@@ -2860,9 +2860,9 @@
         "fields": {
             "name": "global.innodb_data_pending_fsyncs",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The current number of pending fsync() operations.",
             "dbms": 180,
             "default": null
         }
@@ -2872,9 +2872,9 @@
         "fields": {
             "name": "global.innodb_data_pending_reads",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The current number of pending reads.",
             "dbms": 180,
             "default": null
         }
@@ -2884,9 +2884,9 @@
         "fields": {
             "name": "global.innodb_data_pending_writes",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The current number of pending writes.",
             "dbms": 180,
             "default": null
         }
@@ -2898,7 +2898,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The amount of data read since the server was started.",
             "dbms": 180,
             "default": null
         }
@@ -2910,7 +2910,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of data reads.",
             "dbms": 180,
             "default": null
         }
@@ -2922,7 +2922,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of data writes.",
             "dbms": 180,
             "default": null
         }
@@ -2934,7 +2934,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The amount of data written so far, in bytes.",
             "dbms": 180,
             "default": null
         }
@@ -2946,7 +2946,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of pages that have been written for doublewrite operations (innodb_dblwr_pages_written)",
             "dbms": 180,
             "default": null
         }
@@ -2958,7 +2958,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of doublewrite operations that have been performed (innodb_dblwr_writes)",
             "dbms": 180,
             "default": null
         }
@@ -2970,7 +2970,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of log waits due to small log buffer (innodb_log_waits)",
             "dbms": 180,
             "default": null
         }
@@ -2982,7 +2982,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of log write requests",
             "dbms": 180,
             "default": null
         }
@@ -2994,7 +2994,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of log writes",
             "dbms": 180,
             "default": null
         }
@@ -3004,9 +3004,9 @@
         "fields": {
             "name": "global.innodb_num_open_files",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of open files within InnoDB.",
             "dbms": 180,
             "default": null
         }
@@ -3018,7 +3018,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of fsync log writes (innodb_os_log_fsyncs)",
             "dbms": 180,
             "default": null
         }
@@ -3030,7 +3030,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of pending fsync write (innodb_os_log_pending_fsyncs)",
             "dbms": 180,
             "default": null
         }
@@ -3042,7 +3042,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of pending log file writes (innodb_os_log_pending_writes)",
             "dbms": 180,
             "default": null
         }
@@ -3054,7 +3054,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of bytes written to the log file.",
             "dbms": 180,
             "default": null
         }
@@ -3064,9 +3064,9 @@
         "fields": {
             "name": "global.innodb_page_size",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "InnoDB page size in bytes (innodb_page_size)",
             "dbms": 180,
             "default": null
         }
@@ -3078,7 +3078,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of pages created.",
             "dbms": 180,
             "default": null
         }
@@ -3090,7 +3090,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of pages read.",
             "dbms": 180,
             "default": null
         }
@@ -3102,7 +3102,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of pages written.",
             "dbms": 180,
             "default": null
         }
@@ -3112,9 +3112,9 @@
         "fields": {
             "name": "global.innodb_row_lock_current_waits",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of row locks currently being waited for.",
             "dbms": 180,
             "default": null
         }
@@ -3126,7 +3126,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total time spent in acquiring row locks, in milliseconds.",
             "dbms": 180,
             "default": null
         }
@@ -3136,9 +3136,9 @@
         "fields": {
             "name": "global.innodb_row_lock_time_avg",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The average time to acquire a row lock, in milliseconds.",
             "dbms": 180,
             "default": null
         }
@@ -3148,9 +3148,9 @@
         "fields": {
             "name": "global.innodb_row_lock_time_max",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The maximum time to acquire a row lock, in milliseconds.",
             "dbms": 180,
             "default": null
         }
@@ -3162,7 +3162,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of times a row lock had to be waited for.",
             "dbms": 180,
             "default": null
         }
@@ -3174,7 +3174,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of rows deleted from InnoDB tables.",
             "dbms": 180,
             "default": null
         }
@@ -3186,7 +3186,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of rows inserted into InnoDB tables.",
             "dbms": 180,
             "default": null
         }
@@ -3198,7 +3198,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of rows read from InnoDB tables.",
             "dbms": 180,
             "default": null
         }
@@ -3210,7 +3210,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of rows updated in InnoDB tables.",
             "dbms": 180,
             "default": null
         }
@@ -3222,7 +3222,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of times output from the SHOW ENGINE INNODB STATUS statement has been truncated.",
             "dbms": 180,
             "default": null
         }
@@ -3234,7 +3234,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of active undo tablespaces.",
             "dbms": 180,
             "default": null
         }
@@ -3246,7 +3246,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of explicit (user-created) undo tablespaces.",
             "dbms": 180,
             "default": null
         }
@@ -3258,7 +3258,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of implicit (InnoDB-created) undo tablespaces.",
             "dbms": 180,
             "default": null
         }
@@ -3270,7 +3270,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of undo tablespaces.",
             "dbms": 180,
             "default": null
         }
@@ -3280,9 +3280,9 @@
         "fields": {
             "name": "global.key_blocks_not_flushed",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of key blocks in the MyISAM key cache that have changed but have not yet been flushed to disk.",
             "dbms": 180,
             "default": null
         }
@@ -3292,9 +3292,9 @@
         "fields": {
             "name": "global.key_blocks_unused",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of unused blocks in the MyISAM key cache. You can use this value to determine how much of the key cache is in use.",
             "dbms": 180,
             "default": null
         }
@@ -3304,9 +3304,9 @@
         "fields": {
             "name": "global.key_blocks_used",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of used blocks in the MyISAM key cache. This value is a high-water mark that indicates the maximum number of blocks that have ever been in use at one time.",
             "dbms": 180,
             "default": null
         }
@@ -3318,7 +3318,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests to read a key block from the MyISAM key cache.",
             "dbms": 180,
             "default": null
         }
@@ -3330,7 +3330,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of physical reads of a key block from disk into the MyISAM key cache. If Key_reads is large, then your key_buffer_size value is probably too small. The cache miss rate can be calculated as Key_reads/Key_read_requests.",
             "dbms": 180,
             "default": null
         }
@@ -3342,7 +3342,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of requests to write a key block to the MyISAM key cache.",
             "dbms": 180,
             "default": null
         }
@@ -3354,7 +3354,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of physical writes of a key block from the MyISAM key cache to disk.",
             "dbms": 180,
             "default": null
         }
@@ -3364,9 +3364,9 @@
         "fields": {
             "name": "global.last_query_cost",
             "vartype": 3,
-            "metric_type": 2,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The total cost of the last compiled query as computed by the query optimizer. This is useful for comparing the cost of different query plans for the same query. The default value of 0 means that no query has been compiled yet. The default value is 0. Last_query_cost has session scope.",
             "dbms": 180,
             "default": null
         }
@@ -3376,9 +3376,9 @@
         "fields": {
             "name": "global.last_query_partial_plans",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of iterations the query optimizer made in execution plan construction for the previous query. Last_query_cost has session scope.",
             "dbms": 180,
             "default": null
         }
@@ -3390,7 +3390,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of attempts to connect to locked user accounts.",
             "dbms": 180,
             "default": null
         }
@@ -3402,7 +3402,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of SELECT statements for which the execution timeout was exceeded.",
             "dbms": 180,
             "default": null
         }
@@ -3414,7 +3414,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of SELECT statements for which a nonzero execution timeout was set. This includes statements that include a nonzero MAX_EXECUTION_TIME optimizer hint, and statements that include no such hint but execute while the timeout indicated by the max_execution_time system variable is nonzero.",
             "dbms": 180,
             "default": null
         }
@@ -3426,7 +3426,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of SELECT statements for which the attempt to set an execution timeout failed.",
             "dbms": 180,
             "default": null
         }
@@ -3436,9 +3436,9 @@
         "fields": {
             "name": "global.max_used_connections",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The maximum number of connections that have been in use simultaneously since the server started.",
             "dbms": 180,
             "default": null
         }
@@ -3450,7 +3450,7 @@
             "vartype": 6,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The time at which Max_used_connections reached its current value.",
             "dbms": 180,
             "default": null
         }
@@ -3462,7 +3462,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of clients that were disconnected because of an input or output error.",
             "dbms": 180,
             "default": null
         }
@@ -3474,7 +3474,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The network address or addresses for which X Plugin accepts TCP/IP connections",
             "dbms": 180,
             "default": null
         }
@@ -3486,7 +3486,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of bytes received through the network.",
             "dbms": 180,
             "default": null
         }
@@ -3498,7 +3498,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of bytes sent through the network.",
             "dbms": 180,
             "default": null
         }
@@ -3510,7 +3510,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of connections which have caused accept errors.",
             "dbms": 180,
             "default": null
         }
@@ -3522,7 +3522,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of connections which have caused errors.",
             "dbms": 180,
             "default": null
         }
@@ -3534,7 +3534,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of connections which have been accepted.",
             "dbms": 180,
             "default": null
         }
@@ -3546,7 +3546,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of connections which have been closed.",
             "dbms": 180,
             "default": null
         }
@@ -3558,7 +3558,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of connections which have been rejected.",
             "dbms": 180,
             "default": null
         }
@@ -3570,7 +3570,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of create view requests received.",
             "dbms": 180,
             "default": null
         }
@@ -3582,7 +3582,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of delete requests received.",
             "dbms": 180,
             "default": null
         }
@@ -3594,7 +3594,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of drop view requests received.",
             "dbms": 180,
             "default": null
         }
@@ -3606,7 +3606,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of find requests received.",
             "dbms": 180,
             "default": null
         }
@@ -3618,7 +3618,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of insert requests received.",
             "dbms": 180,
             "default": null
         }
@@ -3630,7 +3630,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of modify view requests received.",
             "dbms": 180,
             "default": null
         }
@@ -3642,7 +3642,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of update requests received.",
             "dbms": 180,
             "default": null
         }
@@ -3654,7 +3654,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of cursor-close messages received.",
             "dbms": 180,
             "default": null
         }
@@ -3666,7 +3666,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of cursor-fetch messages received.",
             "dbms": 180,
             "default": null
         }
@@ -3678,7 +3678,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of cursor-open messages received.",
             "dbms": 180,
             "default": null
         }
@@ -3690,7 +3690,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of errors sent to clients.",
             "dbms": 180,
             "default": null
         }
@@ -3702,7 +3702,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of errors with unknown message type",
             "dbms": 180,
             "default": null
         }
@@ -3714,7 +3714,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of expectation blocks closed.",
             "dbms": 180,
             "default": null
         }
@@ -3726,7 +3726,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of expectation blocks opened.",
             "dbms": 180,
             "default": null
         }
@@ -3738,7 +3738,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of errors during initialisation.",
             "dbms": 180,
             "default": null
         }
@@ -3750,7 +3750,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of global notifications sent to clients.",
             "dbms": 180,
             "default": null
         }
@@ -3762,7 +3762,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of other types of notices sent back to clients.",
             "dbms": 180,
             "default": null
         }
@@ -3774,7 +3774,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of warning notices sent back to clients.",
             "dbms": 180,
             "default": null
         }
@@ -3786,7 +3786,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "Number of Group Replication notifications sent to clients",
             "dbms": 180,
             "default": null
         }
@@ -3795,10 +3795,10 @@
         "model": "website.MetricCatalog",
         "fields": {
             "name": "global.mysqlx_port",
-            "vartype": 2,
-            "metric_type": 1,
+            "vartype": 1,
+            "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The TCP port which X Plugin is listening to.",
             "dbms": 180,
             "default": null
         }
@@ -3810,7 +3810,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of prepared-statement-deallocate messages received",
             "dbms": 180,
             "default": null
         }
@@ -3822,7 +3822,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of prepared-statement-execute messages received",
             "dbms": 180,
             "default": null
         }
@@ -3834,7 +3834,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of prepared-statement messages received",
             "dbms": 180,
             "default": null
         }
@@ -3846,7 +3846,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of rows sent back to clients.",
             "dbms": 180,
             "default": null
         }
@@ -3858,7 +3858,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of sessions that have been opened.",
             "dbms": 180,
             "default": null
         }
@@ -3870,7 +3870,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of session attempts which have been accepted.",
             "dbms": 180,
             "default": null
         }
@@ -3882,7 +3882,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of sessions that have been closed.",
             "dbms": 180,
             "default": null
         }
@@ -3894,7 +3894,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of sessions that have closed with a fatal error.",
             "dbms": 180,
             "default": null
         }
@@ -3906,7 +3906,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of sessions which have been killed.",
             "dbms": 180,
             "default": null
         }
@@ -3918,7 +3918,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of session attempts which have been rejected.",
             "dbms": 180,
             "default": null
         }
@@ -3930,7 +3930,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The Unix socket which X Plugin is listening to.",
             "dbms": 180,
             "default": null
         }
@@ -3942,7 +3942,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of accepted SSL connections.",
             "dbms": 180,
             "default": null
         }
@@ -3954,7 +3954,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "If SSL is active.",
             "dbms": 180,
             "default": null
         }
@@ -3966,7 +3966,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The current SSL cipher (empty for non-SSL connections).",
             "dbms": 180,
             "default": null
         }
@@ -3975,10 +3975,10 @@
         "model": "website.MetricCatalog",
         "fields": {
             "name": "global.mysqlx_ssl_cipher_list",
-            "vartype": 1,
-            "metric_type": 2,
+            "vartype": 2,
+            "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "A list of possible SSL ciphers (empty for non-SSL connections).",
             "dbms": 180,
             "default": null
         }
@@ -3988,9 +3988,9 @@
         "fields": {
             "name": "global.mysqlx_ssl_ctx_verify_depth",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The certificate verification depth limit currently set in ctx.",
             "dbms": 180,
             "default": null
         }
@@ -4000,9 +4000,9 @@
         "fields": {
             "name": "global.mysqlx_ssl_ctx_verify_mode",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The certificate verification mode currently set in ctx.",
             "dbms": 180,
             "default": null
         }
@@ -4014,7 +4014,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of successful SSL connections to the server.",
             "dbms": 180,
             "default": null
         }
@@ -4026,7 +4026,7 @@
             "vartype": 6,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The last date for which the SSL certificate is valid.",
             "dbms": 180,
             "default": null
         }
@@ -4038,7 +4038,7 @@
             "vartype": 6,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The first date for which the SSL certificate is valid.",
             "dbms": 180,
             "default": null
         }
@@ -4047,10 +4047,10 @@
         "model": "website.MetricCatalog",
         "fields": {
             "name": "global.mysqlx_ssl_verify_depth",
-            "vartype": 1,
-            "metric_type": 2,
+            "vartype": 2,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The certificate verification depth for SSL connections.",
             "dbms": 180,
             "default": null
         }
@@ -4059,10 +4059,10 @@
         "model": "website.MetricCatalog",
         "fields": {
             "name": "global.mysqlx_ssl_verify_mode",
-            "vartype": 1,
-            "metric_type": 2,
+            "vartype": 2,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The certificate verification mode for SSL connections.",
             "dbms": 180,
             "default": null
         }
@@ -4074,7 +4074,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The name of the protocol used for SSL connections.",
             "dbms": 180,
             "default": null
         }
@@ -4086,7 +4086,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of create collection statements received.",
             "dbms": 180,
             "default": null
         }
@@ -4098,7 +4098,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of create collection index statements received.",
             "dbms": 180,
             "default": null
         }
@@ -4110,7 +4110,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of disable notice statements received.",
             "dbms": 180,
             "default": null
         }
@@ -4122,7 +4122,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of drop collection statements received.",
             "dbms": 180,
             "default": null
         }
@@ -4134,7 +4134,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of drop collection index statements received.",
             "dbms": 180,
             "default": null
         }
@@ -4146,7 +4146,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of enable notice statements received.",
             "dbms": 180,
             "default": null
         }
@@ -4158,7 +4158,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of ensure collection statements received.",
             "dbms": 180,
             "default": null
         }
@@ -4170,7 +4170,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of StmtExecute messages received with namespace set to mysqlx.",
             "dbms": 180,
             "default": null
         }
@@ -4182,7 +4182,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of StmtExecute requests received for the SQL namespace.",
             "dbms": 180,
             "default": null
         }
@@ -4194,7 +4194,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of StmtExecute requests received for the xplugin namespace. From MySQL 8.0.19, the xplugin namespace has been removed so this status variable is no longer used.",
             "dbms": 180,
             "default": null
         }
@@ -4206,7 +4206,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of kill client statements received.",
             "dbms": 180,
             "default": null
         }
@@ -4218,7 +4218,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of list client statements received.",
             "dbms": 180,
             "default": null
         }
@@ -4230,7 +4230,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of list notice statements received.",
             "dbms": 180,
             "default": null
         }
@@ -4242,7 +4242,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of list object statements received.",
             "dbms": 180,
             "default": null
         }
@@ -4254,7 +4254,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of ping statements received.",
             "dbms": 180,
             "default": null
         }
@@ -4264,9 +4264,9 @@
         "fields": {
             "name": "global.mysqlx_worker_threads",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of worker threads available.",
             "dbms": 180,
             "default": null
         }
@@ -4276,9 +4276,9 @@
         "fields": {
             "name": "global.mysqlx_worker_threads_active",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of worker threads currently used.",
             "dbms": 180,
             "default": null
         }
@@ -4288,9 +4288,9 @@
         "fields": {
             "name": "global.not_flushed_delayed_rows",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of rows waiting to be written to nontransactional tables in INSERT DELAYED queues. This status variable is deprecated (because DELAYED inserts are deprecated), and will be removed in a future release.",
             "dbms": 180,
             "default": null
         }
@@ -4300,9 +4300,9 @@
         "fields": {
             "name": "global.ongoing_anonymous_transaction_count",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "Shows the number of ongoing transactions which have been marked as anonymous. This can be used to ensure that no further transactions are waiting to be processed.",
             "dbms": 180,
             "default": null
         }
@@ -4312,9 +4312,9 @@
         "fields": {
             "name": "global.open_files",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of files that are open. This count includes regular files opened by the server. It does not include other types of files such as sockets or pipes.",
             "dbms": 180,
             "default": null
         }
@@ -4324,9 +4324,9 @@
         "fields": {
             "name": "global.open_streams",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of streams that are open (used mainly for logging).",
             "dbms": 180,
             "default": null
         }
@@ -4336,9 +4336,9 @@
         "fields": {
             "name": "global.open_table_definitions",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of currently cached .frm files.",
             "dbms": 180,
             "default": null
         }
@@ -4348,9 +4348,9 @@
         "fields": {
             "name": "global.open_tables",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The current number of tables held open in the table cache.",
             "dbms": 180,
             "default": null
         }
@@ -4362,7 +4362,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of files that have been opened with my_open() (a mysys library function).",
             "dbms": 180,
             "default": null
         }
@@ -4374,7 +4374,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of .frm files that have been cached.",
             "dbms": 180,
             "default": null
         }
@@ -4386,7 +4386,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The total number of tables that have been opened.",
             "dbms": 180,
             "default": null
         }
@@ -4398,7 +4398,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of times a row could not be added to the accounts table because it was full.",
             "dbms": 180,
             "default": null
         }
@@ -4410,7 +4410,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instruments of type cond could not be loaded.",
             "dbms": 180,
             "default": null
         }
@@ -4422,7 +4422,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instances of object type cond could not be created.",
             "dbms": 180,
             "default": null
         }
@@ -4434,7 +4434,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of digest instances that could not be instrumented in the events_statements_summary_by_digest table. This can be nonzero if the value of performance_schema_digests_size is too small.",
             "dbms": 180,
             "default": null
         }
@@ -4446,7 +4446,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instruments of type file could not be loaded.",
             "dbms": 180,
             "default": null
         }
@@ -4458,7 +4458,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instances of object type file could not be opened.",
             "dbms": 180,
             "default": null
         }
@@ -4470,7 +4470,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instances of object type file could not be created.",
             "dbms": 180,
             "default": null
         }
@@ -4482,7 +4482,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many hosts were lost.",
             "dbms": 180,
             "default": null
         }
@@ -4494,7 +4494,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of indexes for which statistics were lost.",
             "dbms": 180,
             "default": null
         }
@@ -4506,7 +4506,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many events are lost or not recorded.",
             "dbms": 180,
             "default": null
         }
@@ -4518,7 +4518,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of times a memory instrument could not be loaded.",
             "dbms": 180,
             "default": null
         }
@@ -4530,7 +4530,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of metadata locks that could not be instrumented in the metadata_locks table.",
             "dbms": 180,
             "default": null
         }
@@ -4542,7 +4542,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instruments of type mutex could not be loaded.",
             "dbms": 180,
             "default": null
         }
@@ -4554,7 +4554,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instances of object type mutest could not be created.",
             "dbms": 180,
             "default": null
         }
@@ -4566,7 +4566,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of stored program statements for which statistics were lost.",
             "dbms": 180,
             "default": null
         }
@@ -4578,7 +4578,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of prepared statements that could not be instrumented in the prepared_statements_instances table.",
             "dbms": 180,
             "default": null
         }
@@ -4590,7 +4590,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of stored programs for which statistics were lost.",
             "dbms": 180,
             "default": null
         }
@@ -4602,7 +4602,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instruments of type rwlock could not be loaded.",
             "dbms": 180,
             "default": null
         }
@@ -4614,7 +4614,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instances of object type rwlock could not be created.",
             "dbms": 180,
             "default": null
         }
@@ -4626,7 +4626,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The longest valid attribute buffer size that was tracked.",
             "dbms": 180,
             "default": null
         }
@@ -4638,7 +4638,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of connections for which connection attribute truncation has occurred. For a given connection, if the client sends connection attribute key-value pairs for which the aggregate size is larger than the reserved storage permitted by the value of the performance_schema_session_connect_attrs_size system variable, the Performance Schema truncates the attribute data and increments Performance_schema_session_connect_attrs_lost. If this value is nonzero, you may wish to set performance_schema_session_connect_attrs_size to a larger value.",
             "dbms": 180,
             "default": null
         }
@@ -4650,7 +4650,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many socket instruments could not be loaded.",
             "dbms": 180,
             "default": null
         }
@@ -4662,7 +4662,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many socket instrument instances could not be created.",
             "dbms": 180,
             "default": null
         }
@@ -4674,7 +4674,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many stage instruments could not be loaded.",
             "dbms": 180,
             "default": null
         }
@@ -4686,7 +4686,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many statement instruments could not be loaded.",
             "dbms": 180,
             "default": null
         }
@@ -4698,7 +4698,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instances of object type table could not be opened.",
             "dbms": 180,
             "default": null
         }
@@ -4710,7 +4710,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instances of object type table could not be created.",
             "dbms": 180,
             "default": null
         }
@@ -4722,7 +4722,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of tables for which lock statistics were lost.",
             "dbms": 180,
             "default": null
         }
@@ -4734,7 +4734,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instruments of type thread could not be loaded.",
             "dbms": 180,
             "default": null
         }
@@ -4746,7 +4746,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many instances of object type thread could not be created.",
             "dbms": 180,
             "default": null
         }
@@ -4758,7 +4758,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of times a row could not be added to the users table because it was full.",
             "dbms": 180,
             "default": null
         }
@@ -4768,9 +4768,9 @@
         "fields": {
             "name": "global.prepared_stmt_count",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The current number of prepared statements. (The maximum number of statements is given by the max_prepared_stmt_count system variable.).",
             "dbms": 180,
             "default": null
         }
@@ -4782,7 +4782,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of statements executed by the server. This variable includes statements executed within stored programs, unlike the Questions variable.",
             "dbms": 180,
             "default": null
         }
@@ -4794,7 +4794,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of statements executed by the server. This includes only statements sent to the server by clients and not statements executed within stored programs, unlike the Queries variable.",
             "dbms": 180,
             "default": null
         }
@@ -4806,7 +4806,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The value of this variable is the public key used by the sha256_password authentication plugin for RSA key pair-based password exchange. The value is nonempty only if the server successfully initializes the private and public keys in the files named by the sha256_password_private_key_path and sha256_password_public_key_path system variables. The value of Rsa_public_key comes from the latter file.",
             "dbms": 180,
             "default": null
         }
@@ -4818,7 +4818,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "For future use. This variable was added in MySQL 8.0.13.",
             "dbms": 180,
             "default": null
         }
@@ -4830,7 +4830,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of joins that perform table scans because they do not use indexes. If this value is not 0, you should carefully check the indexes of your tables.",
             "dbms": 180,
             "default": null
         }
@@ -4842,7 +4842,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of joins that used a range search on a reference table.",
             "dbms": 180,
             "default": null
         }
@@ -4854,7 +4854,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of joins that used ranges on the first table. This is normally not a critical issue even if the value is quite large.",
             "dbms": 180,
             "default": null
         }
@@ -4866,7 +4866,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of joins without keys that check for key usage after each row. If this is not 0, you should carefully check the indexes of your tables.",
             "dbms": 180,
             "default": null
         }
@@ -4878,7 +4878,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of joins that did a full scan of the first table.",
             "dbms": 180,
             "default": null
         }
@@ -4888,9 +4888,9 @@
         "fields": {
             "name": "global.slave_open_temp_tables",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of temporary tables that the replication SQL thread currently has open. If the value is greater than zero, it is not safe to shut down the replica; This variable reports the total count of open temporary tables for all replication channels.",
             "dbms": 180,
             "default": null
         }
@@ -4902,7 +4902,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of threads that have taken more than slow_launch_time seconds to create.conn",
             "dbms": 180,
             "default": null
         }
@@ -4914,7 +4914,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of queries that have taken more than long_query_time seconds",
             "dbms": 180,
             "default": null
         }
@@ -4926,7 +4926,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of merge passes that the sort algorithm has had to do.",
             "dbms": 180,
             "default": null
         }
@@ -4938,7 +4938,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of sorts that were done using ranges.",
             "dbms": 180,
             "default": null
         }
@@ -4950,7 +4950,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of sorted rows.",
             "dbms": 180,
             "default": null
         }
@@ -4962,7 +4962,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of sorts that were done by scanning the table.",
             "dbms": 180,
             "default": null
         }
@@ -4974,7 +4974,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of negotiates needed to establish the connection.",
             "dbms": 180,
             "default": null
         }
@@ -4986,7 +4986,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of accepted SSL connections.",
             "dbms": 180,
             "default": null
         }
@@ -4998,7 +4998,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of callback cache hits.",
             "dbms": 180,
             "default": null
         }
@@ -5010,7 +5010,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The current SSL cipher (empty for non-SSL connections).",
             "dbms": 180,
             "default": null
         }
@@ -5022,7 +5022,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The list of possible SSL ciphers.",
             "dbms": 180,
             "default": null
         }
@@ -5034,7 +5034,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of SSL connection attempts to an SSL-enabled master.",
             "dbms": 180,
             "default": null
         }
@@ -5046,7 +5046,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of negotiates needed to establish the connection to an SSL-enabled master.",
             "dbms": 180,
             "default": null
         }
@@ -5056,9 +5056,9 @@
         "fields": {
             "name": "global.ssl_ctx_verify_depth",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The SSL context verification depth --how many certificates in the chain are tested.",
             "dbms": 180,
             "default": null
         }
@@ -5068,9 +5068,9 @@
         "fields": {
             "name": "global.ssl_ctx_verify_mode",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The SSL context verification mode.",
             "dbms": 180,
             "default": null
         }
@@ -5080,9 +5080,9 @@
         "fields": {
             "name": "global.ssl_default_timeout",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The default SSL timeout.",
             "dbms": 180,
             "default": null
         }
@@ -5094,7 +5094,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of successful SSL connections to the server.",
             "dbms": 180,
             "default": null
         }
@@ -5106,7 +5106,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of successful slave connections to an SSL-enabled master.",
             "dbms": 180,
             "default": null
         }
@@ -5118,7 +5118,7 @@
             "vartype": 6,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The last date for which the SSL certificate is valid.",
             "dbms": 180,
             "default": null
         }
@@ -5130,7 +5130,7 @@
             "vartype": 6,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The first date for which the SSL certificate is valid.",
             "dbms": 180,
             "default": null
         }
@@ -5142,7 +5142,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of SSL session cache hits.",
             "dbms": 180,
             "default": null
         }
@@ -5154,7 +5154,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of SSL session cache misses.",
             "dbms": 180,
             "default": null
         }
@@ -5166,7 +5166,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The SSL session cache mode.",
             "dbms": 180,
             "default": null
         }
@@ -5178,7 +5178,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of SSL session cache overflows.",
             "dbms": 180,
             "default": null
         }
@@ -5188,9 +5188,9 @@
         "fields": {
             "name": "global.ssl_session_cache_size",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The SSL session cache size.",
             "dbms": 180,
             "default": null
         }
@@ -5202,7 +5202,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of SSL session cache timeouts.",
             "dbms": 180,
             "default": null
         }
@@ -5214,7 +5214,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many SSL connections were reused from the cache.",
             "dbms": 180,
             "default": null
         }
@@ -5226,7 +5226,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "How many SSL session cache entries were used.",
             "dbms": 180,
             "default": null
         }
@@ -5236,9 +5236,9 @@
         "fields": {
             "name": "global.ssl_verify_depth",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The verification depth for replication SSL connections.",
             "dbms": 180,
             "default": null
         }
@@ -5248,9 +5248,9 @@
         "fields": {
             "name": "global.ssl_verify_mode",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The verification mode for replication SSL connections.",
             "dbms": 180,
             "default": null
         }
@@ -5262,7 +5262,7 @@
             "vartype": 1,
             "metric_type": 2,
             "scope": "global",
-            "summary": "",
+            "summary": "The SSL version identifier.",
             "dbms": 180,
             "default": null
         }
@@ -5274,7 +5274,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of times that a request for a table lock could be granted immediately.",
             "dbms": 180,
             "default": null
         }
@@ -5286,7 +5286,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of times that a request for a table lock could not be granted immediately and a wait was needed.",
             "dbms": 180,
             "default": null
         }
@@ -5298,7 +5298,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of hits for open tables cache lookups.",
             "dbms": 180,
             "default": null
         }
@@ -5310,7 +5310,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of misses for open tables cache lookups.",
             "dbms": 180,
             "default": null
         }
@@ -5322,7 +5322,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of overflows for the open tables cache. This is the number of times, after a table is opened or closed, a cache instance has an unused entry and the size of the instance is larger than table_open_cache / table_open_cache_instances.",
             "dbms": 180,
             "default": null
         }
@@ -5332,9 +5332,9 @@
         "fields": {
             "name": "global.tc_log_max_pages_used",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "For the memory-mapped implementation of the log that is used by mysqld when it acts as the transaction coordinator for recovery of internal XA transactions, this variable indicates the largest number of pages used for the log since the server started. If the product of Tc_log_max_pages_used and Tc_log_page_size is always significantly less than the log size, the size is larger than necessary and can be reduced. (The size is set by the --log-tc-size option. This variable is unused: It is unneeded for binary log-based recovery, and the memory-mapped recovery log method is not used unless the number of storage engines that are capable of two-phase commit and that support XA transactions is greater than one. (InnoDB is the only applicable engine.)",
             "dbms": 180,
             "default": null
         }
@@ -5344,9 +5344,9 @@
         "fields": {
             "name": "global.tc_log_page_size",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The page size used for the memory-mapped implementation of the XA recovery log. The default value is determined using getpagesize(). This variable is unused for the same reasons as described for Tc_log_max_pages_used.",
             "dbms": 180,
             "default": null
         }
@@ -5358,7 +5358,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "For the memory-mapped implementation of the recovery log, this variable increments each time the server was not able to commit a transaction and had to wait for a free page in the log. If this value is large, you might want to increase the log size (with the --log-tc-size option). For binary log-based recovery, this variable increments each time the binary log cannot be closed because there are two-phase commits in progress. (The close operation waits until all such transactions are finished.)",
             "dbms": 180,
             "default": null
         }
@@ -5368,9 +5368,9 @@
         "fields": {
             "name": "global.threads_cached",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of threads in the thread cache.",
             "dbms": 180,
             "default": null
         }
@@ -5380,9 +5380,9 @@
         "fields": {
             "name": "global.threads_connected",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of currently open connections.",
             "dbms": 180,
             "default": null
         }
@@ -5394,7 +5394,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of threads created to handle connections.",
             "dbms": 180,
             "default": null
         }
@@ -5404,9 +5404,9 @@
         "fields": {
             "name": "global.threads_running",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of threads that are not sleeping.",
             "dbms": 180,
             "default": null
         }
@@ -5416,9 +5416,9 @@
         "fields": {
             "name": "global.uptime",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of seconds that the server has been up.",
             "dbms": 180,
             "default": null
         }
@@ -5428,9 +5428,9 @@
         "fields": {
             "name": "global.uptime_since_flush_status",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "",
+            "summary": "The number of seconds since the most recent FLUSH STATUS statement.",
             "dbms": 180,
             "default": null
         }
@@ -5442,7 +5442,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "Number of active transactions",
+            "summary": "Number of active transactions.",
             "dbms": 180,
             "default": null
         }
@@ -5454,7 +5454,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "Number of transactions committed with inserts and updates",
+            "summary": "Number of transactions committed with inserts and updates.",
             "dbms": 180,
             "default": null
         }
@@ -5466,7 +5466,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "Number of non-locking auto-commit read-only transactions committed",
+            "summary": "Number of non-locking auto-commit read-only transactions committed.",
             "dbms": 180,
             "default": null
         }
@@ -5478,7 +5478,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "Number of transactions rolled back",
+            "summary": "Number of transactions rolled back.",
             "dbms": 180,
             "default": null
         }
@@ -5490,7 +5490,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "Number of transactions rolled back to savepoint",
+            "summary": "Number of transactions rolled back to savepoint.",
             "dbms": 180,
             "default": null
         }
@@ -5502,7 +5502,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "Number of resurrected active transactions rolled back",
+            "summary": "Number of resurrected active transactions rolled back.",
             "dbms": 180,
             "default": null
         }
@@ -5514,7 +5514,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "Number of read-only transactions committed ",
+            "summary": "Number of read-only transactions committed.",
             "dbms": 180,
             "default": null
         }
@@ -5524,9 +5524,9 @@
         "fields": {
             "name": "innodb_metrics.trx_rseg_current_size",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "Current rollback segment size in pages",
+            "summary": "Current rollback segment size in pages.",
             "dbms": 180,
             "default": null
         }
@@ -5536,9 +5536,9 @@
         "fields": {
             "name": "innodb_metrics.trx_rseg_history_len",
             "vartype": 2,
-            "metric_type": 1,
+            "metric_type": 3,
             "scope": "global",
-            "summary": "Length of the TRX_RSEG_HISTORY list",
+            "summary": "Length of the TRX_RSEG_HISTORY list.",
             "dbms": 180,
             "default": null
         }
@@ -5550,7 +5550,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "Number of read-write transactions  committed",
+            "summary": "Number of read-write transactions committed.",
             "dbms": 180,
             "default": null
         }
@@ -5562,7 +5562,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "Number of undo slots cached",
+            "summary": "Number of undo slots cached.",
             "dbms": 180,
             "default": null
         }
@@ -5574,7 +5574,7 @@
             "vartype": 2,
             "metric_type": 1,
             "scope": "global",
-            "summary": "Number of undo slots used ",
+            "summary": "Number of undo slots used.",
             "dbms": 180,
             "default": null
         }
