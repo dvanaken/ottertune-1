@@ -2,22 +2,20 @@ version: "3"
 services:
 
     driver:
-        image: dvanaken/ottertune:driver2
+        image: dvanaken/ottertune:driver2-beta
         labels:
             NAME: "ottertune-driver2"
         environment:
-          CONTAINER_NAME: 'postgres'
+          CONTAINER_NAME: 'mysql'
           LOGIN_NAME: 'user'
           LOGIN_HOST: '192...'
-          DB_TYPE: 'postgres'
-          DB_VERSION: '9.6'
+          DB_TYPE: 'mysql'
+          DB_VERSION: '8.0'
           DB_NAME: 'ycsb'
           DB_PASSWORD: 'pass'
-          DB_CONF: '/home/dvanaken/proposed_work/postgresql.conf'
-          DB_DUMP_DIR: '/var/lib/postgresql/data'
-          PG_DATADIR: '/var/lib/postgresql/data'
-          OVERRIDE_DB_VERSION: '9.6'
-          RELOAD_INTERVAL: 10
+          DB_CONF: "${HOME}/proposed_work/my-ottertune.cnf"
+          DB_DUMP_DIR: "${HOME}/proposed_work"
+          RELOAD_INTERVAL: -1
           RESTART_SLEEP_SEC: 50
           OLTPBENCH_CONFIG: "/app/driver/oltpbench_configs/config.xml"
           OLTPBENCH_BENCH: 'ycsb'
@@ -25,12 +23,12 @@ services:
           WEBSITE_URL: 'http://127.0.0.1:8008'
           UPLOAD_CODE: '123'
           WORKLOAD_NAME: 'ycsb_updateonly'
-          KNOB_RANGES_FILE: '/app/driver/postgres_knob_ranges.json'
+          KNOB_RANGES_FILE: '/app/driver/mysql_knob_ranges_xxl.json'
         volumes:
          - ${HOME}/.ssh/id_rsa:/root/.ssh/id_rsa:ro
          - ${HOME}/.vimrc:/root/.vimrc:ro
          - ${PWD}/driver2_config.py:/app/driver/driver_config.py:ro
-         - ${PWD}/postgres_knob_ranges.json:/app/driver/postgres_knob_ranges.json:ro
+         - ${PWD}/mysql_knob_ranges_xxl.json:/app/driver/mysql_knob_ranges_xxl.json:ro
          - ${PWD}/results:/app/driver/results
          - ${PWD}/log:/app/driver/log
          - ${PWD}/oltpbench_configs:/app/driver/oltpbench_configs

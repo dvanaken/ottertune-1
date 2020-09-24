@@ -1,17 +1,17 @@
 FROM dvanaken/ottertune:base
 
-ARG GRADLE_VERSION=gradle-5.5.1
-
-ENV GRADLE_HOME=/opt/${GRADLE_VERSION}
-ENV PATH=${GRADLE_HOME}/bin:${PATH}
+ENV TZ=America/New_York
 
 COPY ./client /app
 COPY ./docker/driver2/driver2_config.py /app/driver/driver_config.py
 COPY ./docker/driver2/driver2_init.sh /init.sh
 
-RUN /install.sh driver \
+RUN rm -rf /app/controller \
     && apt-get update \
-    && apt-get install -y --no-install-recommends ant git vim sendmail \
+    && apt-get install -y --no-install-recommends openssh-server gcc g++ git vim sendmail \
+        openjdk-11-jdk ant python3-dev mysql-client libmysqlclient-dev python-mysqldb \
+    && pip3 install mysqlclient==1.3.12 \
+    && apt-get purge -y --autoremove gcc g++ \
     && rm -rf /var/lib/apt/lists/* \
     && git clone https://github.com/oltpbenchmark/oltpbench.git /app/oltpbench \
     && cd /app/oltpbench \

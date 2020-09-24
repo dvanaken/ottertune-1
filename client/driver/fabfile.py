@@ -24,6 +24,8 @@ import requests
 from fabric.api import env, lcd, local, settings, show, task, hide
 from fabric.state import output as fabric_output
 
+from collectors import MySQLCollector
+
 from utils import (file_exists, get, get_content, load_driver_conf, parse_bool,
                    put, run, run_sql_script, sudo, FabricException)
 
@@ -40,7 +42,7 @@ env.hosts = [dconf.LOGIN]
 env.password = dconf.LOGIN_PASSWORD
 
 # Create local directories
-for _d in (dconf.RESULT_DIR, dconf.LOG_DIR, dconf.TEMP_DIR):
+for _d in (dconf.RESULT_DIR, dconf.LOG_DIR, dconf.TEMP_DIR, dconf.CONTROLLER_DIR):
     os.makedirs(_d, exist_ok=True)
 
 
@@ -80,41 +82,6 @@ def check_disk_usage():
 @task
 def check_memory_usage():
     run('free -m -h')
-
-
-@task
-def create_controller_config():
-    if dconf.DB_TYPE == 'postgres':
-        dburl_fmt = 'jdbc:postgresql://{host}:{port}/{db}'.format
-    elif dconf.DB_TYPE == 'oracle':
-        dburl_fmt = 'jdbc:oracle:thin:@{host}:{port}:{db}'.format
-    elif dconf.DB_TYPE == 'mysql':
-        if dconf.DB_VERSION in ['5.6', '5.7']:
-            dburl_fmt = 'jdbc:mysql://{host}:{port}/{db}?useSSL=false'.format
-        elif dconf.DB_VERSION == '8.0':
-            dburl_fmt = ('jdbc:mysql://{host}:{port}/{db}?'
-                         'allowPublicKeyRetrieval=true&useSSL=false').format
-        else:
-            raise Exception("MySQL Database Version {} Not Implemented !".format(dconf.DB_VERSION))
-    else:
-        raise Exception("Database Type {} Not Implemented !".format(dconf.DB_TYPE))
-
-    workload_name = getattr(dconf, 'WORKLOAD_NAME', None)
-    if not workload_name:
-        workload_name = dconf.OLTPBENCH_BENCH
-
-    config = dict(
-        database_type=dconf.DB_TYPE,
-        database_url=dburl_fmt(host=dconf.DB_HOST, port=dconf.DB_PORT, db=dconf.DB_NAME),
-        username=dconf.DB_USER,
-        password=dconf.DB_PASSWORD,
-        upload_code='DEPRECATED',
-        upload_url='DEPRECATED',
-        workload_name=workload_name
-    )
-
-    with open(dconf.CONTROLLER_CONFIG, 'w') as f:
-        json.dump(config, f, indent=2)
 
 
 @task
@@ -169,8 +136,8 @@ def drop_database():
         run("PGPASSWORD={} dropdb -e --if-exists {} -U {} -h {}".format(
             dconf.DB_PASSWORD, dconf.DB_NAME, dconf.DB_USER, dconf.DB_HOST))
     elif dconf.DB_TYPE == 'mysql':
-        run("mysql --user={} --password={} -e 'drop database if exists {}'".format(
-            dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_NAME))
+        run("mysql --user={} --password={} --host={} --port={} -e 'drop database if exists {}'".format(
+            dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_HOST, dconf.DB_PORT, dconf.DB_NAME))
     else:
         raise Exception("Database Type {} Not Implemented !".format(dconf.DB_TYPE))
 
@@ -181,8 +148,8 @@ def create_database():
         run("PGPASSWORD={} createdb -e {} -U {} -h {}".format(
             dconf.DB_PASSWORD, dconf.DB_NAME, dconf.DB_USER, dconf.DB_HOST))
     elif dconf.DB_TYPE == 'mysql':
-        run("mysql --user={} --password={} -e 'create database {}'".format(
-            dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_NAME))
+        run("mysql --user={} --password={} --host={} --port={} -e 'create database {}'".format(
+            dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_HOST, dconf.DB_PORT, dconf.DB_NAME))
     else:
         raise Exception("Database Type {} Not Implemented !".format(dconf.DB_TYPE))
 
@@ -312,7 +279,7 @@ def run_oltpbench():
         msg += 'please double check the option in driver_config.py'
         raise Exception(msg)
     set_oltpbench_config()
-    cmd = "./oltpbenchmark -b {} -c {} --execute=true -s 5 -o outputfile".\
+    cmd = "./oltpbenchmark -b {} -c {} --execute=true --output-raw=false -s 5 -o outputfile".\
           format(dconf.OLTPBENCH_BENCH, dconf.OLTPBENCH_CONFIG)
     with lcd(dconf.OLTPBENCH_HOME):  # pylint: disable=not-context-manager
         local(cmd)
@@ -333,33 +300,13 @@ def run_oltpbench_bg():
 
 
 @task
-def run_controller(interval_sec=-1):
-    LOG.info('Controller config path: %s', dconf.CONTROLLER_CONFIG)
-    create_controller_config()
-    cmd = 'gradle run -PappArgs="-c {} -t {} -d output/" --no-daemon > {}'.\
-          format(dconf.CONTROLLER_CONFIG, interval_sec, dconf.CONTROLLER_LOG)
-    with lcd(dconf.CONTROLLER_HOME):  # pylint: disable=not-context-manager
-        local(cmd)
-
-
-@task
-def signal_controller():
-    pidfile = os.path.join(dconf.CONTROLLER_HOME, 'pid.txt')
-    with open(pidfile, 'r') as f:
-        pid = int(f.read())
-    cmd = 'kill -2 {}'.format(pid)
-    with lcd(dconf.CONTROLLER_HOME):  # pylint: disable=not-context-manager
-        local(cmd)
-
-
-@task
-def save_dbms_result():
-    t = int(time.time())
+def save_dbms_result(t=None):
+    t = t or int(time.time())
     files = ['knobs.json', 'metrics_after.json', 'metrics_before.json', 'summary.json']
     if dconf.ENABLE_UDM:
         files.append('user_defined_metrics.json')
     for f_ in files:
-        srcfile = os.path.join(dconf.CONTROLLER_HOME, 'output', f_)
+        srcfile = os.path.join(dconf.CONTROLLER_DIR, f_)
         dstfile = os.path.join(dconf.RESULT_DIR, '{}__{}'.format(t, f_))
         local('cp {} {}'.format(srcfile, dstfile))
     return t
@@ -387,7 +334,7 @@ def free_cache():
 
 @task
 def upload_result(result_dir=None, prefix=None, upload_code=None):
-    result_dir = result_dir or os.path.join(dconf.CONTROLLER_HOME, 'output')
+    result_dir = result_dir or dconf.CONTROLLER_DIR
     prefix = prefix or ''
     upload_code = upload_code or dconf.UPLOAD_CODE
     files = {}
@@ -512,7 +459,7 @@ def download_debug_info(pprint=False):
 
 @task
 def add_udm(result_dir=None):
-    result_dir = result_dir or os.path.join(dconf.CONTROLLER_HOME, 'output')
+    result_dir = result_dir or dconf.CONTROLLER_DIR
     with lcd(dconf.UDM_DIR):  # pylint: disable=not-context-manager
         local('python3 user_defined_metrics.py {}'.format(result_dir))
 
@@ -567,6 +514,11 @@ def dump_database():
     else:
         LOG.info('Dump database %s to %s', dconf.DB_NAME, dumpfile)
 
+    if dconf.RESTORE_DB_CONF:
+        run('cp {0} {0}.restore.bak'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
+        change_conf(dconf.RESTORE_DB_CONF)
+        restart_database()
+
     if dconf.DB_TYPE == 'oracle':
         if dconf.ORACLE_FLASH_BACK:
             run_sql_script('createRestore.sh', dconf.RESTORE_POINT,
@@ -576,25 +528,21 @@ def dump_database():
                            dconf.DB_NAME, dconf.DB_DUMP_DIR)
 
     elif dconf.DB_TYPE == 'postgres':
-        if dconf.RESTORE_DB_CONF:
-            run('cp {0} {0}.restore.bak'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
-            change_conf(dconf.RESTORE_DB_CONF)
-            restart_database()
-
         run('PGPASSWORD={} pg_dump -U {} -h {} -F c -v -d {} > {}'.format(
             dconf.DB_PASSWORD, dconf.DB_USER, dconf.DB_HOST, dconf.DB_NAME, dumpfile),
             remote_only=remote_only)
 
-        if dconf.RESTORE_DB_CONF:
-            run('mv {0}.restore.bak {0}'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
-            restart_database()
-
     elif dconf.DB_TYPE == 'mysql':
-        run('mysqldump --user={} --password={} --host={} --databases {} | gzip > {}'.format(
-            dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_HOST, dconf.DB_NAME, dumpfile),
+        run('mysqldump --user={} --password={} --host={} --port={} --databases {} | gzip > {}'.format(
+            dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_HOST, dconf.DB_PORT, dconf.DB_NAME, dumpfile),
             remote_only=remote_only)
     else:
         raise Exception("Database Type {} Not Implemented !".format(dconf.DB_TYPE))
+
+    if dconf.RESTORE_DB_CONF:
+        run('mv {0}.restore.bak {0}'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
+        restart_database()
+
     return True
 
 
@@ -614,6 +562,12 @@ def restore_database():
         raise FileNotFoundError("Database dumpfile '{}' does not exist!".format(dumpfile))
 
     LOG.info('Start restoring database')
+
+    if dconf.RESTORE_DB_CONF:
+        run('cp {0} {0}.restore.bak'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
+        change_conf(dconf.RESTORE_DB_CONF)
+        restart_database()
+
     if dconf.DB_TYPE == 'oracle':
         if dconf.ORACLE_FLASH_BACK:
             run_sql_script('flashBack.sh', dconf.RESTORE_POINT)
@@ -627,27 +581,22 @@ def restore_database():
         drop_database()
         create_database()
 
-        if dconf.RESTORE_DB_CONF:
-            run('cp {0} {0}.restore.bak'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
-            change_conf(dconf.RESTORE_DB_CONF)
-            restart_database()
-
         run('PGPASSWORD={} pg_restore -U {} -h {} -n public -j 8 -F c -v -d {} {}'.format(
             dconf.DB_PASSWORD, dconf.DB_USER, dconf.DB_HOST, dconf.DB_NAME, dumpfile),
             remote_only=dconf.DB_CONF_MOUNT)
 
-        if dconf.RESTORE_DB_CONF:
-            run('mv {0}.restore.bak {0}'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
-            restart_database()
-
     elif dconf.DB_TYPE == 'mysql':
-        #run('mysql --user={} --password={} < {}'.format(dconf.DB_USER, dconf.DB_PASSWORD, dumpfile))
-        run('cat {} <(gzip -cd {}) {} | mysql -u {} -p{} -h {}'.format(
+        run('cat {} <(gzip -cd {}) {} | mysql -u {} -p{} -h {} -P {}'.format(
             os.path.join(dconf.DB_DUMP_DIR, 'pre.sql'), dumpfile,
             os.path.join(dconf.DB_DUMP_DIR, 'post.sql'), dconf.DB_USER,
-            dconf.DB_PASSWORD, dconf.DB_HOST), remote_only=dconf.DB_DUMP_MOUNT)
+            dconf.DB_PASSWORD, dconf.DB_HOST, dconf.DB_PORT), remote_only=dconf.DB_DUMP_MOUNT)
     else:
         raise Exception("Database Type {} Not Implemented !".format(dconf.DB_TYPE))
+
+    if dconf.RESTORE_DB_CONF:
+        run('mv {0}.restore.bak {0}'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
+        restart_database()
+
     LOG.info('Finish restoring database')
 
 
@@ -655,8 +604,8 @@ def restore_database():
 def is_ready_db(interval_sec=10):
     interval_sec = int(interval_sec)
     if dconf.DB_TYPE == 'mysql':
-        cmd = "mysql --user={} --password={} -h {} -e 'exit'".format(
-            dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_HOST)
+        cmd = "mysql --user={} --password={} -h {} -P {} -e 'exit'".format(
+            dconf.DB_USER, dconf.DB_PASSWORD, dconf.DB_HOST, dconf.DB_PORT)
     elif dconf.DB_TYPE == 'postgres':
         cmd = 'PGPASSWORD={} psql -U {} -h {} -c "SELECT 1;" {}'.format(
             dconf.DB_PASSWORD, dconf.DB_USER, dconf.DB_HOST, dconf.DB_NAME)
@@ -678,54 +627,16 @@ def is_ready_db(interval_sec=10):
                 LOG.info('Database %s is ready after %s seconds.', dconf.DB_TYPE, total_sec)
                 return
 
-def _ready_to_start_oltpbench():
-    ready = False
-    if os.path.exists(dconf.CONTROLLER_LOG):
-        with open(dconf.CONTROLLER_LOG, 'r') as f:
-            content = f.read()
-        ready = 'Output the process pid to' in content
-    return ready
-
-
-def _ready_to_start_controller():
-    ready = False
-    if os.path.exists(dconf.OLTPBENCH_LOG):
-        with open(dconf.OLTPBENCH_LOG, 'r') as f:
-            content = f.read()
-        ready = 'Warmup complete, starting measurements' in content
-    return ready
-
-
-def _ready_to_shut_down_controller():
-    pidfile = os.path.join(dconf.CONTROLLER_HOME, 'pid.txt')
-    ready = False
-    if os.path.exists(pidfile) and os.path.exists(dconf.OLTPBENCH_LOG):
-        with open(dconf.OLTPBENCH_LOG, 'r') as f:
-            content = f.read()
-        if 'Failed' in content:
-            m = re.search('\n.*Failed.*\n', content)
-            error_msg = m.group(0)
-            LOG.error('OLTPBench Failed!')
-            return True, error_msg
-        ready = 'Output throughput samples into file' in content
-    return ready, None
-
 
 def clean_logs():
     # remove oltpbench and controller log files
-    local('rm -f {} {}'.format(dconf.OLTPBENCH_LOG, dconf.CONTROLLER_LOG))
+    local('rm -f {}'.format(dconf.OLTPBENCH_LOG))  #, dconf.CONTROLLER_LOG))
 
 
 @task
 def clean_oltpbench_results():
     # remove oltpbench result files
     local('rm -f {}/results/outputfile*'.format(dconf.OLTPBENCH_HOME))
-
-
-@task
-def clean_controller_results():
-    # remove oltpbench result files
-    local('rm -f {}/output/*.json'.format(dconf.CONTROLLER_HOME))
 
 
 def _set_oltpbench_property(name, line):
@@ -813,42 +724,49 @@ def loop(i):
     if check_disk_usage() > dconf.MAX_DISK_USAGE:
         LOG.warning('Exceeds max disk usage %s', dconf.MAX_DISK_USAGE)
 
-    # run controller from another process
-    p = Process(target=run_controller, args=())
-    p.start()
-    LOG.info('Run the controller')
+    collector = MySQLCollector(
+        passwd=dconf.DB_PASSWORD,
+        host=dconf.DB_HOST,
+        user=dconf.DB_USER,
+        port=dconf.DB_PORT,
+        db=dconf.DB_NAME,
+        result_dir=dconf.CONTROLLER_DIR)
 
-    # run oltpbench as a background job
-    while not _ready_to_start_oltpbench():
-        time.sleep(1)
-    run_oltpbench_bg()
-    LOG.info('Run OLTP-Bench')
-
-    # the controller starts the first collection
-    while not _ready_to_start_controller():
-        time.sleep(1)
-    signal_controller()
+    # Collect knobs/metrics before observing workload
     LOG.info('Start the first collection')
+    collector.collect_knobs()
+    collector.collect_metrics(filename='metrics_before.json')
+    collector.close()
 
-    # stop the experiment
-    ready_to_shut_down = False
-    error_msg = None
-    while not ready_to_shut_down:
-        ready_to_shut_down, error_msg = _ready_to_shut_down_controller()
-        time.sleep(1)
+    LOG.info('Run OLTP-Bench')
+    start_time = time.time()
+    run_oltpbench()
+    end_time = time.time()
 
-    signal_controller()
-    LOG.info('Start the second collection, shut down the controller')
+    LOG.info('Start the final collection')
+    collector.collect_metrics(filename='metrics_after.json')
+    summary = OrderedDict([
+        ('start_time', int(start_time * 1000)),
+        ('end_time', int(end_time * 1000)),
+        ('observation_time', int(end_time - start_time)),
+        ('database_type', dconf.DB_TYPE),
+        ('database_version', collector.version),
+        ('workload_name', dconf.WORKLOAD_NAME),
+    ])
 
-    p.join()
-    if error_msg:
-        raise Exception('OLTPBench Failed: ' + error_msg)
+    with open(os.path.join(dconf.CONTROLLER_DIR, 'summary.json'), 'w') as f:
+        json.dump(summary, f, indent=4)
+
+    collector.close()
+    del collector
+
     # add user defined metrics
     if dconf.ENABLE_UDM is True:
         add_udm()
 
     # save result
-    result_timestamp = save_dbms_result()
+    result_timestamp = int(end_time)
+    save_dbms_result(t=result_timestamp)
 
     if i >= dconf.WARMUP_ITERATIONS:
         # upload result
@@ -972,6 +890,7 @@ def run_loops(max_iter=10, skip_restore=False):
 
 @task
 def monitor(max_iter=1):
+    raise NotImplementedError()
     # Monitor the database, without tuning. OLTPBench is also disabled
     for i in range(int(max_iter)):
         LOG.info('The %s-th Monitor Loop Starts / Total Loops %s', i + 1, max_iter)
@@ -984,6 +903,7 @@ def monitor(max_iter=1):
 @task
 def monitor_tune(max_iter=1):
     # Monitor the database, with tuning. OLTPBench is also disabled
+    raise NotImplementedError()
 
     # Set base config
     set_dynamic_knobs(dconf.BASE_DB_CONF, {})

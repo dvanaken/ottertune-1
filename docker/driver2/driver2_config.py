@@ -102,6 +102,14 @@ if DB_TYPE == 'postgres':
         'full_page_writes': 'off',
         'wal_buffers': -1,
     }
+elif DB_TYPE == 'mysql':
+    RESTORE_DB_CONF = {
+        'innodb_buffer_pool_size': '20G',
+        'innodb_log_buffer_size': '256M',
+        'innodb_log_file_size': '15G',
+        'innodb_write_io_threads': 16,
+        'innodb_flush_log_at_trx_commit': 0,
+    }
 else:
     RESTORE_DB_CONF = None
 
@@ -143,6 +151,9 @@ UDM_DIR = os.path.join(DRIVER_HOME, 'userDefinedMetrics')
 # Path to temp directory
 TEMP_DIR = '/tmp/driver'
 
+# Path to controller's latest result
+CONTROLLER_DIR = os.path.join(DRIVER_HOME, 'latest_result')
+
 # Path to the directory for storing database dump files
 if DB_DUMP_DIR is None:
     if HOST_CONN == 'local':
@@ -180,19 +191,19 @@ OLTPBENCH_CONFIG = os.environ['OLTPBENCH_CONFIG']
 OLTPBENCH_BENCH = os.environ['OLTPBENCH_BENCH']
 
 
-#==========================================================
-#  CONTROLLER OPTIONS
-#==========================================================
-
-# Controller observation time, OLTPBench will be disabled for
-# monitoring if the time is specified
-CONTROLLER_OBSERVE_SEC = None
-
-# Path to the controller directory
-CONTROLLER_HOME = DRIVER_HOME + '/../controller'
-
-# Path to the controller configuration file
-CONTROLLER_CONFIG = os.path.join(CONTROLLER_HOME, 'config/{}_config.json'.format(DB_TYPE))
+### #==========================================================
+### #  CONTROLLER OPTIONS
+### #==========================================================
+### 
+### # Controller observation time, OLTPBench will be disabled for
+### # monitoring if the time is specified
+### CONTROLLER_OBSERVE_SEC = None
+### 
+### # Path to the controller directory
+### CONTROLLER_HOME = DRIVER_HOME + '/../controller'
+### 
+### # Path to the controller configuration file
+### CONTROLLER_CONFIG = os.path.join(CONTROLLER_HOME, 'config/{}_config.json'.format(DB_TYPE))
 
 
 #==========================================================
@@ -207,7 +218,7 @@ LOG_DIR = os.path.join(DRIVER_HOME, 'log')
 # Log files
 DRIVER_LOG = os.path.join(LOG_DIR, 'driver.log')
 OLTPBENCH_LOG = os.path.join(LOG_DIR, 'oltpbench.log')
-CONTROLLER_LOG = os.path.join(LOG_DIR, 'controller.log')
+### CONTROLLER_LOG = os.path.join(LOG_DIR, 'controller.log')
 
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', None) 
 
