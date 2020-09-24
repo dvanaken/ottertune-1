@@ -278,26 +278,28 @@ class SessionKnobManager(models.Manager):
         return session_knob_dicts
 
     @staticmethod
-    def set_knob_min_max_tunability(session, knob_dicts, cascade=True, disable_others=False):
+    def set_knob_min_max_tunability(session, knob_dicts, cascade=True, disable_others=True):
+        from .db import parser
+
         # Returns a dict of the knob
         knob_dicts = {k.lower(): v for k, v in knob_dicts.items()}
         session_knobs = {k.name.lower(): k for k in SessionKnob.objects.filter(session=session)}
+        knob_parser = parser._get(session.dbms.id)
         for lower_name, session_knob in session_knobs.items():
             if lower_name in knob_dicts:
                 settings = knob_dicts[lower_name]
-                if "minval" in settings:
-                    session_knob.minval = settings["minval"]
-                if "maxval" in settings:
-                    session_knob.maxval = settings["maxval"]
-                if "tunable" in settings:
-                    session_knob.tunable = settings["tunable"]
-                if "upperbound" in settings:
-                    session_knob.upperbound = settings["upperbound"]
-                if "lowerbound" in settings:
-                    session_knob.lowerbound = settings["lowerbound"]
+                knob = KnobCatalog.objects.get(name=session_knob.name, dbms=session.dbms)
+                for attr in ('tunable', 'minval', 'maxval', 'upperbound', 'lowerbound'):
+                    if attr in settings:
+                        value = settings[attr]
+                        if attr != 'tunable' and value:
+                            if knob.vartype == VarType.INTEGER:
+                                value = knob_parser.convert_integer(value, knob)
+                            elif knob.vartype == VarType.REAL:
+                                value = knob_parser.convert_real(value, knob)
+                        setattr(session_knob, attr, value)
                 session_knob.save()
                 if cascade:
-                    knob = KnobCatalog.objects.get(name=session_knob.name, dbms=session.dbms)
                     knob.tunable = session_knob.tunable
                     if knob.vartype in (VarType.INTEGER, VarType.REAL):
                         if knob.minval is None or float(session_knob.minval) < float(knob.minval):
