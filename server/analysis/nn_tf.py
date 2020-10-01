@@ -1,4 +1,3 @@
-#
 # OtterTune - nn_tf.py
 #
 # Copyright (c) 2017-18, Carnegie Mellon University Database Group
@@ -28,6 +27,8 @@ class NeuralNet(object):
 
     def __init__(self,
                  n_input,
+                 include_context=False,
+                 n_context=None,
                  learning_rate=0.01,
                  debug=False,
                  debug_interval=100,
@@ -40,6 +41,8 @@ class NeuralNet(object):
         self.history = None
         self.recommend_iters = 0
         self.n_input = n_input
+        self.include_context = include_context
+        self.n_context = n_context
         self.debug = debug
         self.debug_interval = debug_interval
         self.learning_rate = learning_rate
@@ -59,12 +62,23 @@ class NeuralNet(object):
             with self.session.as_default():   # pylint: disable=not-context-manager
                 self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
                 # input X is placeholder, weights are variables.
-                self.model = keras.Sequential([
-                    keras.layers.Dense(64, activation=tf.nn.relu, input_shape=[n_input]),
-                    keras.layers.Dropout(0.5),
-                    keras.layers.Dense(64, activation=tf.nn.relu),
-                    keras.layers.Dense(1)
-                ])
+                if self.include_context:
+                    knobs_in = keras.layers.Input(shape=(n_input, ))
+                    knobs_out = keras.layers.Dense(32, activation=tf.nn.relu)(knobs_in)
+                    context_in = keras.layers.Input(shape=(n_context, ))
+                    context_out = keras.layers.Dense(32, activation=tf.nn.relu)(context_in)
+                    merged = keras.layers.concatenate([knobs_out, context_out])
+                    l1_out = keras.layers.Dropout(0.5)(merged)
+                    l2_out = keras.layers.Dense(64, activation=tf.nn.relu)(l1_out)
+                    l3_out = keras.layers.Dense(1)(l2_out)
+                    self.model = keras.models.Model([knobs_in, context_in], l3_out)
+                else:
+                    self.model = keras.Sequential([
+                        keras.layers.Dense(64, activation=tf.nn.relu, input_shape=[n_input]),
+                        keras.layers.Dropout(0.5),
+                        keras.layers.Dense(64, activation=tf.nn.relu),
+                        keras.layers.Dense(1)
+                    ])
                 self.model.compile(loss='mean_squared_error',
                                    optimizer=self.optimizer,
                                    metrics=['mean_squared_error', 'mean_absolute_error'])
@@ -107,39 +121,76 @@ class NeuralNet(object):
         batch_size = self.batch_size
         with self.graph.as_default():
             with self.session.as_default():  # pylint: disable=not-context-manager
-                x_ = tf.Variable(tf.ones([batch_size, self.n_input]))
-                X_min_ = tf.placeholder(tf.float32, [self.n_input])
-                X_max_ = tf.placeholder(tf.float32, [self.n_input])
-                x_bounded_ = tf.minimum(x_, X_max_)
-                x_bounded_ = tf.maximum(x_bounded_, X_min_)
-                x_bounded_ = tf.cast(x_bounded_, tf.float32)
+                x = tf.Variable(tf.ones([batch_size, self.n_input]))
+                X_min = tf.placeholder(tf.float32, [self.n_input])
+                X_max = tf.placeholder(tf.float32, [self.n_input])
+                x_bounded = tf.minimum(x, X_max)
+                x_bounded = tf.maximum(x_bounded, X_min)
+                x_bounded = tf.cast(x_bounded, tf.float32)
 
-                w1_ = tf.placeholder(tf.float32, [self.n_input, 64])
-                b1_ = tf.placeholder(tf.float32, [64])
-                w2_ = tf.placeholder(tf.float32, [64, 64])
-                b2_ = tf.placeholder(tf.float32, [64])
-                w3_ = tf.placeholder(tf.float32, [64, 1])
-                b3_ = tf.placeholder(tf.float32, [1])
-                l1_ = tf.nn.relu(tf.add(tf.matmul(x_, w1_), b1_))
-                l2_ = tf.nn.relu(tf.add(tf.matmul(l1_, w2_), b2_))
-                y_ = tf.add(tf.matmul(l2_, w3_), b3_)
-                optimizer_ = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
-                train_ = optimizer_.minimize(y_)
+                if self.include_context:
+                    # knob input
+                    w1 = tf.placeholder(tf.float32, [self.n_input, 32])
+                    b1 = tf.placeholder(tf.float32, [32])
+                    l11 = tf.nn.relu(tf.add(tf.matmul(x, w1), b1))
 
-                self.vars['x_'] = x_
-                self.vars['y_'] = y_
-                self.vars['w1_'] = w1_
-                self.vars['w2_'] = w2_
-                self.vars['w3_'] = w3_
-                self.vars['b1_'] = b1_
-                self.vars['b2_'] = b2_
-                self.vars['b3_'] = b3_
-                self.vars['X_min_'] = X_min_
-                self.vars['X_max_'] = X_max_
-                self.vars['x_bounded_'] = x_bounded_
-                self.ops['train_'] = train_
+                    # context input
+                    xc = tf.placeholder(tf.float32, [batch_size, self.n_context])  # placeholder
+                    wc = tf.placeholder(tf.float32, [self.n_context, 32])
+                    bc = tf.placeholder(tf.float32, [32])
+                    l12 = tf.nn.relu(tf.add(tf.matmul(xc, wc), bc))
 
-    def fit(self, X_train, y_train, fit_epochs=500):
+                    # merged
+                    l1 = tf.concat([l11, l12], 1)
+
+                    self.vars['xc'] = xc
+                    self.vars['wc'] = wc
+                    self.vars['bc'] = bc
+
+                else:
+                    w1 = tf.placeholder(tf.float32, [self.n_input, 64])
+                    b1 = tf.placeholder(tf.float32, [64])
+                    l1 = tf.nn.relu(tf.add(tf.matmul(x, w1), b1))
+
+                w2 = tf.placeholder(tf.float32, [64, 64])
+                b2 = tf.placeholder(tf.float32, [64])
+                w3 = tf.placeholder(tf.float32, [64, 1])
+                b3 = tf.placeholder(tf.float32, [1])
+                l2 = tf.nn.relu(tf.add(tf.matmul(l1, w2), b2))
+                y = tf.add(tf.matmul(l2, w3), b3)
+                optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
+                train = optimizer.minimize(y)
+
+                self.vars['x'] = x
+                self.vars['y'] = y
+                self.vars['w1'] = w1
+                self.vars['w2'] = w2
+                self.vars['w3'] = w3
+                self.vars['b1'] = b1
+                self.vars['b2'] = b2
+                self.vars['b3'] = b3
+                self.vars['X_min'] = X_min
+                self.vars['X_max'] = X_max
+                self.vars['x_bounded'] = x_bounded
+                self.ops['train'] = train
+
+    def _fit_with_context(self, X_train, y_train, fit_epochs, X_context):
+        with self.graph.as_default():
+            with self.session.as_default():  # pylint: disable=not-context-manager
+                self.history = self.model.fit(
+                    [X_train, X_context], y_train, epochs=fit_epochs, verbose=0)
+                if self.debug:
+                    mse = self.history.history['mean_squared_error']
+                    i = 0
+                    size = len(mse)
+                    while(i < size):
+                        LOG.info("Neural network training phase, epoch %d: mean_squared_error %f",
+                                 i, mse[i])
+                        i += self.debug_interval
+                    LOG.info("Neural network training phase, epoch %d: mean_squared_error %f",
+                             size - 1, mse[size - 1])
+
+    def _fit_without_context(self, X_train, y_train, fit_epochs):
         with self.graph.as_default():
             with self.session.as_default():  # pylint: disable=not-context-manager
                 self.history = self.model.fit(
@@ -155,9 +206,17 @@ class NeuralNet(object):
                     LOG.info("Neural network training phase, epoch %d: mean_squared_error %f",
                              size - 1, mse[size - 1])
 
-    def predict(self, X_pred):
+    def fit(self, X_train, y_train, fit_epochs=500, X_context=None):
+        if self.include_context:
+            self._fit_with_context(X_train, y_train, fit_epochs, X_context)
+        else:
+            self._fit_without_context(X_train, y_train, fit_epochs)
+
+    def predict(self, X_pred, X_context=None):
         with self.graph.as_default():
             with self.session.as_default():  # pylint: disable=not-context-manager
+                if self.include_context:
+                    return self.model.predict([X_pred, X_context])
                 return self.model.predict(X_pred)
 
     # Reference: Parameter Space Noise for Exploration.ICLR 2018, https://arxiv.org/abs/1706.01905
@@ -175,7 +234,98 @@ class NeuralNet(object):
                 * 1.0 * self.recommend_iters / self.explore_iters
         return scale
 
-    def recommend(self, X_start, X_min=None, X_max=None, recommend_epochs=500, explore=False):
+    def _recommend_with_context(self, X_start, X_min, X_max, recommend_epochs, explore, X_context):
+        batch_size = len(X_start)
+        assert(batch_size == self.batch_size)
+        assert(batch_size == len(X_context))
+        if X_min is None:
+            X_min = np.tile([-np.infty], self.n_input)
+        if X_max is None:
+            X_max = np.tile([np.infty], self.n_input)
+
+        with self.graph.as_default():
+            with self.session.as_default() as sess:  # pylint: disable=not-context-manager
+                w1, b1 = self.model.get_layer(index=2).get_weights()
+                wc, bc = self.model.get_layer(index=3).get_weights()
+                w2, b2 = self.model.get_layer(index=6).get_weights()
+                w3, b3 = self.model.get_layer(index=7).get_weights()
+
+                if explore is True:
+                    w1 = self._add_noise(w1)
+                    b1 = self._add_noise(b1)
+                    wc = self._add_noise(wc)
+                    bc = self._add_noise(bc)
+                    w2 = self._add_noise(w2)
+                    b2 = self._add_noise(b2)
+                    w3 = self._add_noise(w3)
+                    b3 = self._add_noise(b3)
+
+                y_predict = self.predict(X_pred=X_start, X_context=X_context)
+                if self.debug:
+                    LOG.info("Recommend phase, y prediction: min %f, max %f, mean %f",
+                             np.min(y_predict), np.max(y_predict), np.mean(y_predict))
+
+                init = tf.global_variables_initializer()
+                sess.run(init)
+                assign_x_op = self.vars['x'].assign(X_start)
+                sess.run(assign_x_op)
+                y_before = sess.run(self.vars['y'],
+                                    feed_dict={self.vars['w1']: w1, self.vars['w2']: w2,
+                                               self.vars['w3']: w3, self.vars['b1']: b1,
+                                               self.vars['b2']: b2, self.vars['b3']: b3,
+                                               self.vars['xc']: X_context,
+                                               self.vars['wc']: wc, self.vars['bc']: bc,
+                                               self.vars['X_max']: X_max,
+                                               self.vars['X_min']: X_min})
+
+                if self.debug:
+                    LOG.info("Recommend phase, y before gradient descent: min %f, max %f, mean %f",
+                             np.min(y_before), np.max(y_before), np.mean(y_before))
+
+                for i in range(recommend_epochs):
+                    sess.run(self.ops['train'],
+                             feed_dict={self.vars['w1']: w1, self.vars['w2']: w2,
+                                        self.vars['w3']: w3, self.vars['b1']: b1,
+                                        self.vars['b2']: b2, self.vars['b3']: b3,
+                                        self.vars['xc']: X_context,
+                                        self.vars['wc']: wc, self.vars['bc']: bc,
+                                        self.vars['X_max']: X_max, self.vars['X_min']: X_min})
+
+                    if self.debug and i % self.debug_interval == 0:
+                        y_train = sess.run(self.vars['y'],
+                                           feed_dict={self.vars['w1']: w1, self.vars['w2']: w2,
+                                                      self.vars['w3']: w3, self.vars['b1']: b1,
+                                                      self.vars['b2']: b2, self.vars['b3']: b3,
+                                                      self.vars['xc']: X_context,
+                                                      self.vars['wc']: wc, self.vars['bc']: bc,
+                                                      self.vars['X_max']: X_max,
+                                                      self.vars['X_min']: X_min})
+                        LOG.info("Recommend phase, epoch %d, y: min %f, max %f, mean %f",
+                                 i, np.min(y_train), np.max(y_train), np.mean(y_train))
+
+                y_recommend = sess.run(self.vars['y'],
+                                       feed_dict={self.vars['w1']: w1, self.vars['w2']: w2,
+                                                  self.vars['w3']: w3, self.vars['b1']: b1,
+                                                  self.vars['b2']: b2, self.vars['b3']: b3,
+                                                  self.vars['xc']: X_context,
+                                                  self.vars['wc']: wc, self.vars['bc']: bc,
+                                                  self.vars['X_max']: X_max,
+                                                  self.vars['X_min']: X_min})
+
+                X_recommend = sess.run(self.vars['x_bounded'],
+                                       feed_dict={self.vars['X_max']: X_max,
+                                                  self.vars['X_min']: X_min})
+                res = NeuralNetResult(minl=y_recommend, minl_conf=X_recommend)
+
+                if self.debug:
+                    LOG.info("Recommend phase, epoch %d, y after gradient descent: \
+                             min %f, max %f, mean %f", recommend_epochs, np.min(y_recommend),
+                             np.max(y_recommend), np.mean(y_recommend))
+
+                self.recommend_iters += 1
+                return res
+
+    def _recommend_without_context(self, X_start, X_min, X_max, recommend_epochs, explore):
         batch_size = len(X_start)
         assert(batch_size == self.batch_size)
         if X_min is None:
@@ -204,44 +354,44 @@ class NeuralNet(object):
 
                 init = tf.global_variables_initializer()
                 sess.run(init)
-                assign_x_op = self.vars['x_'].assign(X_start)
+                assign_x_op = self.vars['x'].assign(X_start)
                 sess.run(assign_x_op)
-                y_before = sess.run(self.vars['y_'],
-                                    feed_dict={self.vars['w1_']: w1, self.vars['w2_']: w2,
-                                               self.vars['w3_']: w3, self.vars['b1_']: b1,
-                                               self.vars['b2_']: b2, self.vars['b3_']: b3,
-                                               self.vars['X_max_']: X_max,
-                                               self.vars['X_min_']: X_min})
+                y_before = sess.run(self.vars['y'],
+                                    feed_dict={self.vars['w1']: w1, self.vars['w2']: w2,
+                                               self.vars['w3']: w3, self.vars['b1']: b1,
+                                               self.vars['b2']: b2, self.vars['b3']: b3,
+                                               self.vars['X_max']: X_max,
+                                               self.vars['X_min']: X_min})
                 if self.debug:
                     LOG.info("Recommend phase, y before gradient descent: min %f, max %f, mean %f",
                              np.min(y_before), np.max(y_before), np.mean(y_before))
 
                 for i in range(recommend_epochs):
-                    sess.run(self.ops['train_'],
-                             feed_dict={self.vars['w1_']: w1, self.vars['w2_']: w2,
-                                        self.vars['w3_']: w3, self.vars['b1_']: b1,
-                                        self.vars['b2_']: b2, self.vars['b3_']: b3,
-                                        self.vars['X_max_']: X_max, self.vars['X_min_']: X_min})
+                    sess.run(self.ops['train'],
+                             feed_dict={self.vars['w1']: w1, self.vars['w2']: w2,
+                                        self.vars['w3']: w3, self.vars['b1']: b1,
+                                        self.vars['b2']: b2, self.vars['b3']: b3,
+                                        self.vars['X_max']: X_max, self.vars['X_min']: X_min})
 
                     if self.debug and i % self.debug_interval == 0:
-                        y_train = sess.run(self.vars['y_'],
-                                           feed_dict={self.vars['w1_']: w1, self.vars['w2_']: w2,
-                                                      self.vars['w3_']: w3, self.vars['b1_']: b1,
-                                                      self.vars['b2_']: b2, self.vars['b3_']: b3,
-                                                      self.vars['X_max_']: X_max,
-                                                      self.vars['X_min_']: X_min})
+                        y_train = sess.run(self.vars['y'],
+                                           feed_dict={self.vars['w1']: w1, self.vars['w2']: w2,
+                                                      self.vars['w3']: w3, self.vars['b1']: b1,
+                                                      self.vars['b2']: b2, self.vars['b3']: b3,
+                                                      self.vars['X_max']: X_max,
+                                                      self.vars['X_min']: X_min})
                         LOG.info("Recommend phase, epoch %d, y: min %f, max %f, mean %f",
                                  i, np.min(y_train), np.max(y_train), np.mean(y_train))
 
-                y_recommend = sess.run(self.vars['y_'],
-                                       feed_dict={self.vars['w1_']: w1, self.vars['w2_']: w2,
-                                                  self.vars['w3_']: w3, self.vars['b1_']: b1,
-                                                  self.vars['b2_']: b2, self.vars['b3_']: b3,
-                                                  self.vars['X_max_']: X_max,
-                                                  self.vars['X_min_']: X_min})
-                X_recommend = sess.run(self.vars['x_bounded_'],
-                                       feed_dict={self.vars['X_max_']: X_max,
-                                                  self.vars['X_min_']: X_min})
+                y_recommend = sess.run(self.vars['y'],
+                                       feed_dict={self.vars['w1']: w1, self.vars['w2']: w2,
+                                                  self.vars['w3']: w3, self.vars['b1']: b1,
+                                                  self.vars['b2']: b2, self.vars['b3']: b3,
+                                                  self.vars['X_max']: X_max,
+                                                  self.vars['X_min']: X_min})
+                X_recommend = sess.run(self.vars['x_bounded'],
+                                       feed_dict={self.vars['X_max']: X_max,
+                                                  self.vars['X_min']: X_min})
                 res = NeuralNetResult(minl=y_recommend, minl_conf=X_recommend)
 
                 if self.debug:
@@ -251,3 +401,10 @@ class NeuralNet(object):
 
                 self.recommend_iters += 1
                 return res
+
+    def recommend(self, X_start, X_min=None, X_max=None, recommend_epochs=500,
+                  explore=False, X_context=None):
+        if self.include_context:
+            return self._recommend_with_context(X_start, X_min, X_max, recommend_epochs,
+                                                explore, X_context)
+        return self._recommend_without_context(X_start, X_min, X_max, recommend_epochs, explore)
