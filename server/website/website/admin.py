@@ -111,9 +111,12 @@ class BackupDataAdmin(admin.ModelAdmin):
 
 class PipelineDataAdmin(admin.ModelAdmin):
     readonly_fields = ('pipeline_run',)
-    list_display = ('id', 'pipeline_run', 'task_type', 'workload', 'creation_time')
+    list_display = ('id', 'pipeline_run', 'task_type', 'workload_name', 'creation_time')
     list_filter = ('task_type', ('workload', admin.RelatedOnlyFieldListFilter))
     ordering = ('pipeline_run', 'creation_time')
+
+    def workload_name(self, instance):  # pylint: disable=no-self-use
+        return '{}@{}'.format(instance.workload.project.name, instance.workload.name)
 
 
 class PipelineRunAdmin(admin.ModelAdmin):
