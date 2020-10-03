@@ -274,6 +274,6 @@ KNOB_CONFIGDIR = os.environ.get('KNOB_CONFIGDIR', '/app/driver/knob_configs')
 
 # Comma-separated string of config names (filename only without extension)
 if 'KNOB_CONFIGS' in os.environ and os.environ['KNOB_CONFIGS']:
-    KNOB_CONFIGS = KNOB_CONFIGS.split(',')
+    KNOB_CONFIGS = os.environ['KNOB_CONFIGS'].split(',')
 else:
     KNOB_CONFIGS = []

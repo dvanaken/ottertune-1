@@ -922,7 +922,7 @@ def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
         LOG.info("Starting configuration '{}' ({} iters)".format(config_name, iters_per_config))
         put(config_path, dconf.DB_CONF, use_sudo=True, remote_only=dconf.DB_CONF_MOUNT)
 
-        for i in iters_per_config:
+        for i in range(iters_per_config):
             LOG.info("{}: run {}/{}".format(config_name, i + 1, iters_per_config))
             free_cache()
 
