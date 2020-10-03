@@ -2,7 +2,7 @@ version: "3"
 services:
 
     driver:
-        image: dvanaken/ottertune:driver2-beta
+        image: dvanaken/ottertune:driver2
         labels:
             NAME: "ottertune-driver2"
         environment:
@@ -23,12 +23,12 @@ services:
           WEBSITE_URL: 'http://127.0.0.1:8008'
           UPLOAD_CODE: '123'
           WORKLOAD_NAME: 'ycsb_updateonly'
-          KNOB_RANGES_FILE: '/app/driver/mysql_knob_ranges_xxl.json'
+          KNOB_RANGES_FILE: '/app/driver/knob_ranges/mysql_knob_ranges_xxl.json'
         volumes:
          - ${HOME}/.ssh/id_rsa:/root/.ssh/id_rsa:ro
          - ${HOME}/.vimrc:/root/.vimrc:ro
          - ${PWD}/driver2_config.py:/app/driver/driver_config.py:ro
-         - ${PWD}/mysql_knob_ranges_xxl.json:/app/driver/mysql_knob_ranges_xxl.json:ro
+         - ${PWD}/knob_ranges:/app/driver/knob_ranges:ro
          - ${PWD}/results:/app/driver/results
          - ${PWD}/log:/app/driver/log
          - ${PWD}/oltpbench_configs:/app/driver/oltpbench_configs
