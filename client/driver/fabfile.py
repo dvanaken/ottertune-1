@@ -273,14 +273,14 @@ def load_oltpbench():
 
 
 @task
-def run_oltpbench():
+def run_oltpbench(outfile='outputfile'):
     if os.path.exists(dconf.OLTPBENCH_CONFIG) is False:
         msg = 'oltpbench config {} does not exist, '.format(dconf.OLTPBENCH_CONFIG)
         msg += 'please double check the option in driver_config.py'
         raise Exception(msg)
     set_oltpbench_config()
-    cmd = "./oltpbenchmark -b {} -c {} --execute=true --output-raw=false -s 5 -o outputfile".\
-          format(dconf.OLTPBENCH_BENCH, dconf.OLTPBENCH_CONFIG)
+    cmd = "./oltpbenchmark -b {} -c {} --execute=true --output-raw=false -s 5 -o {}".\
+          format(dconf.OLTPBENCH_BENCH, dconf.OLTPBENCH_CONFIG, outfile)
     with lcd(dconf.OLTPBENCH_HOME):  # pylint: disable=not-context-manager
         local(cmd)
 
@@ -886,6 +886,52 @@ def run_loops(max_iter=10, skip_restore=False):
         else:
             LOG.error(tb)
             send_email(subject="{} DB ({}) Failed!".format(dconf.DB_TYPE, dconf.DB_HOST), body=tb)
+            time.sleep(10)
+
+
+@task
+def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
+    if not dconf.KNOB_CONFIGS:
+        print("'KNOB_CONFIGS' env not set or empty! Exiting...")
+        return
+
+    for config_name in dconf.KNOB_CONFIGS:
+        config_path = os.path.join(dconf.KNOB_CONFIGDIR, config_name + '.cnf')
+        if not os.path.exists(config_path):
+            raise FileNotFoundError("Knob configuration not found: {}!. Exiting...".format(
+                config_path))
+
+    iters_per_config = int(iters_per_config)
+    restore_db = parse_bool(restore_db)
+    clear_results = parse_bool(clear_results)
+
+    if clear_results:
+        LOG.info("Removing existing OLTPBench results...")
+        clean_oltpbench_results()
+
+    clean_logs()
+
+    if restore_db:
+        restore_database()
+        if dconf.DB_TYPE == 'mysql':
+            run_oltpbench(outfile='warmup')
+
+    for config_name in dconf.KNOB_CONFIGS:
+        # Install next config
+        config_path = os.path.join(dconf.KNOB_CONFIGDIR, config_name + '.cnf')
+        LOG.info("Starting configuration '{}' ({} iters)".format(config_name, iters_per_config))
+        put(config_path, dconf.DB_CONF, use_sudo=True, remote_only=dconf.DB_CONF_MOUNT)
+
+        for i in iters_per_config:
+            LOG.info("{}: run {}/{}".format(config_name, i + 1, iters_per_config))
+            free_cache()
+
+            assert restart_database()
+            prepare_database()
+
+            run_oltpbench(outfile='{}-{}'.format(dconf.WORKLOAD_NAME, config_name))
+
+    LOG.info("Done running all knob configurations!")
 
 
 @task

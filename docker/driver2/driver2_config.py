@@ -190,6 +190,9 @@ OLTPBENCH_CONFIG = os.environ['OLTPBENCH_CONFIG']
 # Name of the benchmark to run
 OLTPBENCH_BENCH = os.environ['OLTPBENCH_BENCH']
 
+# Path to OLTPBench result directory
+OLTPBENCH_RESULTS = os.environ.get(os.path.join(OLTPBENCH_HOME, 'results'))
+
 
 ### #==========================================================
 ### #  CONTROLLER OPTIONS
@@ -260,3 +263,17 @@ WORKLOAD_NAME = os.environ.get('WORKLOAD_NAME', None)
 #     }
 # }
 KNOB_RANGES_FILE = os.environ.get('KNOB_RANGES_FILE', None)
+
+
+#==========================================================
+#  RUN KNOB CONFIGS OPTIONS
+#==========================================================
+
+# Directory containing the DBMS knob configs to run
+KNOB_CONFIGDIR = os.environ.get('KNOB_CONFIGDIR', '/app/driver/knob_configs')
+
+# Comma-separated string of config names (filename only without extension)
+if 'KNOB_CONFIGS' in os.environ and os.environ['KNOB_CONFIGS']:
+    KNOB_CONFIGS = KNOB_CONFIGS.split(',')
+else:
+    KNOB_CONFIGS = []
