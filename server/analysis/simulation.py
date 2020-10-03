@@ -155,6 +155,7 @@ class ReplayMemory(object):
 
 
 def dnn(env, config, n_loops=100):
+    include_context = config['include_context']
     results = []
     x_axis = []
     memory = ReplayMemory()
@@ -164,6 +165,7 @@ def dnn(env, config, n_loops=100):
     Xmin = np.zeros(env.knob_dim)
     Xmax = np.ones(env.knob_dim)
     noise = OUProcess(env.knob_dim)
+    n_context = 5
 
     for _ in range(num_collections):
         action = np.random.rand(env.knob_dim)
@@ -180,17 +182,36 @@ def dnn(env, config, n_loops=100):
                 X_samples = np.vstack((X_samples, np.array(entry[0])))
         tf.reset_default_graph()
         tf.InteractiveSession()
-        model_nn = NeuralNet(n_input=X_samples.shape[1],
-                             batch_size=X_samples.shape[0],
-                             learning_rate=0.005,
-                             explore_iters=100,
-                             noise_scale_begin=0.1,
-                             noise_scale_end=0.0,
-                             debug=False,
-                             debug_interval=100)
         actions, rewards = memory.get_all()
-        model_nn.fit(np.array(actions), -np.array(rewards), fit_epochs=100)
-        res = model_nn.recommend(X_samples, Xmin, Xmax, recommend_epochs=20, explore=False)
+        if include_context:
+            model_nn = NeuralNet(n_input=X_samples.shape[1],
+                                 batch_size=X_samples.shape[0],
+                                 learning_rate=0.005,
+                                 explore_iters=100,
+                                 noise_scale_begin=0.1,
+                                 noise_scale_end=0.0,
+                                 debug=False,
+                                 debug_interval=100,
+                                 include_context=True,
+                                 n_context=n_context)
+            train_size = len(actions)
+            batch_size = len(X_samples)  # recommend
+            model_nn.fit(np.array(actions), -np.array(rewards), fit_epochs=100,
+                         X_context=np.ones([train_size, n_context]))
+            res = model_nn.recommend(X_samples, Xmin, Xmax, recommend_epochs=20, explore=False,
+                                     X_context=np.ones([batch_size, n_context]))
+        else:
+            print('zbh')
+            model_nn = NeuralNet(n_input=X_samples.shape[1],
+                                 batch_size=X_samples.shape[0],
+                                 learning_rate=0.005,
+                                 explore_iters=100,
+                                 noise_scale_begin=0.1,
+                                 noise_scale_end=0.0,
+                                 debug=False,
+                                 debug_interval=100)
+            model_nn.fit(np.array(actions), -np.array(rewards), fit_epochs=100)
+            res = model_nn.recommend(X_samples, Xmin, Xmax, recommend_epochs=20, explore=False)
 
         best_config_idx = np.argmin(res.minl.ravel())
         best_config = res.minl_conf[best_config_idx, :]
@@ -399,7 +420,7 @@ def run(tuners, configs, labels, title, env, n_loops, n_repeats):
 def main():
     env = Environment(knob_dim=192, metric_dim=60, modes=[2], reward_variance=0.15)
     title = 'dim=192'
-    n_repeats = [1, 1, 1, 1, 1, 1]
+    n_repeats = [1, 1, 1, 1, 1, 1, 1]
     n_loops = 200
     configs = [{'num_collections': 5, 'num_samples': 30, 'beta': 'get_beta_td', 'scale': 0.1},
                {'num_collections': 5, 'num_samples': 30, 'beta': 'get_beta_td', 'scale': 0.2},
@@ -407,9 +428,10 @@ def main():
                {'num_collections': 5, 'num_samples': 30},
                {'gamma': 0., 'c_lr': 0.001, 'a_lr': 0.02, 'num_collections': 1, 'n_epochs': 30,
                 'a_hidden_sizes': [128, 128, 64], 'c_hidden_sizes': [64, 128, 64]},
-               {'num_collections': 5, 'num_samples': 30}]
-    tuners = [gpr_new, gpr_new, gpr_new, gpr, ddpg, dnn]
-    labels = ['gpr_new_0.5', 'gpr_new_1', 'gpr_new_3', 'gpr', 'ddpg', 'dnn']
+               {'num_collections': 5, 'num_samples': 30},
+               {'num_collections': 5, 'num_samples': 30, 'include_context': True}]
+    tuners = [gpr_new, gpr_new, gpr_new, gpr, ddpg, dnn, dnn]
+    labels = ['gpr_new_0.5', 'gpr_new_1', 'gpr_new_3', 'gpr', 'ddpg', 'dnn', 'dnn_context']
     run(tuners, configs, labels, title, env, n_loops, n_repeats)
 
 
