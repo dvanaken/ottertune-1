@@ -343,7 +343,7 @@ def create_or_edit_session(request, project_id, session_id=''):
             form_kwargs.update(
                 initial={
                     'dbms': DBMSCatalog.objects.get(
-                        type=DBMSType.POSTGRES, version='9.6'),
+                        type=DBMSType.MYSQL, version='8.0'),
                     'algorithm': AlgorithmType.GPR,
                     'target_objective': target_objectives.default()
                 })

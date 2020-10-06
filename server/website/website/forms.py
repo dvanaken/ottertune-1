@@ -73,7 +73,7 @@ class SessionForm(forms.ModelForm):
         self.fields['description'].required = False
         self.fields['target_objective'].required = True
         self.fields['tuning_session'].required = True
-        self.initial.update(cpu=4, memory=16, storage=32,
+        self.initial.update(cpu=8, memory=32, storage=20,
                             storage_type=StorageType.SSD)
 
         target_objs = target_objectives.get_all()
