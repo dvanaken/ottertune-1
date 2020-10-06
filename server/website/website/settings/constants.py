@@ -25,7 +25,7 @@ ENABLE_DUMMY_ENCODER = False
 KNOB_IDENT_USE_PRUNED_METRICS = True
 
 # The background tasks only process workloads containing this minimum amount of results
-MIN_WORKLOAD_RESULTS_COUNT = 5
+MIN_WORKLOAD_RESULTS_COUNT = 1
 
 # The views used for metrics pruning
 VIEWS_FOR_PRUNING = {
@@ -37,4 +37,13 @@ VIEWS_FOR_PRUNING = {
 # WARNING: modifying this parameter will cause all existing DDPG sessions broken
 VIEWS_FOR_DDPG = {
     DBMSType.ORACLE: ['dba_hist_sys_time_model'],
+}
+
+OVERRIDE_PRUNED_METRICS = {
+    DBMSType.MYSQL: [
+        #"global.com_commit",
+        #"global.innodb_buffer_pool_pages_free",
+        #"global.innodb_buffer_pool_bytes_data",
+        #"global.innodb_buffer_pool_pages_data",
+    ],
 }
