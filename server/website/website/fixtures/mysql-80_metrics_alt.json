@@ -1,0 +1,5582 @@
+[
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.aborted_clients",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of connections that were aborted because the client died without closing the connection properly.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.aborted_connects",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of failed attempts to connect to the MySQL server.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.acl_cache_items_count",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of cached privilege objects. Each object is the privilege combination of a user and its active roles.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.binlog_cache_disk_use",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of transactions that used the temporary binary log cache but that exceeded the value of binlog_cache_size and used a temporary file to store statements from the transaction.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.binlog_cache_use",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of transactions that used the temporary binary log cache.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.binlog_stmt_cache_disk_use",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "he number of nontransaction statements that used the binary log statement cache but that exceeded the value of binlog_stmt_cache_size and used a temporary file to store those statements.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.binlog_stmt_cache_use",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of nontransactional statements that used the binary log statement cache.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.bytes_received",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of bytes received from all clients.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.bytes_sent",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of bytes sent to all clients.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.caching_sha2_password_rsa_public_key",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The public key used by the caching_sha2_password authentication plugin for RSA key pair-based password exchange. The value is nonempty only if the server successfully initializes the private and public keys in the files named by the caching_sha2_password_private_key_path and caching_sha2_password_public_key_path system variables. The value of Caching_sha2_password_rsa_public_key comes from the latter file.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_admin_commands",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of times a COM_PING, or COM_CHANGE_USER have executed on the protocol.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_alter_db",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of ALTER DATABASE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_alter_event",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of ALTER EVENT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_alter_function",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of ALTER FUNCTION statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_alter_instance",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of ALTER INSTANCE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_alter_procedure",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of ALTER PROCEDURE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_alter_resource_group",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "he total number of ALTER RESOURCE GROUP statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_alter_server",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of ALTER SERVER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_alter_table",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of ALTER TABLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_alter_tablespace",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of ALTER TABLESPACE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_alter_user",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of ALTER USER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_alter_user_default_role",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of ALTER USER ... DEFAULT ROLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_analyze",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of ANALYZE TABLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_assign_to_keycache",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CACHE INDEX statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_begin",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of BEGIN statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_binlog",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of BINLOG statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_call_procedure",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CALL statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_change_db",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of USE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_change_master",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CHANGE MASTER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_change_repl_filter",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CHANGE REPLICATION FILTER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_check",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CHECK TABLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_checksum",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CHECKSUM TABLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_clone",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CLONE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_commit",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The total number of COMMIT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_db",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE DATABASE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_event",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE EVENT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_function",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE FUNCTION statements executed for stored functions.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_index",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE INDEX statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_procedure",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE PROCEDURE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_resource_group",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE RESOURCE GROUP statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_role",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE ROLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_server",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE SERVER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_spatial_reference_system",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE SPATIAL REFERENCE SYSTEM statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_table",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE TABLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_trigger",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE TRIGGER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_udf",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE FUNCTION statements executed for user defined functions.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_user",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE USER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_create_view",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of CREATE VIEW statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_dealloc_sql",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DEALLOCATE PREPARE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_delete",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The total number of DELETE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_delete_multi",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of multi-table DELETE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_do",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DO statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_db",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP DATABASE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_event",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP EVENT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_function",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP FUNCTION statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_index",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP INDEX statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_procedure",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP PROCEDURE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_resource_group",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP RESOURCE GROUP statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_role",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP ROLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_server",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP SERVER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_spatial_reference_system",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP SPATIAL REFERENCE SYSTEM statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_table",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP TABLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_trigger",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP TRIGGER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_user",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP USER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_drop_view",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DROP VIEW statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_empty_query",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of empty queries executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_execute_sql",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of EXECUTE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_explain_other",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of EXPLAIN FOR CONNECTION statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_flush",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of FLUSH statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_get_diagnostics",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of GET DIAGNOSTICS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_grant",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of GRANT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_grant_roles",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of GRANT ROLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_group_replication_start",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of START GROUP_REPLICATION statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_group_replication_stop",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of STOP GROUP_REPLICATION statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_ha_close",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of HANDLER CLOSE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_ha_open",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of HANDLER OPEN statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_ha_read",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of HANDLER READ statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_help",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of HELP statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_import",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of IMPORT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_insert",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The total number of INSERT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_insert_select",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of INSERT ... SELECT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_install_component",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of INSTALL COMPONENT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_install_plugin",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of INSTALL PLUGIN statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_kill",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of KILL statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_load",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of LOAD DATA INFILE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_lock_instance",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of LOCK INSTANCE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_lock_tables",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of LOCK TABLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_optimize",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of OPTIMIZE TABLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_preload_keys",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of LOAD INDEX INTO CACHE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_prepare_sql",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of PREPARE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_purge",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of PURGE BINARY LOGS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_purge_before_date",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of PURGE BINARY LOGS BEFORE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_release_savepoint",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of RELEASE SAVEPOINT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_rename_table",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of RENAME TABLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_rename_user",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of RENAME USER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_repair",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of REPAIR TABLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_replace",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of REPLACE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_replace_select",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of REPLACE ... SELECT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_reset",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of RESET statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_resignal",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of RESIGNAL statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_restart",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of RESTART statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_revoke",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of REVOKE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_revoke_all",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of REVOKE ALL statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_revoke_roles",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of REVOKE ROLES statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_rollback",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The total number of ROLLBACK statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_rollback_to_savepoint",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of ROLLBACK TO SAVEPOINT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_savepoint",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SAVEPOINT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_select",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The total number of SELECT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_set_option",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SET statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_set_password",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SET PASSWORD statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_set_resource_group",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SET RESOURCE GROUP statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_set_role",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SET ROLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_binlog_events",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW BINLOG EVENTS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_binlogs",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW BINARY LOGS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_charsets",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW CHARACTER SET statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_collations",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW COLLATION statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_create_db",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW CREATE DATABASE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_create_event",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW CREATE EVENT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_create_func",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW CREATE FUNCTION statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_create_proc",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW CREATE PROCEDURE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_create_table",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW CREATE TABLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_create_trigger",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW CREATE TRIGGER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_create_user",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW CREATE USER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_databases",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW DATABASES statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_engine_logs",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW ENGINE ... LOGS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_engine_mutex",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW ENGINE ... MUTEX statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_engine_status",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW ENGINE ... STATUS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_errors",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW ERRORS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_events",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW EVENTS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_fields",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW FIELDS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_function_code",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW FUNCTION CODE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_function_status",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW FUNCTION STATUS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_grants",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW GRANTS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_keys",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW KEYS | INDEX | INDEXES statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_master_status",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW MASTER STATUS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_open_tables",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW OPEN TABLES statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_plugins",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW PLUGINS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_privileges",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW PRIVILEGES statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_procedure_code",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW PROCEDURE CODE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_procedure_status",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW PROCEDURE STATUS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_processlist",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW PROCESSLIST statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_profile",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW PROFILE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_profiles",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW PROFILES statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_relaylog_events",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW RELAYLOG EVENTS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_slave_hosts",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW SLAVE HOSTS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_slave_status",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW SLAVE STATUS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_status",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW STATUS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_storage_engines",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW STORAGE ENGINES statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_table_status",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW TABLE STATUS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_tables",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW TABLES statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_triggers",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW TRIGGERS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_variables",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW VARIABLES statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_show_warnings",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SHOW WARNINGS statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_shutdown",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "Number of SHUTDOWN commands executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_signal",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of SIGNAL statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_slave_start",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of START SLAVE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_slave_stop",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of STOP SLAVE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_stmt_close",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of DEALLOCATE PREPARE statements, or mysql_stmt_close() calls, executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_stmt_execute",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of EXECUTE statements, or mysql_stmt_execute() calls, executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_stmt_fetch",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of mysql_stmt_fetch() calls executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_stmt_prepare",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of PREPARE statements, mysql_stmt_prepare() calls, executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_stmt_reprepare",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of re-prepare operations executed for prepared statements.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_stmt_reset",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of mysql_stmt_reset() calls executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_stmt_send_long_data",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of mysql_stmt_send_long_data calls executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_truncate",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of TRUNCATE TABLE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_uninstall_component",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of UNINSTALL COMPONENT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_uninstall_plugin",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of UNINSTALL PLUGIN statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_unlock_instance",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of UNLOCK INSTANCE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_unlock_tables",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of UNLOCK TABLES statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_update",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The total number of UPDATE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_update_multi",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of multi-table UPDATE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_xa_commit",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of XA COMMIT statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_xa_end",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of XA END statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_xa_prepare",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of XA PREPARE statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_xa_recover",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of XA RECOVER statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_xa_rollback",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of XA ROLLBACK statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.com_xa_start",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of XA START statements executed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.compression",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "Whether the client connection uses compression in the client/server protocol.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.connection_errors_accept",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of errors that occurred during calls to accept() on the listening port.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.connection_errors_internal",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of connections refused due to internal errors in the server, such as failure to start a new thread or an out-of-memory condition.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.connection_errors_max_connections",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of connections refused because the server max_connections limit was reached.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.connection_errors_peer_address",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of errors that occurred while searching for connecting client IP addresses.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.connection_errors_select",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of errors that occurred during calls to select() or poll() on the listening port. (Failure of this operation does not necessarily means a client connection was rejected.)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.connection_errors_tcpwrap",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of connections refused by the libwrap library.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.connections",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of connection attempts (successful or not) to the MySQL server.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.created_tmp_disk_tables",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of temporary tables that were converted to disk based tables, due to exceeding either tmp_table_size or max_heap_table_size.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.created_tmp_files",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "How many temporary files mysqld has created.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.created_tmp_tables",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The total number of temporary tables created.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.current_tls_ca",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The active ssl_ca value in the SSL context that the server uses for new connections. This context value may differ from the current ssl_ca system variable value if the system variable has been changed but ALTER INSTANCE RELOAD TLS has not subsequently been executed to reconfigure the SSL context from the context-related system variable values and update the corresponding status variables. This variable was added in MySQL 8.0.16.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.current_tls_capath",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The active ssl_capath value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.current_tls_cert",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The active ssl_cert value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.current_tls_cipher",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The active ssl_cipher value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.current_tls_ciphersuites",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The active tls_ciphersuites value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.current_tls_crl",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The active ssl_crl value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.current_tls_crlpath",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The active ssl_crlpath value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.current_tls_key",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The active ssl_key value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.current_tls_version",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The active tls_version value in the SSL context that the server uses for new connections. This variable was added in MySQL 8.0.16.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.delayed_errors",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of rows written with INSERT DELAYED for which some error occurred (probably duplicate key). This status variable is deprecated (because DELAYED inserts are deprecated), and will be removed in a future release.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.delayed_insert_threads",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of INSERT DELAYED handler threads in use for nontransactional tables. This status variable is deprecated (because DELAYED inserts are deprecated), and will be removed in a future release.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.delayed_writes",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of INSERT DELAYED rows written to nontransactional tables. This status variable is deprecated (because DELAYED inserts are deprecated), and will be removed in a future release.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.flush_commands",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of executed FLUSH statements.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_commit",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of internal COMMIT statements.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_delete",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of times that rows have been deleted from tables.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_discover",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The MySQL server can ask the NDBCLUSTER storage engine if it knows about a table with a given name. This is called discovery. Handler_discover indicates the number of times that tables have been discovered using this mechanism.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_external_lock",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The server increments this variable for each call to its external_lock() function, which generally occurs at the beginning and end of access to a table instance.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_mrr_init",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of times the server uses a storage engine's own Multi-Range Read implementation for table access.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_prepare",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "A counter for the prepare phase of two-phase commit operations.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_read_first",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of times the first entry in an index was read. If this value is high, it suggests that the server is doing a lot of full index scans; for example, SELECT col1 FROM foo, assuming that col1 is indexed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_read_key",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of requests to read the last key in an index. If this value is high, it is a good indication that your tables are properly indexed for your queries.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_read_last",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of requests to read the last key in an index. With ORDER BY, the server will issue a first-key request followed by several next-key requests, whereas with With ORDER BY DESC, the server will issue a last-key request followed by several previous-key requests. This variable was added in MySQL 5.6.1.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_read_next",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of requests to read the next row in key order. This value is incremented if you are querying an index column with a range constraint or if you are doing an index scan.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_read_prev",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of requests to read the previous row in key order. This read method is mainly used to optimize ORDER BY ... DESC.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_read_rnd",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of requests to read a row based on a fixed position. This value is high if you are doing a lot of queries that require sorting of the result. You probably have a lot of queries that require MySQL to scan entire tables or you have joins that do not use keys properly.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_read_rnd_next",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of requests to read the next row in the data file. This value is high if you are doing a lot of table scans. Generally this suggests that your tables are not properly indexed or that your queries are not written to take advantage of the indexes you have.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_rollback",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of requests for a storage engine to perform a rollback operation.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_savepoint",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of requests for a storage engine to place a savepoint.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_savepoint_rollback",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of requests for a storage engine to rollback to a savepoint.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_update",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of requests to update a row in a table.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.handler_write",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of requests to insert a row in a table.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_bytes_data",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "Buffer bytes containing data (innodb_buffer_pool_bytes_data)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_bytes_dirty",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "Buffer bytes currently dirty (innodb_buffer_pool_bytes_dirty)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_dump_status",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The progress of an operation to record the pages held in the InnoDB buffer pool, triggered by the setting of innodb_buffer_pool_dump_at_shutdown or innodb_buffer_pool_dump_now.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_load_status",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The progress of an operation to warm up the InnoDB buffer pool by reading in a set of pages corresponding to an earlier point in time, triggered by the setting of innodb_buffer_pool_load_at_startup or innodb_buffer_pool_load_now.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_pages_data",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "Buffer pages containing data (innodb_buffer_pool_pages_data)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_pages_dirty",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "Buffer pages currently dirty (innodb_buffer_pool_pages_dirty)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_pages_flushed",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of requests to flush pages from the InnoDB buffer pool.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_pages_free",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "Buffer pages currently free (innodb_buffer_pool_pages_free)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_pages_misc",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "Buffer pages for misc use such as row locks or the adaptive hash index (innodb_buffer_pool_pages_misc)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_pages_total",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "Total buffer pool size in pages (innodb_buffer_pool_pages_total)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_read_ahead",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of pages read as read ahead (innodb_buffer_pool_read_ahead)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_read_ahead_evicted",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Read-ahead pages evicted without being accessed (innodb_buffer_pool_read_ahead_evicted)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_read_ahead_rnd",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of random read-aheads initiated by InnoDB. This happens when a query scans a large portion of a table but in random order.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_read_requests",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of logical read requests (innodb_buffer_pool_read_requests)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_reads",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of reads directly from disk (innodb_buffer_pool_reads)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_resize_status",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The status of an operation to resize the InnoDB buffer pool dynamically, triggered by setting the innodb_buffer_pool_size parameter dynamically.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_wait_free",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of times waited for free buffer (innodb_buffer_pool_wait_free)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_buffer_pool_write_requests",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of write requests (innodb_buffer_pool_write_requests)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_data_fsyncs",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of fsync() operations so far.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_data_pending_fsyncs",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "The current number of pending fsync() operations.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_data_pending_reads",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The current number of pending reads.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_data_pending_writes",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The current number of pending writes.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_data_read",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The amount of data read since the server was started.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_data_reads",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The total number of data reads.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_data_writes",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The total number of data writes.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_data_written",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The amount of data written so far, in bytes.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_dblwr_pages_written",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of pages that have been written for doublewrite operations (innodb_dblwr_pages_written)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_dblwr_writes",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of doublewrite operations that have been performed (innodb_dblwr_writes)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_log_waits",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of log waits due to small log buffer (innodb_log_waits)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_log_write_requests",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of log write requests",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_log_writes",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of log writes",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_num_open_files",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of open files within InnoDB.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_os_log_fsyncs",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of fsync log writes (innodb_os_log_fsyncs)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_os_log_pending_fsyncs",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "Number of pending fsync write (innodb_os_log_pending_fsyncs)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_os_log_pending_writes",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "Number of pending log file writes (innodb_os_log_pending_writes)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_os_log_written",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of bytes written to the log file.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_page_size",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "InnoDB page size in bytes (innodb_page_size)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_pages_created",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of pages created.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_pages_read",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of pages read.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_pages_written",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of pages written.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_row_lock_current_waits",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of row locks currently being waited for.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_row_lock_time",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The total time spent in acquiring row locks, in milliseconds.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_row_lock_time_avg",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "The average time to acquire a row lock, in milliseconds.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_row_lock_time_max",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "The maximum time to acquire a row lock, in milliseconds.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_row_lock_waits",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of times a row lock had to be waited for.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_rows_deleted",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of rows deleted from InnoDB tables.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_rows_inserted",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of rows inserted into InnoDB tables.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_rows_read",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of rows read from InnoDB tables.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_rows_updated",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of rows updated in InnoDB tables.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_truncated_status_writes",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of times output from the SHOW ENGINE INNODB STATUS statement has been truncated.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_undo_tablespaces_active",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of active undo tablespaces.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_undo_tablespaces_explicit",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of explicit (user-created) undo tablespaces.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_undo_tablespaces_implicit",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of implicit (InnoDB-created) undo tablespaces.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.innodb_undo_tablespaces_total",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of undo tablespaces.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.key_blocks_not_flushed",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of key blocks in the MyISAM key cache that have changed but have not yet been flushed to disk.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.key_blocks_unused",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of unused blocks in the MyISAM key cache. You can use this value to determine how much of the key cache is in use.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.key_blocks_used",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of used blocks in the MyISAM key cache. This value is a high-water mark that indicates the maximum number of blocks that have ever been in use at one time.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.key_read_requests",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of requests to read a key block from the MyISAM key cache.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.key_reads",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of physical reads of a key block from disk into the MyISAM key cache. If Key_reads is large, then your key_buffer_size value is probably too small. The cache miss rate can be calculated as Key_reads/Key_read_requests.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.key_write_requests",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of requests to write a key block to the MyISAM key cache.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.key_writes",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of physical writes of a key block from the MyISAM key cache to disk.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.last_query_cost",
+            "vartype": 3,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total cost of the last compiled query as computed by the query optimizer. This is useful for comparing the cost of different query plans for the same query. The default value of 0 means that no query has been compiled yet. The default value is 0. Last_query_cost has session scope.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.last_query_partial_plans",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of iterations the query optimizer made in execution plan construction for the previous query. Last_query_cost has session scope.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.locked_connects",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of attempts to connect to locked user accounts.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.max_execution_time_exceeded",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of SELECT statements for which the execution timeout was exceeded.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.max_execution_time_set",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of SELECT statements for which a nonzero execution timeout was set. This includes statements that include a nonzero MAX_EXECUTION_TIME optimizer hint, and statements that include no such hint but execute while the timeout indicated by the max_execution_time system variable is nonzero.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.max_execution_time_set_failed",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of SELECT statements for which the attempt to set an execution timeout failed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.max_used_connections",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The maximum number of connections that have been in use simultaneously since the server started.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.max_used_connections_time",
+            "vartype": 6,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The time at which Max_used_connections reached its current value.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_aborted_clients",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of clients that were disconnected because of an input or output error.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_address",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The network address or addresses for which X Plugin accepts TCP/IP connections",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_bytes_received",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of bytes received through the network.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_bytes_sent",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The total number of bytes sent through the network.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_connection_accept_errors",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of connections which have caused accept errors.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_connection_errors",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of connections which have caused errors.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_connections_accepted",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of connections which have been accepted.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_connections_closed",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of connections which have been closed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_connections_rejected",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of connections which have been rejected.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_crud_create_view",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of create view requests received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_crud_delete",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of delete requests received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_crud_drop_view",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of drop view requests received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_crud_find",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of find requests received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_crud_insert",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of insert requests received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_crud_modify_view",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of modify view requests received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_crud_update",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of update requests received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_cursor_close",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of cursor-close messages received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_cursor_fetch",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of cursor-fetch messages received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_cursor_open",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of cursor-open messages received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_errors_sent",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of errors sent to clients.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_errors_unknown_message_type",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of errors with unknown message type",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_expect_close",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of expectation blocks closed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_expect_open",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of expectation blocks opened.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_init_error",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of errors during initialisation.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_notice_global_sent",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of global notifications sent to clients.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_notice_other_sent",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of other types of notices sent back to clients.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_notice_warning_sent",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of warning notices sent back to clients.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_notified_by_group_replication",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "Number of Group Replication notifications sent to clients",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_port",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The TCP port which X Plugin is listening to.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_prep_deallocate",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of prepared-statement-deallocate messages received",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_prep_execute",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of prepared-statement-execute messages received",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_prep_prepare",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of prepared-statement messages received",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_rows_sent",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of rows sent back to clients.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_sessions",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of sessions that have been opened.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_sessions_accepted",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of session attempts which have been accepted.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_sessions_closed",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of sessions that have been closed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_sessions_fatal_error",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of sessions that have closed with a fatal error.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_sessions_killed",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of sessions which have been killed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_sessions_rejected",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of session attempts which have been rejected.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_socket",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The Unix socket which X Plugin is listening to.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_ssl_accepts",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of accepted SSL connections.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_ssl_active",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "If SSL is active.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_ssl_cipher",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The current SSL cipher (empty for non-SSL connections).",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_ssl_cipher_list",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "A list of possible SSL ciphers (empty for non-SSL connections).",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_ssl_ctx_verify_depth",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The certificate verification depth limit currently set in ctx.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_ssl_ctx_verify_mode",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The certificate verification mode currently set in ctx.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_ssl_finished_accepts",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of successful SSL connections to the server.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_ssl_server_not_after",
+            "vartype": 6,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The last date for which the SSL certificate is valid.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_ssl_server_not_before",
+            "vartype": 6,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The first date for which the SSL certificate is valid.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_ssl_verify_depth",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The certificate verification depth for SSL connections.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_ssl_verify_mode",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The certificate verification mode for SSL connections.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_ssl_version",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The name of the protocol used for SSL connections.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_create_collection",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of create collection statements received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_create_collection_index",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of create collection index statements received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_disable_notices",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of disable notice statements received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_drop_collection",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of drop collection statements received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_drop_collection_index",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of drop collection index statements received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_enable_notices",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of enable notice statements received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_ensure_collection",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of ensure collection statements received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_execute_mysqlx",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of StmtExecute messages received with namespace set to mysqlx.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_execute_sql",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of StmtExecute requests received for the SQL namespace.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_execute_xplugin",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of StmtExecute requests received for the xplugin namespace. From MySQL 8.0.19, the xplugin namespace has been removed so this status variable is no longer used.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_kill_client",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of kill client statements received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_list_clients",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of list client statements received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_list_notices",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of list notice statements received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_list_objects",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of list object statements received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_stmt_ping",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of ping statements received.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_worker_threads",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of worker threads available.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.mysqlx_worker_threads_active",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of worker threads currently used.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.not_flushed_delayed_rows",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of rows waiting to be written to nontransactional tables in INSERT DELAYED queues. This status variable is deprecated (because DELAYED inserts are deprecated), and will be removed in a future release.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ongoing_anonymous_transaction_count",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "Shows the number of ongoing transactions which have been marked as anonymous. This can be used to ensure that no further transactions are waiting to be processed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.open_files",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of files that are open. This count includes regular files opened by the server. It does not include other types of files such as sockets or pipes.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.open_streams",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of streams that are open (used mainly for logging).",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.open_table_definitions",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of currently cached .frm files.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.open_tables",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "The current number of tables held open in the table cache.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.opened_files",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of files that have been opened with my_open() (a mysys library function).",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.opened_table_definitions",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of .frm files that have been cached.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.opened_tables",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The total number of tables that have been opened.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_accounts_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of times a row could not be added to the accounts table because it was full.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_cond_classes_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instruments of type cond could not be loaded.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_cond_instances_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instances of object type cond could not be created.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_digest_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of digest instances that could not be instrumented in the events_statements_summary_by_digest table. This can be nonzero if the value of performance_schema_digests_size is too small.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_file_classes_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instruments of type file could not be loaded.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_file_handles_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instances of object type file could not be opened.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_file_instances_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instances of object type file could not be created.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_hosts_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many hosts were lost.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_index_stat_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of indexes for which statistics were lost.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_locker_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many events are lost or not recorded.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_memory_classes_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of times a memory instrument could not be loaded.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_metadata_lock_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of metadata locks that could not be instrumented in the metadata_locks table.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_mutex_classes_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instruments of type mutex could not be loaded.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_mutex_instances_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instances of object type mutest could not be created.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_nested_statement_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of stored program statements for which statistics were lost.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_prepared_statements_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of prepared statements that could not be instrumented in the prepared_statements_instances table.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_program_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of stored programs for which statistics were lost.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_rwlock_classes_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instruments of type rwlock could not be loaded.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_rwlock_instances_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instances of object type rwlock could not be created.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_session_connect_attrs_longest_seen",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The longest valid attribute buffer size that was tracked.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_session_connect_attrs_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of connections for which connection attribute truncation has occurred. For a given connection, if the client sends connection attribute key-value pairs for which the aggregate size is larger than the reserved storage permitted by the value of the performance_schema_session_connect_attrs_size system variable, the Performance Schema truncates the attribute data and increments Performance_schema_session_connect_attrs_lost. If this value is nonzero, you may wish to set performance_schema_session_connect_attrs_size to a larger value.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_socket_classes_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many socket instruments could not be loaded.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_socket_instances_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many socket instrument instances could not be created.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_stage_classes_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many stage instruments could not be loaded.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_statement_classes_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many statement instruments could not be loaded.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_table_handles_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instances of object type table could not be opened.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_table_instances_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instances of object type table could not be created.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_table_lock_stat_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of tables for which lock statistics were lost.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_thread_classes_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instruments of type thread could not be loaded.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_thread_instances_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many instances of object type thread could not be created.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.performance_schema_users_lost",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of times a row could not be added to the users table because it was full.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.prepared_stmt_count",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The current number of prepared statements. (The maximum number of statements is given by the max_prepared_stmt_count system variable.).",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.queries",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of statements executed by the server. This variable includes statements executed within stored programs, unlike the Questions variable.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.questions",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of statements executed by the server. This includes only statements sent to the server by clients and not statements executed within stored programs, unlike the Queries variable.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.rsa_public_key",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The value of this variable is the public key used by the sha256_password authentication plugin for RSA key pair-based password exchange. The value is nonempty only if the server successfully initializes the private and public keys in the files named by the sha256_password_private_key_path and sha256_password_public_key_path system variables. The value of Rsa_public_key comes from the latter file.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.secondary_engine_execution_count",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "For future use. This variable was added in MySQL 8.0.13.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.select_full_join",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of joins that perform table scans because they do not use indexes. If this value is not 0, you should carefully check the indexes of your tables.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.select_full_range_join",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of joins that used a range search on a reference table.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.select_range",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of joins that used ranges on the first table. This is normally not a critical issue even if the value is quite large.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.select_range_check",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of joins without keys that check for key usage after each row. If this is not 0, you should carefully check the indexes of your tables.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.select_scan",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of joins that did a full scan of the first table.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.slave_open_temp_tables",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of temporary tables that the replication SQL thread currently has open. If the value is greater than zero, it is not safe to shut down the replica; This variable reports the total count of open temporary tables for all replication channels.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.slow_launch_threads",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of threads that have taken more than slow_launch_time seconds to create.conn",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.slow_queries",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of queries that have taken more than long_query_time seconds",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.sort_merge_passes",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of merge passes that the sort algorithm has had to do.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.sort_range",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of sorts that were done using ranges.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.sort_rows",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of sorted rows.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.sort_scan",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of sorts that were done by scanning the table.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_accept_renegotiates",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of negotiates needed to establish the connection.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_accepts",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of accepted SSL connections.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_callback_cache_hits",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of callback cache hits.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_cipher",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The current SSL cipher (empty for non-SSL connections).",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_cipher_list",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The list of possible SSL ciphers.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_client_connects",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of SSL connection attempts to an SSL-enabled master.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_connect_renegotiates",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of negotiates needed to establish the connection to an SSL-enabled master.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_ctx_verify_depth",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The SSL context verification depth --how many certificates in the chain are tested.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_ctx_verify_mode",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The SSL context verification mode.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_default_timeout",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The default SSL timeout.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_finished_accepts",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of successful SSL connections to the server.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_finished_connects",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of successful slave connections to an SSL-enabled master.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_server_not_after",
+            "vartype": 6,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The last date for which the SSL certificate is valid.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_server_not_before",
+            "vartype": 6,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The first date for which the SSL certificate is valid.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_session_cache_hits",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of SSL session cache hits.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_session_cache_misses",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of SSL session cache misses.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_session_cache_mode",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The SSL session cache mode.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_session_cache_overflows",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of SSL session cache overflows.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_session_cache_size",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The SSL session cache size.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_session_cache_timeouts",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of SSL session cache timeouts.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_sessions_reused",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many SSL connections were reused from the cache.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_used_session_cache_entries",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "How many SSL session cache entries were used.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_verify_depth",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The verification depth for replication SSL connections.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_verify_mode",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The verification mode for replication SSL connections.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.ssl_version",
+            "vartype": 1,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The SSL version identifier.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.table_locks_immediate",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of times that a request for a table lock could be granted immediately.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.table_locks_waited",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of times that a request for a table lock could not be granted immediately and a wait was needed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.table_open_cache_hits",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of hits for open tables cache lookups.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.table_open_cache_misses",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "The number of misses for open tables cache lookups.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.table_open_cache_overflows",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of overflows for the open tables cache. This is the number of times, after a table is opened or closed, a cache instance has an unused entry and the size of the instance is larger than table_open_cache / table_open_cache_instances.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.tc_log_max_pages_used",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "For the memory-mapped implementation of the log that is used by mysqld when it acts as the transaction coordinator for recovery of internal XA transactions, this variable indicates the largest number of pages used for the log since the server started. If the product of Tc_log_max_pages_used and Tc_log_page_size is always significantly less than the log size, the size is larger than necessary and can be reduced. (The size is set by the --log-tc-size option. This variable is unused: It is unneeded for binary log-based recovery, and the memory-mapped recovery log method is not used unless the number of storage engines that are capable of two-phase commit and that support XA transactions is greater than one. (InnoDB is the only applicable engine.)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.tc_log_page_size",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The page size used for the memory-mapped implementation of the XA recovery log. The default value is determined using getpagesize(). This variable is unused for the same reasons as described for Tc_log_max_pages_used.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.tc_log_page_waits",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "For the memory-mapped implementation of the recovery log, this variable increments each time the server was not able to commit a transaction and had to wait for a free page in the log. If this value is large, you might want to increase the log size (with the --log-tc-size option). For binary log-based recovery, this variable increments each time the binary log cannot be closed because there are two-phase commits in progress. (The close operation waits until all such transactions are finished.)",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.threads_cached",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "The number of threads in the thread cache.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.threads_connected",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of currently open connections.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.threads_created",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of threads created to handle connections.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.threads_running",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "The number of threads that are not sleeping.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.uptime",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "The number of seconds that the server has been up.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "global.uptime_since_flush_status",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "The number of seconds since the most recent FLUSH STATUS statement.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "innodb_metrics.trx_active_transactions",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of active transactions.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "innodb_metrics.trx_commits_insert_update",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of transactions committed with inserts and updates.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "innodb_metrics.trx_nl_ro_commits",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of non-locking auto-commit read-only transactions committed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "innodb_metrics.trx_rollbacks",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of transactions rolled back.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "innodb_metrics.trx_rollbacks_savepoint",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of transactions rolled back to savepoint.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "innodb_metrics.trx_rollback_active",
+            "vartype": 2,
+            "metric_type": 2,
+            "scope": "global",
+            "summary": "Number of resurrected active transactions rolled back.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "innodb_metrics.trx_ro_commits",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of read-only transactions committed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "innodb_metrics.trx_rseg_current_size",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "Current rollback segment size in pages.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "innodb_metrics.trx_rseg_history_len",
+            "vartype": 2,
+            "metric_type": 3,
+            "scope": "global",
+            "summary": "Length of the TRX_RSEG_HISTORY list.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "innodb_metrics.trx_rw_commits",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of read-write transactions committed.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "innodb_metrics.trx_undo_slots_cached",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of undo slots cached.",
+            "dbms": 180,
+            "default": null
+        }
+    },
+    {
+        "model": "website.MetricCatalog",
+        "fields": {
+            "name": "innodb_metrics.trx_undo_slots_used",
+            "vartype": 2,
+            "metric_type": 1,
+            "scope": "global",
+            "summary": "Number of undo slots used.",
+            "dbms": 180,
+            "default": null
+        }
+    }
+]

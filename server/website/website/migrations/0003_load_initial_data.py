@@ -4,9 +4,11 @@
 
 from django.core.management import call_command
 from django.db import migrations
+from website.settings import ACTIVE_METRICS_ONLY
 
 
 def load_initial_data(apps, schema_editor):
+    ftype = '_alt' if ACTIVE_METRICS_ONLY else ''
     initial_data_fixtures = [
         "dbms_catalog.json",
         "postgres-96_knobs.json",
@@ -32,8 +34,9 @@ def load_initial_data(apps, schema_editor):
         "mysql-57_knobs.json",
         "mysql-57_metrics.json",
         "mysql-80_knobs.json",
-        "mysql-80_metrics.json",
+        "mysql-80_metrics{}.json".format(ftype),
     ]
+
     for fixture in initial_data_fixtures:
         call_command("loaddata", fixture, app_label="website")
 

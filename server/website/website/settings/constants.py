@@ -39,11 +39,6 @@ VIEWS_FOR_DDPG = {
     DBMSType.ORACLE: ['dba_hist_sys_time_model'],
 }
 
-OVERRIDE_PRUNED_METRICS = {
-    DBMSType.MYSQL: [
-        #"global.com_commit",
-        #"global.innodb_buffer_pool_pages_free",
-        #"global.innodb_buffer_pool_bytes_data",
-        #"global.innodb_buffer_pool_pages_data",
-    ],
-}
+ACTIVE_METRICS_ONLY = True
+
+OVERRIDE_PRUNED_METRICS = {}
