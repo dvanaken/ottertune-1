@@ -73,6 +73,7 @@ class MapWorkloadTask(BaseTask):  # pylint: disable=abstract-method
             new_res = {
                 'scores': sorted(args[0][0]['scores'].items()),
                 'mapped_workload_id': args[0][0]['mapped_workload'],
+                'pruned_metrics': sorted(args[0][0]['pruned_metrics'])
             }
 
         task_meta.result = new_res
@@ -1060,6 +1061,7 @@ def map_workload(map_workload_input):
                 pipeline_data, unique_workload, PipelineTaskType.PRUNED_METRICS)
             pruned_metric_idxs = [i for i in range(y_matrix.shape[1]) if y_columnlabels[
                 i] in global_pruned_metrics]
+            target_data['pruned_metrics'] = global_pruned_metrics
 
             # Filter y columnlabels by pruned_metrics
             y_columnlabels = y_columnlabels[pruned_metric_idxs]

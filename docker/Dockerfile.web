@@ -1,4 +1,4 @@
-FROM ottertune-base
+FROM dvanaken/ottertune:base
 
 COPY ./server /app
 
