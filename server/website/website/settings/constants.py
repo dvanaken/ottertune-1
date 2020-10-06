@@ -22,7 +22,7 @@ ENABLE_DUMMY_ENCODER = False
 # the set of target objectives used to tune the given workload. If this flag is enabled
 # then the pruned metrics from the workload characterization subtask are also included
 # in the output. (See website/tasks/periodic_tasks.py)
-KNOB_IDENT_USE_PRUNED_METRICS = False
+KNOB_IDENT_USE_PRUNED_METRICS = True
 
 # The background tasks only process workloads containing this minimum amount of results
 MIN_WORKLOAD_RESULTS_COUNT = 5
