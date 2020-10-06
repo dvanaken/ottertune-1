@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from website.models import KnobData, MetricData, Project, Result, Session, SessionKnob, Workload
-from website.types import WorkloadStatusType
+from website.types import AlgorithmType, WorkloadStatusType
 from website.utils import MediaUtil
 
 
@@ -23,11 +23,17 @@ class Command(BaseCommand):
             metavar='PROJECTNAME',
             default=None,
             help='Specifies which existing project the new session will belong to.')
+        parser.add_argument(
+            '--algorithm',
+            metavar='ALGORITHM',
+            default=None,
+            help='Specifies which algorithm the new session will use.')
 
     def handle(self, *args, **options):
         upload_code = options['upload_code']
         new_sessionname = options['new_sessionname']
         projectname = options['projectname']
+        algorithm = options['algorithm']
 
         session = Session.objects.get(upload_code=upload_code)
         session_knobs = SessionKnob.objects.filter(session=session)
@@ -36,6 +42,14 @@ class Command(BaseCommand):
         session.pk = None
         session.name = new_sessionname
         session.upload_code = MediaUtil.upload_code_generator()
+        if algorithm:
+            algorithm = algorithm.lower()
+            if algorithm == 'gpr':
+                session.algorithm = AlgorithmType.GPR
+            elif algorithm == 'dnn':
+                session.algorithm = AlgorithmType.DNN
+            elif algorithm == 'ddpg':
+                session.algorithm = AlgorithmType.DDPG
 
         if projectname and projectname != session.project.name:
             project = Project.objects.get(name=projectname)
@@ -75,5 +89,5 @@ class Command(BaseCommand):
                 res.save()
 
         self.stdout.write(self.style.SUCCESS(
-            "Successfully created session '{}' under project '{}' (upload_code: {}).".format(
+            "Successfully created session '{}' under project '{}'\nupload_code: {}".format(
                 session.name, session.project, session.upload_code)))

@@ -139,7 +139,7 @@ def home_projects_view(request):
         'button_delete': 'delete selected projects',
     }))
     form_labels['title'] = 'Your Projects'
-    projects = Project.objects.filter(user=request.user)
+    projects = Project.objects.filter(user=request.user).order_by('-creation_time')
     show_descriptions = any([proj.description for proj in projects])
     context = {
         "projects": projects,

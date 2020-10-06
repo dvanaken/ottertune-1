@@ -34,7 +34,7 @@ from website.models import (PipelineData, PipelineRun, Result, Workload, Session
 from website import db
 from website.types import PipelineTaskType, AlgorithmType, VarType
 from website.utils import DataUtil, JSONUtil
-from website.settings import ENABLE_DUMMY_ENCODER, TIME_ZONE, VIEWS_FOR_DDPG
+from website.settings import ENABLE_DUMMY_ENCODER, TIME_ZONE, VIEWS_FOR_DDPG, OVERRIDE_PRUNED_METRICS
 
 
 LOG = get_task_logger(__name__)
@@ -73,6 +73,7 @@ class MapWorkloadTask(BaseTask):  # pylint: disable=abstract-method
             new_res = {
                 'scores': sorted(args[0][0]['scores'].items()),
                 'mapped_workload_id': args[0][0]['mapped_workload'],
+                'pruned_metrics': sorted(args[0][0]['pruned_metrics'])
             }
 
         task_meta.result = new_res
@@ -1055,11 +1056,16 @@ def map_workload(map_workload_input):
         assert np.array_equal(rowlabels, metric_data["rowlabels"])
 
         if not initialized:
-            # For now set pruned metrics to be those computed for the first workload
-            global_pruned_metrics = load_data_helper(
-                pipeline_data, unique_workload, PipelineTaskType.PRUNED_METRICS)
+            global_pruned_metrics = OVERRIDE_PRUNED_METRICS.get(session.dbms.type, None)
+            LOG.info("Override metrics: %s", global_pruned_metrics)
+            if not global_pruned_metrics:
+                # For now set pruned metrics to be those computed for the first workload
+                global_pruned_metrics = load_data_helper(
+                    pipeline_data, unique_workload, PipelineTaskType.PRUNED_METRICS)
+
             pruned_metric_idxs = [i for i in range(y_matrix.shape[1]) if y_columnlabels[
                 i] in global_pruned_metrics]
+            target_data['pruned_metrics'] = global_pruned_metrics
 
             # Filter y columnlabels by pruned_metrics
             y_columnlabels = y_columnlabels[pruned_metric_idxs]

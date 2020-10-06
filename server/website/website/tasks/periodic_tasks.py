@@ -152,7 +152,7 @@ def run_background_tasks():
                   ', '.join(ranked_knob_metrics))
 
         if KNOB_IDENT_USE_PRUNED_METRICS:
-            ranked_knob_metrics = sorted(set(ranked_knob_metrics) + set(pruned_metrics))
+            ranked_knob_metrics = sorted(set(ranked_knob_metrics) | set(pruned_metrics))
 
         # Use the set of metrics to filter the metric_data
         metric_idxs = [i for i, metric_name in enumerate(metric_data['columnlabels'])
@@ -283,7 +283,9 @@ def run_workload_characterization(metric_data, dbms=None):
         if np.any(col != col[0]):
             nonconst_matrix.append(col.reshape(-1, 1))
             nonconst_columnlabels.append(cl)
-    assert len(nonconst_matrix) > 0, "Need more data to train the model"
+    #assert len(nonconst_matrix) > 0, "Need more data to train the model"
+    if len(nonconst_matrix) == 0:
+        return []
     nonconst_matrix = np.hstack(nonconst_matrix)
     LOG.debug("Workload characterization ~ nonconst data size: %s", nonconst_matrix.shape)
 
@@ -358,10 +360,12 @@ def run_knob_identification(knob_data, metric_data, dbms):
     nonconst_knob_columnlabels = []
 
     for col, cl in zip(knob_matrix.T, knob_columnlabels):
-        if np.any(col != col[0]):
-            nonconst_knob_matrix.append(col.reshape(-1, 1))
-            nonconst_knob_columnlabels.append(cl)
-    assert len(nonconst_knob_matrix) > 0, "Need more data to train the model"
+        #if np.any(col != col[0]):
+        nonconst_knob_matrix.append(col.reshape(-1, 1))
+        nonconst_knob_columnlabels.append(cl)
+    #assert len(nonconst_knob_matrix) > 0, "Need more data to train the model"
+    if len(nonconst_knob_matrix) == 0:
+        return []
     nonconst_knob_matrix = np.hstack(nonconst_knob_matrix)
 
     nonconst_metric_matrix = []
@@ -371,6 +375,8 @@ def run_knob_identification(knob_data, metric_data, dbms):
         if np.any(col != col[0]):
             nonconst_metric_matrix.append(col.reshape(-1, 1))
             nonconst_metric_columnlabels.append(cl)
+    if len(nonconst_metric_matrix) == 0:
+        return []
     nonconst_metric_matrix = np.hstack(nonconst_metric_matrix)
 
     if ENABLE_DUMMY_ENCODER:
