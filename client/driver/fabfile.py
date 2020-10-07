@@ -829,8 +829,11 @@ def prepare_database():
 
 
 @task
-def run_loops(max_iter=10, skip_restore=False):
+def run_loops(max_iter=10, skip_restore=False, reset_config=False):
+    max_iter = int(max_iter)
     skip_restore = parse_bool(skip_restore)
+    reset_config = parse_bool(reset_config)
+
     try:
         # Update session knob ranges if KNOB_RANGES_FILE is set in driver_config.py
         update_session_knobs()
@@ -840,8 +843,9 @@ def run_loops(max_iter=10, skip_restore=False):
             dump = skip_restore
         # put the BASE_DB_CONF in the config file
         # e.g., mysql needs to set innodb_monitor_enable to track innodb metrics
-        reset_conf(False)
-        for i in range(int(max_iter)):
+        reset_conf(reset_config)
+
+        for i in range(max_iter):
             # restart database
             restart_succeeded = restart_database()
             if not restart_succeeded:
