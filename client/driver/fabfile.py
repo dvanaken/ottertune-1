@@ -890,7 +890,7 @@ def run_loops(max_iter=10, skip_restore=False, reset_config=False):
         else:
             LOG.error(tb)
             send_email(subject="{} DB ({}) Failed!".format(dconf.DB_TYPE, dconf.DB_HOST), body=tb)
-            time.sleep(10)
+        time.sleep(60)
 
 
 @task
