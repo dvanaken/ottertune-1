@@ -3,9 +3,11 @@
 #
 # Copyright (c) 2017-18, Carnegie Mellon University Database Group
 #
+import json
 import logging
 
 from .models import KnobCatalog, SessionKnob
+from .settings import PROJECT_ROOT
 from .types import DBMSType, KnobResourceType, VarType
 
 LOG = logging.getLogger(__name__)
@@ -70,67 +72,96 @@ SESSION_NUM = 50.0
 
 def set_default_knobs(session, cascade=True):
     dbtype = session.dbms.type
-    default_tunable_knobs = DEFAULT_TUNABLE_KNOBS.get(dbtype)
 
-    if not default_tunable_knobs:
-        default_tunable_knobs = set(KnobCatalog.objects.filter(
-            dbms=session.dbms, tunable=True).values_list('name', flat=True))
+    if dbtype == DBMSType.MYSQL and session.dbms.version == '8.0':
+        knob_path = os.path.join(PROJECT_ROOT, 'website/fixtures/mysql_knob_ranges_xxl.json')
+        with open(knob_path, 'r') as f:
+            default_tunable_knobs = json.load(f)
 
-    for knob in KnobCatalog.objects.filter(dbms=session.dbms):
-        tunable = knob.name in default_tunable_knobs
-        minval = knob.minval
-
-        # set session knob tunable in knob catalog
-        if tunable and cascade:
-            knob.tunable = True
-            knob.save()
-
-        if knob.vartype is VarType.ENUM:
-            enumvals = knob.enumvals.split(',')
-            minval = 0
-            maxval = len(enumvals) - 1
-        elif knob.vartype is VarType.BOOL:
-            minval = 0
-            maxval = 1
-        elif knob.vartype in (VarType.INTEGER, VarType.REAL):
-            vtype = int if knob.vartype == VarType.INTEGER else float
-
-            minval = vtype(minval) if minval is not None else MINVAL
-            knob_maxval = vtype(knob.maxval) if knob.maxval is not None else MAXVAL
-
-            if knob.resource == KnobResourceType.CPU:
-                maxval = session.hardware.cpu * CPU_PERCENT
-            elif knob.resource == KnobResourceType.MEMORY:
-                minval = session.hardware.memory * minval
-                maxval = session.hardware.memory * GB * MEMORY_PERCENT
-            elif knob.resource == KnobResourceType.STORAGE:
-                minval = session.hardware.storage * minval
-                maxval = session.hardware.storage * GB * STORAGE_PERCENT
+        for knob in KnobCatalog.objects.filter(dbms=session.dbms):
+            if knob.name in default_tunable_knobs:
+                entry = default_tunable_knobs[knob.name]
+                tunable = entry['tunable']
+                minval = entry['minval']
+                maxval = entry['maxval']
             else:
-                maxval = knob_maxval
+                tunable = False
+                minval = knob.minval
+                maxval = knob.maxval
 
-            # Special cases
-            if dbtype == DBMSType.POSTGRES:
-                if knob.name in ('global.work_mem', 'global.temp_buffers'):
-                    maxval /= SESSION_NUM
+            SessionKnob.objects.create(session=session,
+                                       knob=knob,
+                                       minval=minval,
+                                       maxval=maxval,
+                                       tunable=tunable)
 
-            if maxval > knob_maxval:
-                maxval = knob_maxval
+            # set session knob tunable in knob catalog
+            if tunable and cascade:
+                knob.tunable = True
+                knob.save()
 
-            if maxval < minval:
-                LOG.warning(("Invalid range for session knob '%s': maxval <= minval "
-                             "(minval: %s, maxval: %s). Setting maxval to the vendor setting: %s."),
-                            knob.name, minval, maxval, knob_maxval)
-                maxval = knob_maxval
+    else:
+        default_tunable_knobs = DEFAULT_TUNABLE_KNOBS.get(dbtype)
 
-            maxval = vtype(maxval)
+        if not default_tunable_knobs:
+            default_tunable_knobs = set(KnobCatalog.objects.filter(
+                dbms=session.dbms, tunable=True).values_list('name', flat=True))
 
-        else:
-            assert knob.resource == KnobResourceType.OTHER
-            maxval = knob.maxval
+        for knob in KnobCatalog.objects.filter(dbms=session.dbms):
+            tunable = knob.name in default_tunable_knobs
+            minval = knob.minval
 
-        SessionKnob.objects.create(session=session,
-                                   knob=knob,
-                                   minval=minval,
-                                   maxval=maxval,
-                                   tunable=tunable)
+            # set session knob tunable in knob catalog
+            if tunable and cascade:
+                knob.tunable = True
+                knob.save()
+
+            if knob.vartype is VarType.ENUM:
+                enumvals = knob.enumvals.split(',')
+                minval = 0
+                maxval = len(enumvals) - 1
+            elif knob.vartype is VarType.BOOL:
+                minval = 0
+                maxval = 1
+            elif knob.vartype in (VarType.INTEGER, VarType.REAL):
+                vtype = int if knob.vartype == VarType.INTEGER else float
+
+                minval = vtype(minval) if minval is not None else MINVAL
+                knob_maxval = vtype(knob.maxval) if knob.maxval is not None else MAXVAL
+
+                if knob.resource == KnobResourceType.CPU:
+                    maxval = session.hardware.cpu * CPU_PERCENT
+                elif knob.resource == KnobResourceType.MEMORY:
+                    minval = session.hardware.memory * minval
+                    maxval = session.hardware.memory * GB * MEMORY_PERCENT
+                elif knob.resource == KnobResourceType.STORAGE:
+                    minval = session.hardware.storage * minval
+                    maxval = session.hardware.storage * GB * STORAGE_PERCENT
+                else:
+                    maxval = knob_maxval
+
+                # Special cases
+                if dbtype == DBMSType.POSTGRES:
+                    if knob.name in ('global.work_mem', 'global.temp_buffers'):
+                        maxval /= SESSION_NUM
+
+                if maxval > knob_maxval:
+                    maxval = knob_maxval
+
+                if maxval < minval:
+                    LOG.warning(("Invalid range for session knob '%s': maxval <= minval "
+                                 "(minval: %s, maxval: %s). Setting maxval to the vendor setting: %s."),
+                                knob.name, minval, maxval, knob_maxval)
+                    maxval = knob_maxval
+
+                maxval = vtype(maxval)
+
+            else:
+                assert knob.resource == KnobResourceType.OTHER
+                maxval = knob.maxval
+
+            SessionKnob.objects.create(session=session,
+                                       knob=knob,
+                                       minval=minval,
+                                       maxval=maxval,
+                                       tunable=tunable)

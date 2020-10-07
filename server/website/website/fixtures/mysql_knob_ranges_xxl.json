@@ -1,0 +1,262 @@
+{
+    "global.innodb_adaptive_flushing": {
+        "minval": null,
+        "maxval": null,
+        "tunable": true
+    },
+    "global.innodb_adaptive_flushing_lwm": {
+        "minval": 0,
+        "maxval": 70,
+        "tunable": true
+    },
+    "global.innodb_adaptive_hash_index": {
+        "minval": null,
+        "maxval": null,
+        "tunable": true
+    },
+    "global.innodb_adaptive_max_sleep_delay": {
+        "minval": 0,
+        "maxval": 1000000,
+        "tunable": true
+    },
+    "global.innodb_autoextend_increment": {
+        "minval": 1,
+        "maxval": 1000,
+        "tunable": true
+    },
+    "global.innodb_buffer_pool_dump_at_shutdown": {
+        "minval": null,
+        "maxval": null,
+        "tunable": false
+    },
+    "global.innodb_buffer_pool_instances": {
+        "minval": 1,
+        "maxval": 64,
+        "tunable": true
+    },
+    "global.innodb_buffer_pool_load_at_startup": {
+        "minval": null,
+        "maxval": null,
+        "tunable": false
+    },
+    "global.innodb_buffer_pool_size": {
+        "minval": "125M",
+        "maxval": "24G",
+        "tunable": true
+    },
+    "global.innodb_change_buffer_max_size": {
+        "minval": 0,
+        "maxval": 50,
+        "tunable": true
+    },
+    "global.innodb_concurrency_tickets": {
+        "minval": 1,
+        "maxval": 100000,
+        "tunable": true
+    },
+    "global.innodb_disable_sort_file_cache": {
+        "minval": null,
+        "maxval": null,
+        "tunable": true
+    },
+    "global.innodb_file_per_table": {
+        "minval": null,
+        "maxval": null,
+        "tunable": false
+    },
+    "global.innodb_flush_method": {
+        "minval": null,
+        "maxval": null,
+        "tunable": true
+    },
+    "global.innodb_flush_log_at_timeout": {
+        "minval": 1,
+        "maxval": 2700,
+        "tunable": false
+    },
+    "global.innodb_flushing_avg_loops": {
+        "minval": 1,
+        "maxval": 1000,
+        "tunable": true
+    },
+    "global.innodb_io_capacity": {
+        "minval": 100,
+        "maxval": 1000,
+        "tunable": true
+    },
+    "global.innodb_lock_wait_timeout": {
+        "minval": 1,
+        "maxval": 1000,
+        "tunable": true
+    },
+    "global.innodb_log_buffer_size": {
+        "minval": "1M",
+        "maxval": "4G",
+        "tunable": true
+    },
+    "global.innodb_log_file_size": {
+        "minval": "40M",
+        "maxval": "15G",
+        "tunable": true
+    },
+    "global.innodb_log_files_in_group": {
+        "minval": 2,
+        "maxval": 16,
+        "tunable": false
+    },
+    "global.innodb_lru_scan_depth": {
+        "minval": 100,
+        "maxval": 2048,
+        "tunable": true
+    },
+    "global.innodb_max_dirty_pages_pct": {
+        "minval": 0,
+        "maxval": 99.99,
+        "tunable": true
+    },
+    "global.innodb_max_dirty_pages_pct_lwm": {
+        "minval": 0,
+        "maxval": 99.99,
+        "tunable": true
+    },
+    "global.innodb_max_purge_lag": {
+        "minval": 0,
+        "maxval": 100000,
+        "tunable": true
+    },
+    "global.innodb_old_blocks_pct": {
+        "minval": 5,
+        "maxval": 95,
+        "tunable": true
+    },
+    "global.innodb_old_blocks_time": {
+        "minval": 0,
+        "maxval": 1000,
+        "tunable": true
+    },
+    "global.innodb_purge_batch_size": {
+        "minval": 1,
+        "maxval": 5000,
+        "tunable": true
+    },
+    "global.innodb_purge_threads": {
+        "minval": 1,
+        "maxval": 16,
+        "tunable": true
+    },
+    "global.innodb_read_ahead": {
+        "minval": null,
+        "maxval": null,
+        "tunable": true
+    },
+    "global.innodb_read_ahead_threshold": {
+        "minval": 0,
+        "maxval": 64,
+        "tunable": true
+    },
+    "global.innodb_read_io_threads": {
+        "minval": 1,
+        "maxval": 16,
+        "tunable": true
+    },
+    "global.innodb_rollback_segments": {
+        "minval": 1,
+        "maxval": 128,
+        "tunable": false
+    },
+    "global.innodb_spin_wait_delay": {
+        "minval": 0,
+        "maxval": 1000,
+        "tunable": true
+    },
+    "global.innodb_sync_array_size": {
+        "minval": 1,
+        "maxval": 1024,
+        "tunable": true
+    },
+    "global.innodb_sync_spin_loops": {
+        "minval": 0,
+        "maxval": 1000,
+        "tunable": true
+    },
+    "global.innodb_thread_concurrency": {
+        "minval": 0,
+        "maxval": 100,
+        "tunable": true
+    },
+    "global.innodb_thread_sleep_delay": {
+        "minval": 0,
+        "maxval": 1000000,
+        "tunable": true
+    },
+    "global.innodb_write_io_threads": {
+        "minval": 1,
+        "maxval": 16,
+        "tunable": true
+    },
+    "global.join_buffer_size": {
+        "minval": "1k",
+        "maxval": "2G",
+        "tunable": true
+    },
+    "global.lock_wait_timeout": {
+        "minval": 1,
+        "maxval": 31536000,
+        "tunable": true
+    },
+    "global.max_write_lock_count": {
+        "minval": 1,
+        "maxval": 8589934590,
+        "tunable": true
+    },
+    "global.query_alloc_block_size": {
+        "minval": "1k",
+        "maxval": "1M",
+        "tunable": true
+    },
+    "global.query_prealloc_size": {
+        "minval": "8k",
+        "maxval": "1M",
+        "tunable": true
+    },
+    "global.read_rnd_buffer_size": {
+        "minval": 1,
+        "maxval": 500000,
+        "tunable": true
+    },
+    "global.table_open_cache": {
+        "minval": 1,
+        "maxval": 524288,
+        "tunable": false
+    },
+    "global.table_open_cache_instances": {
+        "minval": 1,
+        "maxval": 64,
+        "tunable": true
+    },
+    "global.transaction_prealloc_size": {
+        "minval": 1024,
+        "maxval": 131072,
+        "tunable": false
+    },
+    "global.skip_name_resolve": {
+        "minval": null,
+        "maxval": null,
+        "tunable": true
+    },
+    "global.sort_buffer_size": {
+        "minval": "32k",
+        "maxval": "1M",
+        "tunable": true
+    },
+    "global.tmp_table_size": {
+        "minval": "1k",
+        "maxval": "1G",
+        "tunable": true
+    },
+    "global.thread_cache_size": {
+        "minval": 0,
+        "maxval": 16384,
+        "tunable": true
+    }
+}
