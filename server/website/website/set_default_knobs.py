@@ -5,6 +5,7 @@
 #
 import json
 import logging
+import os
 
 from .models import KnobCatalog, SessionKnob
 from .settings import PROJECT_ROOT

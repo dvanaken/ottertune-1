@@ -8,7 +8,9 @@ COPY ./docker/credentials.py ./website/settings
 COPY ./docker/start.sh ./docker/start-test.sh ./docker/wait-for-it.sh ./
 
 RUN /install.sh web \
-    && chmod +x ./*.sh
+    && chmod +x ./*.sh \
+    && echo "alias python=python3" >> /root/.bash_aliases \
+    && echo "alias pip=pip3" >> /root/.bash_aliases
 
 ENV DJANGO_SETTINGS_MODULE=website.settings
 ENV C_FORCE_ROOT=true

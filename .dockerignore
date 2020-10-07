@@ -18,6 +18,7 @@ server/website/session_knobs.json
 server/website/dump_website.json
 server/website/script
 server/website/website/settings/*credentials.py
+server/website/*.json.gz
 **/.git*
 **/*.swp
 **/*.swo
