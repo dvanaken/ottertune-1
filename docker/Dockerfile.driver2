@@ -1,6 +1,6 @@
 FROM dvanaken/ottertune:base
 
-ENV TZ=America/New_York
+ENV TZ=America/Los_Angeles
 
 COPY ./client /app
 COPY ./docker/driver2/driver2_config.py /app/driver/driver_config.py
@@ -9,7 +9,7 @@ COPY ./docker/driver2/driver2_init.sh /init.sh
 RUN rm -rf /app/controller \
     && apt-get update \
     && apt-get install -y --no-install-recommends openssh-server gcc g++ git vim sendmail \
-        openjdk-11-jdk ant python3-dev mysql-client libmysqlclient-dev python-mysqldb \
+        openjdk-11-jdk ant python3-dev mysql-client libmysqlclient-dev python-mysqldb tzdata \
     && pip3 install mysqlclient==1.3.12 \
     && apt-get purge -y --autoremove gcc g++ \
     && rm -rf /var/lib/apt/lists/* \
