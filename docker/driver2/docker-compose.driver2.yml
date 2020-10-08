@@ -17,6 +17,7 @@ services:
           DB_DUMP_DIR: "${HOME}/proposed_work"
           RELOAD_INTERVAL: -1
           RESTART_SLEEP_SEC: 50
+          CONTAINER_RESTART_SEC: 1200
           OLTPBENCH_CONFIG: "/app/driver/oltpbench_configs/config.xml"
           OLTPBENCH_BENCH: 'ycsb'
           ADMIN_EMAIL: 'user@gmail.com'
@@ -28,7 +29,7 @@ services:
         volumes:
          - ${HOME}/.ssh/id_rsa:/root/.ssh/id_rsa:ro
          - ${HOME}/.vimrc:/root/.vimrc:ro
-         - ${PWD}/driver2_config.py:/app/driver/driver_config.py:ro
+         - ${PWD}/driver_config.py:/app/driver/driver_config.py:ro
          - ${PWD}/knob_ranges:/app/driver/knob_ranges:ro
          - ${PWD}/results:/app/driver/results
          - ${PWD}/log:/app/driver/log
