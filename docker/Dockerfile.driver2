@@ -3,7 +3,6 @@ FROM dvanaken/ottertune:base
 ENV TZ=America/Los_Angeles
 
 COPY ./client /app
-COPY ./docker/driver2/driver2_config.py /app/driver/driver_config.py
 COPY ./docker/driver2/driver2_init.sh /init.sh
 
 RUN rm -rf /app/controller \
@@ -11,17 +10,12 @@ RUN rm -rf /app/controller \
     && apt-get install -y --no-install-recommends openssh-server gcc g++ git vim sendmail \
         openjdk-11-jdk ant python3-dev mysql-client libmysqlclient-dev python-mysqldb tzdata \
     && pip3 install mysqlclient==1.3.12 \
-    && apt-get purge -y --autoremove gcc g++ \
-    && rm -rf /var/lib/apt/lists/* \
     && git clone https://github.com/oltpbenchmark/oltpbench.git /app/oltpbench \
-    && cp /app/oltpbench/src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java \
-        /app/oltpbench/src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java.orig \
-    && sed -e 's/\(=.*$\)/\L\1/' /app/oltpbench/src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java \
-        > /app/oltpbench/src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java.lower \
+    && apt-get purge -y --autoremove gcc g++ git \
+    && rm -rf /var/lib/apt/lists/* \
     && cd /app/oltpbench \
     && ant bootstrap \
     && ant resolve \
-    && ant build \
     && chmod +x /init.sh
 
 WORKDIR /app/driver

@@ -45,7 +45,6 @@ env.password = dconf.LOGIN_PASSWORD
 for _d in (dconf.RESULT_DIR, dconf.LOG_DIR, dconf.TEMP_DIR, dconf.CONTROLLER_DIR):
     os.makedirs(_d, exist_ok=True)
 
-
 # Configure logging
 LOG = logging.getLogger(__name__)
 LOG.setLevel(getattr(logging, dconf.LOG_LEVEL, logging.DEBUG))
@@ -60,7 +59,13 @@ FileHandler = RotatingFileHandler(  # pylint: disable=invalid-name
 FileHandler.setFormatter(Formatter)
 LOG.addHandler(FileHandler)
 
+TLOG = logging.getLogger('times')
+TLOG.setLevel(logging.INFO)
+TFileHandler = FileHandler(dconf.TIMES_LOG)
+TFileHandler.setFormatter(Formatter)
+TLOG.addHandler(TFileHandler)
 
+# Initialize sendmail
 if os.path.exists('/init.sh'):
     local('/init.sh')
 
@@ -84,8 +89,17 @@ def check_memory_usage():
     run('free -m -h')
 
 
+def log_time(name, start_time, fmt="{: <24} {: >6} sec"):
+    elapsed = int(time.time() - start_time)
+    TLOG.info(fmt.format(name, elapsed))
+    return elapsed
+
+
 @task
 def restart_database():
+    restarted = False
+    start_time = time.time()
+
     if dconf.DB_TYPE in ('postgres', 'mysql') and dconf.HOST_CONN in ('docker', 'remote_docker'):
         restart_cmd = 'docker restart -t {} {}'.format(dconf.CONTAINER_RESTART_SEC, dconf.CONTAINER_NAME)
         check_cmd = 'docker ps -a --filter "name={}" --format "{{{{.Status}}}}"'.format(dconf.CONTAINER_NAME)
@@ -99,16 +113,16 @@ def restart_database():
 
         if res.stdout.startswith('Up'):
             is_ready_db()
-            return True
-        else:
-            return False
+            restarted = True
 
     elif dconf.DB_TYPE == 'postgres':
         sudo('pg_ctl -D {} -w -t 600 restart -m fast'.format(
             dconf.PG_DATADIR), user=dconf.ADMIN_USER, capture=False)
+        restarted = True
 
     elif dconf.DB_TYPE == 'mysql':
         sudo('service mysql restart')
+        restarted = True
 
     elif dconf.DB_TYPE == 'oracle':
         db_log_path = os.path.join(os.path.split(dconf.DB_CONF)[0], 'startup.log')
@@ -120,14 +134,17 @@ def restart_database():
             lines = fin.readlines()
             for line in lines:
                 if line.startswith('ORACLE instance started.'):
-                    return True
+                    restarted = True
+                    break
                 if not line.startswith('SQL>'):
                     fout.write(line)
             fout.write('\n')
-        return False
     else:
         raise Exception("Database Type {} Not Implemented !".format(dconf.DB_TYPE))
-    return True
+
+    elapsed = log_time('restart_database', start_time)
+    LOG.info("DB restarted: %s (%s seconds)", restarted, elapsed)
+    return restarted
 
 
 @task
@@ -556,6 +573,7 @@ def clean_recovery():
 
 @task
 def restore_database():
+    start_time = time.time()
     dumpfile = os.path.join(dconf.DB_DUMP_DIR, dconf.DB_NAME + '.dump')
     if dconf.DB_TYPE == 'mysql':
         dumpfile += '.gz'
@@ -598,7 +616,8 @@ def restore_database():
         run('mv {0}.restore.bak {0}'.format(dconf.DB_CONF), remote_only=dconf.DB_CONF_MOUNT)
         restart_database()
 
-    LOG.info('Finish restoring database')
+    elapsed = log_time('restore_database', start_time)
+    LOG.info('Finish restoring database (%s seconds)', elapsed)
 
 
 @task
@@ -706,12 +725,12 @@ def set_oltpbench_config():
     with open(dconf.OLTPBENCH_CONFIG, 'w') as f:
         f.write(text)
 
-    if dconf.OLTPBENCH_BENCH == 'chbenchmark':
-        with lcd(dconf.OLTPBENCH_HOME):
-            local('cp {} {}'.format(
-                'src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java.lower',
-                'src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java'))
-            local('ant clean && ant build')
+    with lcd(dconf.OLTPBENCH_HOME):
+        if dconf.OLTPBENCH_BENCH == 'chbenchmark':
+            local("sed -i -e 's/\(=.*$\)/\L\1/' src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java")
+            local('ant clean')
+        local('ant build')
+
     LOG.info('oltpbench config is set: %s', dconf.OLTPBENCH_CONFIG)
 
 
@@ -854,6 +873,8 @@ def run_loops(max_iter=10, skip_restore=False, reset_config=False):
         reset_conf(reset_config)
 
         for i in range(max_iter):
+            start_time = time.time()
+
             # restart database
             restart_succeeded = restart_database()
             if not restart_succeeded:
@@ -876,19 +897,14 @@ def run_loops(max_iter=10, skip_restore=False, reset_config=False):
                 if i % dconf.RELOAD_INTERVAL == 0:
                     if i == 0 and dump is False:
                         restore_database()
-                        if dconf.DB_TYPE == 'mysql':
-                            run_oltpbench()
-                            assert restart_database()
                     elif i > 0:
                         restore_database()
-                        if dconf.DB_TYPE == 'mysql':
-                            run_oltpbench()
-                            assert restart_database()
 
             prepare_database()
             LOG.info('The %s-th Loop Starts / Total Loops %s', i + 1, max_iter)
             loop(i % dconf.RELOAD_INTERVAL if dconf.RELOAD_INTERVAL > 0 else i)
-            LOG.info('The %s-th Loop Ends / Total Loops %s', i + 1, max_iter)
+            elapsed = log_time('Loop {}/{}'.format(i + 1, max_iter), start_time)
+            LOG.info('The %s-th Loop Ends / Total Loops %s (%s seconds)', i + 1, max_iter, elapsed)
     finally:
         tb = traceback.format_exc()
         if tb.startswith('NoneType'):
