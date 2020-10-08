@@ -18,12 +18,12 @@ services:
           RELOAD_INTERVAL: -1
           RESTART_SLEEP_SEC: 50
           CONTAINER_RESTART_SEC: 1200
-          OLTPBENCH_CONFIG: "/app/driver/oltpbench_configs/config.xml"
+          OLTPBENCH_CONFIG: "/app/driver/oltpbench_configs/mysql_workload.xml"
           OLTPBENCH_BENCH: 'ycsb'
           ADMIN_EMAIL: 'user@gmail.com'
           WEBSITE_URL: 'http://127.0.0.1:8008'
-          UPLOAD_CODE: '123'
-          WORKLOAD_NAME: 'ycsb_updateonly'
+          UPLOAD_CODE: 'abc123'
+          WORKLOAD_NAME: 'updateonly'
           KNOB_RANGES_FILE: '/app/driver/knob_ranges/mysql_knob_ranges_xxl.json'
           KNOB_CONFIGS: ''
         volumes:

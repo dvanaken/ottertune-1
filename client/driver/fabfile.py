@@ -61,7 +61,7 @@ LOG.addHandler(FileHandler)
 
 TLOG = logging.getLogger('times')
 TLOG.setLevel(logging.INFO)
-TFileHandler = FileHandler(dconf.TIMES_LOG)
+TFileHandler = logging.FileHandler(dconf.TIMES_LOG)
 TFileHandler.setFormatter(Formatter)
 TLOG.addHandler(TFileHandler)
 
@@ -727,7 +727,7 @@ def set_oltpbench_config():
 
     with lcd(dconf.OLTPBENCH_HOME):
         if dconf.OLTPBENCH_BENCH == 'chbenchmark':
-            local("sed -i -e 's/\(=.*$\)/\L\1/' src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java")
+            local("sed -i -e 's/\(=.*$\)/\L\\1/' src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java")
             local('ant clean')
         local('ant build')
 
