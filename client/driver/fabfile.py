@@ -87,7 +87,7 @@ def check_memory_usage():
 @task
 def restart_database():
     if dconf.DB_TYPE in ('postgres', 'mysql') and dconf.HOST_CONN in ('docker', 'remote_docker'):
-        restart_cmd = 'docker restart -t 600 {}'.format(dconf.CONTAINER_NAME)
+        restart_cmd = 'docker restart -t {} {}'.format(dconf.CONTAINER_RESTART_SEC, dconf.CONTAINER_NAME)
         check_cmd = 'docker ps -a --filter "name={}" --format "{{{{.Status}}}}"'.format(dconf.CONTAINER_NAME)
 
         if dconf.HOST_CONN == 'docker':
@@ -279,8 +279,9 @@ def run_oltpbench(outfile='outputfile'):
         msg += 'please double check the option in driver_config.py'
         raise Exception(msg)
     set_oltpbench_config()
+    bench = 'chbenchmark,tpcc' if dconf.OLTPBENCH_BENCH == 'chbenchmark' else dconf.OLTPBENCH_BENCH
     cmd = "./oltpbenchmark -b {} -c {} --execute=true --output-raw=false -s 5 -o {}".\
-          format(dconf.OLTPBENCH_BENCH, dconf.OLTPBENCH_CONFIG, outfile)
+          format(bench, dconf.OLTPBENCH_CONFIG, outfile)
     with lcd(dconf.OLTPBENCH_HOME):  # pylint: disable=not-context-manager
         local(cmd)
 
@@ -704,6 +705,13 @@ def set_oltpbench_config():
     text = ''.join(lines)
     with open(dconf.OLTPBENCH_CONFIG, 'w') as f:
         f.write(text)
+
+    if dconf.OLTPBENCH_BENCH == 'chbenchmark':
+        with lcd(dconf.OLTPBENCH_HOME):
+            local('cp {} {}'.format(
+                'src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java.lower',
+                'src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java'))
+            local('ant clean && ant build')
     LOG.info('oltpbench config is set: %s', dconf.OLTPBENCH_CONFIG)
 
 

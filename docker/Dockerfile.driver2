@@ -14,6 +14,10 @@ RUN rm -rf /app/controller \
     && apt-get purge -y --autoremove gcc g++ \
     && rm -rf /var/lib/apt/lists/* \
     && git clone https://github.com/oltpbenchmark/oltpbench.git /app/oltpbench \
+    && cp /app/oltpbench/src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java \
+        /app/oltpbench/src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java.orig \
+    && sed -e 's/\(=.*$\)/\L\1/' /app/oltpbench/src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java \
+        > /app/oltpbench/src/com/oltpbenchmark/benchmarks/tpcc/TPCCConstants.java.lower \
     && cd /app/oltpbench \
     && ant bootstrap \
     && ant resolve \

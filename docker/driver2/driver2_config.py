@@ -177,6 +177,9 @@ WARMUP_ITERATIONS = 0
 # Let the database initialize for this many seconds after it restarts
 RESTART_SLEEP_SEC = int(os.environ.get('RESTART_SLEEP_SEC', 50))
 
+# Seconds to wait for stop before killing the container
+CONTAINER_RESTART_SEC = int(os.environ.get('CONTAINER_RESTART_SEC', 60))
+
 #==========================================================
 #  OLTPBENCHMARK OPTIONS
 #==========================================================
