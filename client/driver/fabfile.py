@@ -89,7 +89,7 @@ def check_memory_usage():
     run('free -m -h')
 
 
-def log_time(name, start_time, fmt="{: <24} {: >6} sec"):
+def log_time(name, start_time, fmt="{: <30} {: >6} sec"):
     elapsed = int(time.time() - start_time)
     TLOG.info(fmt.format(name, elapsed))
     return elapsed
@@ -104,6 +104,7 @@ def restart_database():
         restart_cmd = 'docker restart -t {} {}'.format(dconf.CONTAINER_RESTART_SEC, dconf.CONTAINER_NAME)
         check_cmd = 'docker ps -a --filter "name={}" --format "{{{{.Status}}}}"'.format(dconf.CONTAINER_NAME)
 
+        docker_start_time = time.time()
         if dconf.HOST_CONN == 'docker':
             local(restart_cmd)
             res = local(check_cmd, capture=True)
@@ -111,9 +112,15 @@ def restart_database():
             run(restart_cmd, remote_only=True)
             res = run(check_cmd, remote_only=True)
 
+        elapsed = log_time('restart_database.docker', docker_start_time)
+        LOG.info("Docker restart time: %s", elapsed)
+
+        docker_start_time = time.time()
         if res.stdout.startswith('Up'):
             is_ready_db()
             restarted = True
+
+        log_time('restart_database.is_ready_db', docker_start_time)
 
     elif dconf.DB_TYPE == 'postgres':
         sudo('pg_ctl -D {} -w -t 600 restart -m fast'.format(
@@ -318,14 +325,15 @@ def run_oltpbench_bg():
 
 
 @task
-def save_dbms_result(t=None):
+def save_dbms_result(t=None, result_dir=None):
     t = t or int(time.time())
+    result_dir = result_dir or dconf.RESULT_DIR
     files = ['knobs.json', 'metrics_after.json', 'metrics_before.json', 'summary.json']
     if dconf.ENABLE_UDM:
         files.append('user_defined_metrics.json')
     for f_ in files:
         srcfile = os.path.join(dconf.CONTROLLER_DIR, f_)
-        dstfile = os.path.join(dconf.RESULT_DIR, '{}__{}'.format(t, f_))
+        dstfile = os.path.join(result_dir, '{}__{}'.format(t, f_))
         local('cp {} {}'.format(srcfile, dstfile))
     return t
 
@@ -735,6 +743,68 @@ def set_oltpbench_config():
 
 
 @task
+def warmup():
+    # free cache
+    free_cache()
+
+    # remove oltpbench log and controller log
+    clean_logs()
+
+    if dconf.ENABLE_UDM is True:
+        clean_oltpbench_results()
+
+    # check disk usage
+    if check_disk_usage() > dconf.MAX_DISK_USAGE:
+        LOG.warning('Exceeds max disk usage %s', dconf.MAX_DISK_USAGE)
+
+    collector = MySQLCollector(
+        passwd=dconf.DB_PASSWORD,
+        host=dconf.DB_HOST,
+        user=dconf.DB_USER,
+        port=dconf.DB_PORT,
+        db=dconf.DB_NAME,
+        result_dir=dconf.CONTROLLER_DIR)
+
+    # Collect knobs/metrics before observing workload
+    LOG.info('Start the first collection')
+    collector.collect_knobs()
+    collector.collect_metrics(filename='metrics_before.json')
+    collector.close()
+
+    LOG.info('Run OLTP-Bench')
+    start_time = time.time()
+    run_oltpbench()
+    end_time = time.time()
+
+    LOG.info('Start the final collection')
+    collector.collect_metrics(filename='metrics_after.json')
+    summary = OrderedDict([
+        ('start_time', int(start_time * 1000)),
+        ('end_time', int(end_time * 1000)),
+        ('observation_time', int(end_time - start_time)),
+        ('database_type', dconf.DB_TYPE),
+        ('database_version', collector.version),
+        ('workload_name', dconf.WORKLOAD_NAME),
+    ])
+
+    with open(os.path.join(dconf.CONTROLLER_DIR, 'summary.json'), 'w') as f:
+        json.dump(summary, f, indent=4)
+
+    collector.close()
+    del collector
+
+    # add user defined metrics
+    if dconf.ENABLE_UDM is True:
+        add_udm()
+
+    # save result
+    result_timestamp = int(end_time)
+    result_dir = os.path.join(dconf.RESULT_DIR, 'warmup')
+    os.makedirs(result_dir, exist_ok=True)
+    save_dbms_result(t=result_timestamp, result_dir=result_dir)
+
+
+@task
 def loop(i):
     i = int(i)
 
@@ -795,18 +865,17 @@ def loop(i):
     result_timestamp = int(end_time)
     save_dbms_result(t=result_timestamp)
 
-    if i >= dconf.WARMUP_ITERATIONS:
-        # upload result
-        upload_result()
+    # upload result
+    upload_result()
 
-        # get result
-        response = get_result()
+    # get result
+    response = get_result()
 
-        # save next config
-        save_next_config(response, t=result_timestamp)
+    # save next config
+    save_next_config(response, t=result_timestamp)
 
-        # change config
-        change_conf(response['recommendation'])
+    # change config
+    change_conf(response['recommendation'])
 
 
 @task
@@ -895,10 +964,10 @@ def run_loops(max_iter=10, skip_restore=False, reset_config=False):
             # reload database periodically
             if dconf.RELOAD_INTERVAL > 0:
                 if i % dconf.RELOAD_INTERVAL == 0:
-                    if i == 0 and dump is False:
+                    if i > 0 or (i == 0 and dump is False):
                         restore_database()
-                    elif i > 0:
-                        restore_database()
+                        for j in range(dconf.WARMUP_ITERATIONS):
+                            warmup()
 
             prepare_database()
             LOG.info('The %s-th Loop Starts / Total Loops %s', i + 1, max_iter)
