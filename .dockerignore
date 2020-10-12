@@ -28,3 +28,4 @@ server/website/*.json.gz
 **/*.bak
 **/.DS_Store
 **/__pycache__
+**/old*
