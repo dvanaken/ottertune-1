@@ -359,7 +359,8 @@ def free_cache():
 
 
 @task
-def upload_result(result_dir=None, prefix=None, upload_code=None, skip_recommend=False):
+def upload_result(result_dir=None, prefix=None, upload_code=None, skip_recommend=False,
+                  override_workload=None):
     result_dir = result_dir or dconf.CONTROLLER_DIR
     prefix = prefix or ''
     upload_code = upload_code or dconf.UPLOAD_CODE
@@ -373,13 +374,21 @@ def upload_result(result_dir=None, prefix=None, upload_code=None, skip_recommend
 
         # Replaces the true db version with the specified version to allow for
         # testing versions not officially supported by OtterTune
-        if base == 'summary' and dconf.OVERRIDE_DB_VERSION:
+        if base == 'summary' and (dconf.OVERRIDE_DB_VERSION or override_workload):
             with open(fpath, 'r') as f:
                 summary = json.load(f)
-            summary['real_database_version'] = summary['database_version']
-            summary['database_version'] = dconf.OVERRIDE_DB_VERSION
-            with open(fpath, 'w') as f:
-                json.dump(summary, f, indent=1)
+            summary_updated = False
+            if dconf.OVERRIDE_DB_VERSION and dconf.OVERRIDE_DB_VERSION != summary['database_version']:
+                summary['real_database_version'] = summary['database_version']
+                summary['database_version'] = dconf.OVERRIDE_DB_VERSION
+                summary_updated = True
+            if override_workload and override_workload != summary['workload_name']:
+                summary['real_workload_name'] = summary['workload_name']
+                summary['workload_name'] = override_workload
+                summary_updated = True
+            if summary_updated:
+                with open(fpath, 'w') as f:
+                    json.dump(summary, f, indent=1)
 
         files[base] = open(fpath, 'rb')
 
@@ -492,7 +501,8 @@ def add_udm(result_dir=None):
 
 
 @task
-def upload_batch(result_dir=None, sort=True, upload_code=None, skip_recommend=False):
+def upload_batch(result_dir=None, sort=True, upload_code=None, skip_recommend=False,
+                 override_workload=None):
     result_dir = result_dir or dconf.RESULT_DIR
     sort = parse_bool(sort)
     results = glob.glob(os.path.join(result_dir, '*__summary.json'))
@@ -505,7 +515,8 @@ def upload_batch(result_dir=None, sort=True, upload_code=None, skip_recommend=Fa
         prefix = os.path.basename(result)
         prefix_len = os.path.basename(result).find('_') + 2
         prefix = prefix[:prefix_len]
-        upload_result(result_dir=result_dir, prefix=prefix, upload_code=upload_code, skip_recommend=skip_recommend)
+        upload_result(result_dir=result_dir, prefix=prefix, upload_code=upload_code,
+                      skip_recommend=skip_recommend, override_workload=override_workload)
         LOG.info('Uploaded result %d/%d: %s__*.json', i + 1, count, prefix)
 
 @task
