@@ -8,6 +8,9 @@ from driver_config import OLTPBENCH_HOME  # pylint: disable=import-error,wrong-i
 
 parser = argparse.ArgumentParser()  # pylint: disable=invalid-name
 parser.add_argument("result_dir")
+parser.add_argument("--outputfile",
+                    required=False,
+                    default='outputfile')
 args = parser.parse_args()  # pylint: disable=invalid-name
 
 INTEGER = 2
@@ -32,7 +35,7 @@ USER_DEFINED_METRICS = {
 
 
 def get_udm():
-    summary_path = OLTPBENCH_HOME + '/results/outputfile.summary'
+    summary_path = os.path.join(OLTPBENCH_HOME, 'results', args.outputfile + '.summary')
     with open(summary_path, 'r') as f:
         info = json.load(f)
     metrics = copy.deepcopy(USER_DEFINED_METRICS)

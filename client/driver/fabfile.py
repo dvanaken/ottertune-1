@@ -502,10 +502,13 @@ def download_debug_info(pprint=False):
 
 
 @task
-def add_udm(result_dir=None):
+def add_udm(result_dir=None, outputfile=None):
     result_dir = result_dir or dconf.CONTROLLER_DIR
     with lcd(dconf.UDM_DIR):  # pylint: disable=not-context-manager
-        local('python3 user_defined_metrics.py {}'.format(result_dir))
+        cmd = 'python3 user_defined_metrics.py {}'.format(result_dir)
+        if outputfile:
+            cmd += ' --outputfile {}'.format(outputfile)
+        local(cmd)
 
 
 @task
@@ -1041,12 +1044,66 @@ def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
 
         for i in range(iters_per_config):
             LOG.info("{}: run {}/{}".format(config_name, i + 1, iters_per_config))
+
+            # free cache
             free_cache()
+
+            # remove oltpbench log and controller log
+            clean_logs()
+
+            # check disk usage
+            if check_disk_usage() > dconf.MAX_DISK_USAGE:
+                LOG.warning('Exceeds max disk usage %s', dconf.MAX_DISK_USAGE)
 
             assert restart_database()
             prepare_database()
 
-            run_oltpbench(outfile='{}-{}'.format(dconf.WORKLOAD_NAME, config_name))
+            collector = MySQLCollector(
+                passwd=dconf.DB_PASSWORD,
+                host=dconf.DB_HOST,
+                user=dconf.DB_USER,
+                port=dconf.DB_PORT,
+                db=dconf.DB_NAME,
+                result_dir=dconf.CONTROLLER_DIR)
+
+            # Collect knobs/metrics before observing workload
+            LOG.info('Start the first collection')
+            collector.collect_knobs()
+            collector.collect_metrics(filename='metrics_before.json')
+            collector.close()
+
+            LOG.info('Run OLTP-Bench')
+            outfile = '{}-{}-{:02d}'.format(dconf.WORKLOAD_NAME, config_name, i)
+            start_time = time.time()
+            run_oltpbench(outfile=outfile)
+            end_time = time.time()
+
+            LOG.info('Start the final collection')
+            collector.collect_metrics(filename='metrics_after.json')
+            summary = OrderedDict([
+                ('start_time', int(start_time * 1000)),
+                ('end_time', int(end_time * 1000)),
+                ('observation_time', int(end_time - start_time)),
+                ('database_type', dconf.DB_TYPE),
+                ('database_version', collector.version),
+                ('workload_name', dconf.WORKLOAD_NAME),
+                ('oltpbench_result_name', outfile),
+            ])
+
+            with open(os.path.join(dconf.CONTROLLER_DIR, 'summary.json'), 'w') as f:
+                json.dump(summary, f, indent=4)
+
+            collector.close()
+            del collector
+
+            # add user defined metrics
+            if dconf.ENABLE_UDM is True:
+                add_udm(outputfile=outfile)
+
+            # save result
+            #result_timestamp = int(end_time)
+            #save_dbms_result(t=result_timestamp)
+            save_dbms_result(t=outfile)
 
     LOG.info("Done running all knob configurations!")
 
