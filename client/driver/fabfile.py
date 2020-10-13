@@ -1036,6 +1036,8 @@ def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
         if dconf.DB_TYPE == 'mysql':
             run_oltpbench(outfile='warmup')
 
+    total_iters = 0
+
     for config_name in dconf.KNOB_CONFIGS:
         # Install next config
         config_path = os.path.join(dconf.KNOB_CONFIGDIR, config_name + '.cnf')
@@ -1104,6 +1106,14 @@ def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
             #result_timestamp = int(end_time)
             #save_dbms_result(t=result_timestamp)
             save_dbms_result(t=outfile)
+
+            # reload database periodically
+            if dconf.RELOAD_INTERVAL > 0 and total_iters > 0 and total_iters % dconf.RELOAD_INTERVAL == 0:
+                restore_database()
+                for j in range(dconf.WARMUP_ITERATIONS):
+                    warmup()
+
+            total_iters += 1
 
     LOG.info("Done running all knob configurations!")
 
