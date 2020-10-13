@@ -359,10 +359,11 @@ def free_cache():
 
 
 @task
-def upload_result(result_dir=None, prefix=None, upload_code=None):
+def upload_result(result_dir=None, prefix=None, upload_code=None, skip_recommend=False):
     result_dir = result_dir or dconf.CONTROLLER_DIR
     prefix = prefix or ''
     upload_code = upload_code or dconf.UPLOAD_CODE
+    skip_recommend = parse_bool(skip_recommend)
     files = {}
     bases = ['summary', 'knobs', 'metrics_before', 'metrics_after']
     if dconf.ENABLE_UDM:
@@ -383,7 +384,7 @@ def upload_result(result_dir=None, prefix=None, upload_code=None):
         files[base] = open(fpath, 'rb')
 
     response = requests.post(dconf.WEBSITE_URL + '/new_result/', files=files,
-                             data={'upload_code': upload_code})
+                             data={'upload_code': upload_code, 'skip_recommend': skip_recommend})
     if response.status_code != 200:
         raise Exception('Error uploading result.\nStatus: {}\nMessage: {}\n'.format(
             response.status_code, get_content(response)))
@@ -491,7 +492,7 @@ def add_udm(result_dir=None):
 
 
 @task
-def upload_batch(result_dir=None, sort=True, upload_code=None):
+def upload_batch(result_dir=None, sort=True, upload_code=None, skip_recommend=False):
     result_dir = result_dir or dconf.RESULT_DIR
     sort = parse_bool(sort)
     results = glob.glob(os.path.join(result_dir, '*__summary.json'))
@@ -504,7 +505,7 @@ def upload_batch(result_dir=None, sort=True, upload_code=None):
         prefix = os.path.basename(result)
         prefix_len = os.path.basename(result).find('_') + 2
         prefix = prefix[:prefix_len]
-        upload_result(result_dir=result_dir, prefix=prefix, upload_code=upload_code)
+        upload_result(result_dir=result_dir, prefix=prefix, upload_code=upload_code, skip_recommend=skip_recommend)
         LOG.info('Uploaded result %d/%d: %s__*.json', i + 1, count, prefix)
 
 @task
@@ -1415,3 +1416,16 @@ def send_email(subject='', body=''):
         local('cat {} | sendmail -t {}'.format(mailfile, dconf.ADMIN_EMAIL))
     else:
         LOG.warning("ADMIN_EMAIL not set.")
+
+
+@task
+def update_session_hyperparams(upload_code=None, **kwargs):
+    upload_code = upload_code or dconf.UPLOAD_CODE
+    base = 'cd ~/git/ottertune-experimental/server/website && python3 manage.py hyperparams {}'.format(upload_code)
+    cmd = base
+    for k, v in kwargs.items():
+        cmd += ' --{} {}'.format(k.lower().replace('_','-'), v)
+    host_string = '{}@{}'.format(dconf.LOGIN_NAME, dconf.WEBSITE_URL.split('//', 1)[-1].rsplit(':', 1)[0])
+    with settings(host_string=host_string):
+        run(cmd, remote_only=True)
+        run(base + ' --print', remote_only=True)
