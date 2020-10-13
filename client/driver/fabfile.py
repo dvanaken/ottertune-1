@@ -339,12 +339,20 @@ def save_dbms_result(t=None, result_dir=None):
 
 
 @task
-def save_next_config(next_config, t=None):
-    if not t:
-        t = int(time.time())
-    with open(os.path.join(dconf.RESULT_DIR, '{}__next_config.json'.format(t)), 'w') as f:
+def save_next_config(next_config, t=None, result_dir=None):
+    t = t or int(time.time())
+    result_dir = result_dir or dconf.RESULT_DIR
+    savepath = os.path.join(result_dir, '{}__next_config.json'.format(t))
+    with open(savepath, 'w') as f:
         json.dump(next_config, f, indent=2)
+    LOG.info("Saved next config to {}".format(savepath))
     return t
+
+
+@task
+def get_and_save_result(upload_code=None, t=None, result_dir=None):
+    response = get_result(upload_code=upload_code)
+    save_next_config(response, t=t, result_dir=result_dir)
 
 
 @task
