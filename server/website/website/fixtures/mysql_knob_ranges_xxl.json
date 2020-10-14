@@ -40,8 +40,8 @@
         "tunable": false
     },
     "global.innodb_buffer_pool_size": {
-        "minval": "125M",
-        "maxval": "24G",
+        "minval": 131072000,
+        "maxval": 25769803776,
         "tunable": true
     },
     "global.innodb_change_buffer_max_size": {
@@ -90,13 +90,13 @@
         "tunable": true
     },
     "global.innodb_log_buffer_size": {
-        "minval": "1M",
-        "maxval": "4G",
+        "minval": 1048576,
+        "maxval": 4294967296,
         "tunable": true
     },
     "global.innodb_log_file_size": {
-        "minval": "40M",
-        "maxval": "15G",
+        "minval": 41943040,
+        "maxval": 16106127360,
         "tunable": true
     },
     "global.innodb_log_files_in_group": {
@@ -195,8 +195,8 @@
         "tunable": true
     },
     "global.join_buffer_size": {
-        "minval": "1k",
-        "maxval": "2G",
+        "minval": 1024,
+        "maxval": 2147483648,
         "tunable": true
     },
     "global.lock_wait_timeout": {
@@ -210,13 +210,13 @@
         "tunable": true
     },
     "global.query_alloc_block_size": {
-        "minval": "1k",
-        "maxval": "1M",
+        "minval": 1024,
+        "maxval": 1048576,
         "tunable": true
     },
     "global.query_prealloc_size": {
-        "minval": "8k",
-        "maxval": "1M",
+        "minval": 8192,
+        "maxval": 1048576,
         "tunable": true
     },
     "global.read_rnd_buffer_size": {
@@ -245,13 +245,13 @@
         "tunable": true
     },
     "global.sort_buffer_size": {
-        "minval": "32k",
-        "maxval": "1M",
+        "minval": 32768,
+        "maxval": 1048576,
         "tunable": true
     },
     "global.tmp_table_size": {
-        "minval": "1k",
-        "maxval": "1G",
+        "minval": 1024,
+        "maxval": 1073741824,
         "tunable": true
     },
     "global.thread_cache_size": {

@@ -1,20 +1,27 @@
 import numpy as np
 
 
+def get_beta_const(**kwargs):  # pylint: disable=unused-argument
+    return 1.
+
+
 def get_beta_t(t, **kwargs):
     assert t > 0.
     return 2. * np.log(t / np.sqrt(np.log(2. * t)))
 
 
-def get_beta_td(t, ndim, bound=1.0, **kwargs):
+# Ref: https://arxiv.org/pdf/0912.3995.pdf, Theorem 1
+def get_beta_td(t, ndim, sigma=0.1, **kwargs):  # pylint: disable=unused-argument
     assert t > 0.
     assert ndim > 0.
-    assert bound > 0.
-    bt = 2. * np.log(float(ndim) * t**2 * np.pi**2 / (6. * bound))
+    assert sigma > 0.
+    assert sigma < 1.
+    bt = 2. * np.log(float(ndim) * t**2 * np.pi**2 / (6. * sigma))
     return np.sqrt(bt) if bt > 0. else 0.
 
 
 _UCB_MAP = {
+    'get_beta_const': get_beta_const,
     'get_beta_t': get_beta_t,
     'get_beta_td': get_beta_td,
 }

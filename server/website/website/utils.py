@@ -95,6 +95,18 @@ class TaskUtil(object):
         return TaskMeta.objects.filter(task_id__in=task_ids).order_by(preserved)
 
     @staticmethod
+    def get_tasks_from_result(result):
+        if not isinstance(result, Result):
+            result = Result.objects.get(id=result)
+        if result.task_ids:
+            task_tuple = JSONUtil.loads(result.task_ids)
+            task_ids = TaskUtil.get_task_ids_from_tuple(task_tuple)
+            tasks = TaskUtil.get_tasks(task_ids)
+        else:
+            tasks = []
+        return tasks
+
+    @staticmethod
     def get_task_status(tasks, num_tasks):
         overall_status = 'UNAVAILABLE'
         num_completed = 0

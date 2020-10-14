@@ -71,12 +71,13 @@ def tf_optimize(model, Xnew_arr, learning_rate=0.01, maxiter=100, ucb_beta=3.,
         y_mean_value = session.run(y_mean)
         y_std_value = session.run(y_std)
         loss_value = session.run(loss)
+        if debug:
+            LOG.info("kernel variance:     %f", session.run(kvar))
+            LOG.info("kernel lengthscale:  %f", session.run(kls))
+            LOG.info("likelihood variance: %f", session.run(lvar))
+            LOG.info("ucb_beta:            %f", session.run(beta_t))
         assert_all_finite(Xnew_value)
         assert_all_finite(y_mean_value)
         assert_all_finite(y_std_value)
         assert_all_finite(loss_value)
-        if debug:
-            LOG.info("kernel variance: %f", session.run(kvar))
-            LOG.info("kernel lengthscale: %f", session.run(kls))
-            LOG.info("likelihood variance: %f", session.run(lvar))
         return GPRGDResult(y_mean_value, y_std_value, loss_value, Xnew_value)

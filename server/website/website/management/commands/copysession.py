@@ -1,3 +1,5 @@
+import string
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -24,6 +26,12 @@ class Command(BaseCommand):
             default=None,
             help='Specifies which existing project the new session will belong to.')
         parser.add_argument(
+            '--uploadcode',
+            metavar='UPLOAD_CODE',
+            default=None,
+            type=self.upload_code_type,
+            help='Specifies the upload code for the new session.')
+        parser.add_argument(
             '--algorithm',
             metavar='ALGORITHM',
             default=None,
@@ -33,6 +41,7 @@ class Command(BaseCommand):
         upload_code = options['upload_code']
         new_sessionname = options['new_sessionname']
         projectname = options['projectname']
+        new_upload_code = options['uploadcode']
         algorithm = options['algorithm']
 
         session = Session.objects.get(upload_code=upload_code)
@@ -41,7 +50,7 @@ class Command(BaseCommand):
 
         session.pk = None
         session.name = new_sessionname
-        session.upload_code = MediaUtil.upload_code_generator()
+        session.upload_code = new_upload_code or MediaUtil.upload_code_generator()
         if algorithm:
             algorithm = algorithm.lower()
             if algorithm == 'gpr':
@@ -91,3 +100,20 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(
             "Successfully created session '{}' under project '{}'\nupload_code: {}".format(
                 session.name, session.project, session.upload_code)))
+
+    @staticmethod
+    def upload_code_type(s):
+        if s is None:
+            s = MediaUtil.upload_code_generator()
+        else:
+            if len(s) > 30:
+                print("Upload code is too long: {} (expected <= 30 characters)".format(len(s)))
+                raise ValueError("Upload code is too long: {} (expected <= 30 characters)".format(len(s)))
+            valid_chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
+            for c in s:
+                if c not in valid_chars:
+                    print("Upload code contains invalid character: {} (valid chars: {})".format(
+                        c, valid_chars))
+                    raise ValueError("Upload code contains invalid character: {} (valid chars: {})".format(
+                        c, valid_chars))
+        return s

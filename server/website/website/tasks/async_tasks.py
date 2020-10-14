@@ -573,7 +573,8 @@ def create_and_save_recommendation(recommended_knobs, result, status, **kwargs):
         status=status,
         result_id=result.pk,
         recommendation=config,
-        context=knob_contexts
+        context=knob_contexts,
+        hyperparams=JSONUtil.loads(result.session.hyperparameters),
     )
     result.next_configuration = JSONUtil.dumps(retval)
     result.save()
@@ -914,6 +915,8 @@ def configuration_recommendation(recommendation_input):
         # default gpr model
         if params['GPR_USE_GPFLOW']:
             LOG.debug("%s: Running GPR with GPFLOW.", task_name)
+            res_cnt = Result.objects.filter(session=session).count()
+            LOG.debug("Current session has %d results.", res_cnt)
             model_kwargs = {}
             model_kwargs['model_learning_rate'] = params['GPR_HP_LEARNING_RATE']
             model_kwargs['model_maxiter'] = params['GPR_HP_MAX_ITER']
@@ -924,7 +927,7 @@ def configuration_recommendation(recommendation_input):
             opt_kwargs['debug'] = params['GPR_DEBUG']
             opt_kwargs['ucb_beta'] = ucb.get_ucb_beta(params['GPR_UCB_BETA'],
                                                       scale=params['GPR_UCB_SCALE'],
-                                                      t=i + 1., ndim=X_scaled.shape[1])
+                                                      t=res_cnt, ndim=X_scaled.shape[1])
             tf.reset_default_graph()
             graph = tf.get_default_graph()
             gpflow.reset_default_session(graph=graph)

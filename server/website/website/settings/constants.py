@@ -25,7 +25,7 @@ ENABLE_DUMMY_ENCODER = False
 KNOB_IDENT_USE_PRUNED_METRICS = True
 
 # The background tasks only process workloads containing this minimum amount of results
-MIN_WORKLOAD_RESULTS_COUNT = 1
+MIN_WORKLOAD_RESULTS_COUNT = 5
 
 # The views used for metrics pruning
 VIEWS_FOR_PRUNING = {
