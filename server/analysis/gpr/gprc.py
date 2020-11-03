@@ -45,4 +45,24 @@ class GPRC(GPR):
         else:
             fvar = self.kern.Kdiag(Xnew) - tf.reduce_sum(tf.square(A), 0)
             fvar = tf.tile(tf.reshape(fvar, (-1, 1)), [1, tf.shape(self.Y)[1]])
-        return fmean, fvar, self.kern.variance, self.kern.lengthscales, self.likelihood.variance
+        return fmean, fvar  #, self.kern.variance, self.kern.lengthscales, self.likelihood.variance
+
+    #@name_scope('predict')
+    #@params_as_tensors
+    #def _build_predict(self, Xnew, full_cov=False):
+    #    """
+    #    Xnew is a data matrix, the points at which we want to predict.
+
+    #    This method computes
+
+    #        p(F* | Y)
+
+    #    where F* are points on the GP at Xnew, Y are noisy observations at X.
+
+    #    """
+    #    y = self.Y - self.mean_function(self.X)
+    #    Kmn = self.kern.K(self.X, Xnew)
+    #    Kmm_sigma = self.kern.K(self.X) + tf.eye(tf.shape(self.X)[0], dtype=settings.float_type) * self.likelihood.variance
+    #    Knn = self.kern.K(Xnew) if full_cov else self.kern.Kdiag(Xnew)
+    #    f_mean, f_var = base_conditional(Kmn, Kmm_sigma, Knn, y, full_cov=full_cov, white=False)  # N x P, N x P or P x N x N
+    #    return f_mean + self.mean_function(Xnew), f_var

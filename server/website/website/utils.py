@@ -195,32 +195,94 @@ class DataUtil(object):
         }
 
     @staticmethod
-    def combine_duplicate_rows(X_matrix, y_matrix, rowlabels):
-        X_unique, idxs, invs, cts = np.unique(X_matrix,
-                                              return_index=True,
-                                              return_inverse=True,
-                                              return_counts=True,
-                                              axis=0)
-        num_unique = X_unique.shape[0]
-        if num_unique == X_matrix.shape[0]:
-            # No duplicate rows
-
+    def combine_duplicate_rows(X_matrix, y_matrix, rowlabels, dup_test='X', Xy_target_idx=None,
+                               debug=False):
+        if dup_test == 'noop':
+            LOG.info("Skip combining dup rows since dup_test == 'noop'")
             # For consistency, tuple the rowlabels
-            rowlabels = np.array([tuple([x]) for x in rowlabels])  # pylint: disable=bad-builtin,deprecated-lambda
+            rowlabels = np.array([(x,) for x in rowlabels])  # pylint: disable=bad-builtin,deprecated-lambda
             return X_matrix, y_matrix, rowlabels
-
-        # Combine duplicate rows
-        y_unique = np.empty((num_unique, y_matrix.shape[1]))
-        rowlabels_unique = np.empty(num_unique, dtype=tuple)
-        ix = np.arange(X_matrix.shape[0])
-        for i, count in enumerate(cts):
-            if count == 1:
-                y_unique[i, :] = y_matrix[idxs[i], :]
-                rowlabels_unique[i] = (rowlabels[idxs[i]],)
+            
+        elif dup_test in ('Xy', 'Xy_target'):
+            initial_nrows, X_ncols = X_matrix.shape
+            y_ncols = y_matrix.shape[1]
+            if dup_test == 'Xy_target':
+                if Xy_target_idx is None:
+                    Xy_target_idx = -1
+                Xy_matrix = np.hstack([X_matrix, y_matrix[:, Xy_target_idx].reshape(-1, 1)])
             else:
+                Xy_matrix = np.hstack([X_matrix, y_matrix])
+            Xy_unique, idxs, invs, cts = np.unique(
+                Xy_matrix, return_index=True, return_inverse=True, return_counts=True, axis=0)
+            LOG.info("COMBINE DUP ROWS INITIAL: dup_test=%s, X=%s, y=%s, rowlabels=%s, Xy_target_idx=%s, "
+                     "Xy_matrix=%s, Xy_unique=%s", dup_test, X_matrix.shape, y_matrix.shape,
+                     rowlabels.shape, Xy_target_idx, Xy_matrix.shape, Xy_unique.shape)
+
+            num_unique = Xy_unique.shape[0]
+            if num_unique == initial_nrows:
+                # No duplicate rows
+                LOG.info("No duplicate rows found! (dup_test='%s')", dup_test)
+
+                # For consistency, tuple the rowlabels
+                rowlabels = np.array([(x,) for x in rowlabels])  # pylint: disable=bad-builtin,deprecated-lambda
+                return X_matrix, y_matrix, rowlabels
+
+            # Combine duplicate rows
+            X_unique = np.empty((num_unique, X_ncols))
+            y_unique = np.empty((num_unique, y_ncols))
+            rowlabels_unique = np.empty(num_unique, dtype=tuple)
+            dup_rowlabels = []
+            ix = np.arange(X_matrix.shape[0])
+            for i, count in enumerate(cts):
+                X_unique[i, :] = X_matrix[idxs[i], :]
+                y_unique[i, :] = y_matrix[idxs[i], :]
                 dup_idxs = ix[invs == i]
-                y_unique[i, :] = np.median(y_matrix[dup_idxs, :], axis=0)
-                rowlabels_unique[i] = tuple(rowlabels[dup_idxs])
+                rl_unique = tuple(rowlabels[dup_idxs])
+                rowlabels_unique[i] = rl_unique
+                if count > 1:
+                    dup_rowlabels.append('[i={} rl={} y={}]'.format(
+                        i, rl_unique, int(y_unique[i, -1])))
+
+        else:  # dup_test='X' (default)
+            X_unique, idxs, invs, cts = np.unique(X_matrix,
+                                                  return_index=True,
+                                                  return_inverse=True,
+                                                  return_counts=True,
+                                                  axis=0)
+            LOG.info("COMBINE DUP ROWS INITIAL: dup_test=%s, X=%s, y=%s, rowlabels=%s, Xy_target_idx=%s, "
+                     "X_unique=%s", dup_test, X_matrix.shape, y_matrix.shape, rowlabels.shape, Xy_target_idx,
+                     X_unique.shape)
+            num_unique = X_unique.shape[0]
+            if num_unique == X_matrix.shape[0]:
+                # No duplicate rows
+                LOG.info("No duplicate rows found! (dup_test='%s')", dup_test)
+
+                # For consistency, tuple the rowlabels
+                rowlabels = np.array([(x,) for x in rowlabels])  # pylint: disable=bad-builtin,deprecated-lambda
+                return X_matrix, y_matrix, rowlabels
+
+            # Combine duplicate rows
+            y_unique = np.empty((num_unique, y_matrix.shape[1]))
+            rowlabels_unique = np.empty(num_unique, dtype=tuple)
+            dup_rowlabels = []
+            ix = np.arange(X_matrix.shape[0])
+            for i, count in enumerate(cts):
+                if count == 1:
+                    y_unique[i, :] = y_matrix[idxs[i], :]
+                    rowlabels_unique[i] = (rowlabels[idxs[i]],)
+                else:
+                    dup_idxs = ix[invs == i]
+                    y_unique[i, :] = np.median(y_matrix[dup_idxs, :], axis=0)
+                    rowlabels_unique[i] = tuple(rowlabels[dup_idxs])
+                    dup_rowlabels.append('[i={} rl={} y={}]'.format(
+                        i, tuple(rowlabels[dup_idxs]),
+                        int(np.median(y_matrix[dup_idxs, :], axis=0)[-1])))
+
+        if debug:
+            LOG.info("DUP ROWLABELS (count=%s): %s", len(dup_rowlabels), ', '.join(dup_rowlabels)) 
+        LOG.info("COMBINE DUP ROWS FINAL (dup_test=%s): X=%s, y=%s, rowlabels=%s",
+                 dup_test, X_unique.shape, y_unique.shape, rowlabels_unique.shape)
+
         return X_unique, y_unique, rowlabels_unique
 
     @staticmethod

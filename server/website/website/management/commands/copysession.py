@@ -24,24 +24,25 @@ class Command(BaseCommand):
             '--projectname',
             metavar='PROJECTNAME',
             default=None,
-            help='Specifies which existing project the new session will belong to.')
+            help='Specifies which existing project the new session will belong to (default: same as original session).')
         parser.add_argument(
             '--uploadcode',
             metavar='UPLOAD_CODE',
             default=None,
             type=self.upload_code_type,
-            help='Specifies the upload code for the new session.')
+            help='Specifies the upload code for the new session (default: generate randomly).')
         parser.add_argument(
             '--algorithm',
             metavar='ALGORITHM',
             default=None,
-            help='Specifies which algorithm the new session will use.')
+            choices=('gpr', 'dnn', 'ddpg'),
+            help='Specifies which algorithm the new session will use (default: same as original session).')
 
     def handle(self, *args, **options):
         upload_code = options['upload_code']
         new_sessionname = options['new_sessionname']
         projectname = options['projectname']
-        new_upload_code = options['uploadcode']
+        new_upload_code = options['uploadcode'] or MediaUtil.upload_code_generator()
         algorithm = options['algorithm']
 
         session = Session.objects.get(upload_code=upload_code)
@@ -50,15 +51,9 @@ class Command(BaseCommand):
 
         session.pk = None
         session.name = new_sessionname
-        session.upload_code = new_upload_code or MediaUtil.upload_code_generator()
+        session.upload_code = new_upload_code
         if algorithm:
-            algorithm = algorithm.lower()
-            if algorithm == 'gpr':
-                session.algorithm = AlgorithmType.GPR
-            elif algorithm == 'dnn':
-                session.algorithm = AlgorithmType.DNN
-            elif algorithm == 'ddpg':
-                session.algorithm = AlgorithmType.DDPG
+            session.algorithm = AlgorithmType.short_type(algorithm)
 
         if projectname and projectname != session.project.name:
             project = Project.objects.get(name=projectname)
@@ -103,17 +98,16 @@ class Command(BaseCommand):
 
     @staticmethod
     def upload_code_type(s):
-        if s is None:
-            s = MediaUtil.upload_code_generator()
-        else:
-            if len(s) > 30:
-                print("Upload code is too long: {} (expected <= 30 characters)".format(len(s)))
-                raise ValueError("Upload code is too long: {} (expected <= 30 characters)".format(len(s)))
-            valid_chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
-            for c in s:
-                if c not in valid_chars:
-                    print("Upload code contains invalid character: {} (valid chars: {})".format(
-                        c, valid_chars))
-                    raise ValueError("Upload code contains invalid character: {} (valid chars: {})".format(
-                        c, valid_chars))
+        # Note: this method is only called if the user explicitly sets the --uploadcode option so
+        # an unset upload code cannot be generated here since the method never gets called.
+        if len(s) > 30:
+            print("Upload code is too long: {} (expected <= 30 characters)".format(len(s)))
+            raise ValueError("Upload code is too long: {} (expected <= 30 characters)".format(len(s)))
+        valid_chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
+        for c in s:
+            if c not in valid_chars:
+                print("Upload code contains invalid character: {} (valid chars: {})".format(
+                    c, valid_chars))
+                raise ValueError("Upload code contains invalid character: {} (valid chars: {})".format(
+                    c, valid_chars))
         return s

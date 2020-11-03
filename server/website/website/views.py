@@ -409,7 +409,7 @@ def result_view(request, project_id, session_id, result_id):
 
     # default_metrics = {mname: metric_data[mname] * metric_meta[mname].scale
     #                    for mname in default_metrics}
-    if session.tuning_session == 'no_tuning_session':
+    if session.tuning_session == 'no_tuning_session' or target.task_ids is None:
         status = None
         next_conf = ''
         next_conf_available = False

@@ -500,6 +500,9 @@ def train_ddpg(train_ddpg_input):
     prev_metric_data = prev_metric_data.flatten()
     prev_metric_scalar = MinMaxScaler().fit(prev_metric_data.reshape(1, -1))
     prev_normalized_metric_data = prev_metric_scalar.transform(prev_metric_data.reshape(1, -1))[0]
+    LOG.info("metric_data: %s, norm_metric_data: %s, prev_metric_data: %s, prev_norm_metric_data: %s",
+             metric_data.shape, normalized_metric_data.shape, prev_metric_data.shape,
+             prev_normalized_metric_data.shape)
 
     # Clean knob data
     cleaned_knob_data = DataUtil.clean_knob_data(agg_data['X_matrix'],
@@ -511,6 +514,8 @@ def train_ddpg(train_ddpg_input):
     knob_num = len(knob_data)
     metric_num = len(metric_data)
     LOG.debug('%s: knob_num: %d, metric_num: %d', task_name, knob_num, metric_num)
+    LOG.info("knob_data: %s, knob_labels: %s, knob_bounds: %s, knob_num: %s, metric_num: %s",
+             knob_data.shape, knob_labels.shape, knob_bounds.shape, knob_num, metric_num)
 
     metric_meta = db.target_objectives.get_metric_metadata(session.dbms.pk,
                                                            session.target_objective)
@@ -650,6 +655,8 @@ def configuration_recommendation_ddpg(recommendation_ddpg_input):  # pylint: dis
     knob_bounds = np.vstack(DataUtil.get_knob_bounds(knob_labels, session))
     knob_data = MinMaxScaler().fit(knob_bounds).inverse_transform(knob_data.reshape(1, -1))[0]
     conf_map = {k: knob_data[i] for i, k in enumerate(knob_labels)}
+    LOG.info("metric_data: %s, knob_bounds: %s, knob_data: %s", metric_data.shape, knob_bounds.shape,
+             knob_data.shape)
 
     target_data_res = create_and_save_recommendation(recommended_knobs=conf_map, result=result,
                                                      status='good', info='INFO: ddpg')
@@ -705,6 +712,10 @@ def process_training_data(target_data):
     y_target = target_data['y_matrix']
     rowlabels_target = np.array(target_data['rowlabels'])
 
+    LOG.info("X_workload: %s, X_columnlabels: %s, y_workload: %s, y_columnlabels: %s, rowlabels_workload: %s",
+             X_workload.shape, X_columnlabels.shape, y_workload.shape, y_columnlabels.shape, rowlabels_workload.shape)
+    LOG.info("X_target: %s, y_target: %s, rowlabels_target: %s", X_target.shape, y_target.shape, rowlabels_target.shape)
+
     if not np.array_equal(X_columnlabels, target_data['X_columnlabels']):
         raise Exception(('The workload and target data should have '
                          'identical X columnlabels (sorted knob names)'),
@@ -728,6 +739,8 @@ def process_training_data(target_data):
     y_workload = y_workload[:, target_obj_idx]
     y_target = y_target[:, target_obj_idx]
     y_columnlabels = y_columnlabels[target_obj_idx]
+    LOG.info("FILTER TARGET: y_workload: %s, y_target: %s, y_columnlabels: %s",
+             y_workload.shape, y_target.shape, y_columnlabels.shape)
 
     # Combine duplicate rows in the target/workload data (separately)
     X_workload, y_workload, rowlabels_workload = DataUtil.combine_duplicate_rows(
@@ -748,6 +761,7 @@ def process_training_data(target_data):
 
     # Combine target & workload Xs for preprocessing
     X_matrix = np.vstack([X_target, X_workload])
+    rowlabels = np.concatenate([rowlabels_target, rowlabels_workload])
 
     # Dummy encode categorial variables
     if ENABLE_DUMMY_ENCODER:
@@ -836,17 +850,114 @@ def process_training_data(target_data):
         X_min[i] = col_min
         X_max[i] = col_max
 
-    return X_columnlabels, X_scaler, X_scaled, y_scaled, X_max, X_min,\
+    return X_columnlabels, X_scaler, X_scaled, y_scaled, rowlabels, X_max, X_min,\
         dummy_encoder, constraint_helper, pipeline_data_knob, pipeline_data_metric
+
+
+def process_training_data_with_context(target_data):
+    import csv
+    newest_result = Result.objects.get(pk=target_data['newest_result_id'])
+    session = newest_result.session
+    params = JSONUtil.loads(session.hyperparameters)
+
+    # Target workload data
+    newest_result = Result.objects.get(pk=target_data['newest_result_id'])
+    X_matrix = np.array(target_data['X_matrix'])
+    X_columnlabels = np.array(target_data['X_columnlabels'])
+    y_matrix = np.array(target_data['y_matrix'])
+    y_columnlabels = np.array(target_data['y_columnlabels'])
+    rowlabels = np.array(target_data['rowlabels'])
+
+    X_rows = np.hstack([rowlabels.reshape(-1, 1), X_matrix]).tolist()
+    y_rows = np.hstack([rowlabels.reshape(-1, 1), y_matrix]).tolist()
+    with open('X_matrix.csv', 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(['result_id'] + X_columnlabels.tolist())
+        writer.writerows(X_rows)
+    with open('y_matrix.csv', 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(['result_id'] + y_columnlabels.tolist())
+        writer.writerows(y_rows)
+
+    target_objective = newest_result.session.target_objective
+    target_obj_idx = [i for i, cl in enumerate(y_columnlabels) if cl == target_objective]
+    if len(target_obj_idx) == 0:
+        raise Exception(('Could not find target objective in metrics '
+                         '(target_obj={})').format(target_objective))
+    elif len(target_obj_idx) > 1:
+        raise Exception(('Found {} instances of target objective in '
+                         'metrics (target_obj={})').format(len(target_obj_idx),
+                                                           target_objective))
+
+    LOG.info("INITIAL - ROW[0]: id=%s y=%s, ROW[-1]: id=%s y=%s", rowlabels[0],
+             y_matrix[0, target_obj_idx], rowlabels[-1], y_matrix[-1, target_obj_idx])
+
+    LOG.info("X_matrix: %s, y_matrix: %s, X_columnlabels: %s, y_columnlabels: %s, rowlabels: %s",
+             X_matrix.shape, y_matrix.shape, X_columnlabels.shape, y_columnlabels.shape, rowlabels.shape)
+
+    # Combine duplicate rows
+    initial_nrows = X_matrix.shape[0]
+    X_matrix, y_matrix, rowlabels = DataUtil.combine_duplicate_rows(
+        X_matrix, y_matrix, rowlabels, dup_test='Xy_target', Xy_target_idx=target_obj_idx)
+
+    LOG.info("REMOVED %s DUP ROWS: X_matrix: %s, y_matrix: %s, rowlabels: %s", initial_nrows - X_matrix.shape[0],
+             X_matrix.shape, y_matrix.shape, rowlabels.shape)
+
+    # Split y_matrix into y_target (target objective only) and context (all other metrics)
+    y_target = y_matrix[:, target_obj_idx]
+    LOG.info("FINAL - ROW[0]: id=%s y=%s, ROW[-1]: id=%s y=%s", rowlabels[0], y_target[0], rowlabels[-1], y_target[-1])
+    context = np.delete(y_matrix, target_obj_idx, axis=1)
+    y_target_labels = y_columnlabels[target_obj_idx]
+    context_labels = np.delete(y_columnlabels, target_obj_idx, axis=0)
+    LOG.info("FILTER TARGET: y_target: %s, context: %s, y_target_labels: %s, context_labels: %s, rowlabels: %s",
+             y_target.shape, context.shape, y_target_labels.shape, context_labels.shape, rowlabels.shape)
+
+    X_scaler = StandardScaler()
+    X_scaled = X_scaler.fit_transform(X_matrix)
+    y_scaler = StandardScaler()
+    y_scaled = y_scaler.fit_transform(y_target)
+    ctx_scaler = StandardScaler()
+    ctx_scaled = ctx_scaler.fit_transform(context)
+
+    metric_meta = db.target_objectives.get_metric_metadata(
+        newest_result.session.dbms.pk, newest_result.session.target_objective)
+    lessisbetter = metric_meta[target_objective].improvement == db.target_objectives.LESS_IS_BETTER
+    # Maximize the throughput, moreisbetter
+    # Use gradient descent to minimize -throughput
+    if not lessisbetter:
+        y_scaled = -y_scaled
+
+    X_min = np.empty(X_scaled.shape[1])
+    X_max = np.empty(X_scaled.shape[1])
+    X_scaler_matrix = np.zeros([1, X_scaled.shape[1]])
+
+    session_knobs = SessionKnob.objects.get_knobs_for_session(newest_result.session)
+
+    # Set min/max for knob values
+    for i in range(X_scaled.shape[1]):
+        col_min = X_scaled[:, i].min()
+        col_max = X_scaled[:, i].max()
+        for knob in session_knobs:
+            if X_columnlabels[i] == knob["name"]:
+                X_scaler_matrix[0][i] = knob["minval"]
+                col_min = X_scaler.transform(X_scaler_matrix)[0][i]
+                X_scaler_matrix[0][i] = knob["maxval"]
+                col_max = X_scaler.transform(X_scaler_matrix)[0][i]
+        X_min[i] = col_min
+        X_max[i] = col_max
+
+    return X_columnlabels, X_scaler, X_scaled, y_scaled, ctx_scaled, rowlabels, X_max, X_min
 
 
 @shared_task(base=ConfigurationRecommendation, name='configuration_recommendation')
 def configuration_recommendation(recommendation_input):
     start_ts = time.time()
     target_data, algorithm = recommendation_input
-    newest_result = Result.objects.get(pk=target_data['newest_result_id'])
+    newest_result_id = target_data['newest_result_id']
+    newest_result = Result.objects.get(pk=newest_result_id)
     session = newest_result.session
-    task_name = _get_task_name(session, target_data['newest_result_id'])
+    task_name = _get_task_name(session, newest_result_id)
+    LOG.info("NEWEST RESULT ID: %s (type=%s)", newest_result_id, type(newest_result_id))
 
     early_return, target_data_res = check_early_return(target_data, algorithm)
     if early_return:
@@ -857,44 +968,82 @@ def configuration_recommendation(recommendation_input):
     LOG.info("%s: Recommending the next configuration...", task_name)
     params = JSONUtil.loads(session.hyperparameters)
 
-    X_columnlabels, X_scaler, X_scaled, y_scaled, X_max, X_min,\
-        dummy_encoder, constraint_helper, pipeline_knobs,\
-        pipeline_metrics = process_training_data(target_data)
+    include_context =\
+        (algorithm == AlgorithmType.GPR and params['GPR_CONTEXT'] and params['GPR_USE_GPFLOW']) or \
+        (algorithm == AlgorithmType.DNN and params['DNN_CONTEXT'])
+
+    if include_context:
+        X_columnlabels, X_scaler, X_scaled, y_scaled, ctx_scaled, rowlabels, X_max, X_min =\
+            process_training_data_with_context(target_data)
+        dummy_encoder, constraint_helper = None, None
+        pipeline_knobs, pipeline_metrics = None, None
+    else:
+        X_columnlabels, X_scaler, X_scaled, y_scaled, rowlabels, X_max, X_min,\
+            dummy_encoder, constraint_helper, pipeline_knobs,\
+            pipeline_metrics = process_training_data(target_data)
+        ctx_scaled = None
+
+    num_grid_samples = params['NUM_SAMPLES']  # Num random configs to explore
+    num_top_samples = min(params['TOP_NUM_CONFIG'], X_scaled.shape[0])  # Num "good" configs to exploit
+    num_samples = num_grid_samples + num_top_samples
 
     # FIXME: we should generate more samples and use a smarter sampling technique
-    num_samples = params['NUM_SAMPLES']
-    X_samples = np.empty((num_samples, X_scaled.shape[1]))
+    X_grid_samples = np.empty((num_grid_samples, X_scaled.shape[1]))
     for i in range(X_scaled.shape[1]):
-        X_samples[:, i] = np.random.rand(num_samples) * (X_max[i] - X_min[i]) + X_min[i]
+        X_grid_samples[:, i] = np.random.rand(num_grid_samples) * (X_max[i] - X_min[i]) + X_min[i]
 
     q = queue.PriorityQueue()
     for x in range(0, y_scaled.shape[0]):
         q.put((y_scaled[x][0], x))
 
+    X_top_samples = np.empty((num_top_samples, X_scaled.shape[1]))
+    bias = abs(params['GPR_EPS'])
     i = 0
-    while i < params['TOP_NUM_CONFIG']:
+    while i < num_top_samples:
         try:
             item = q.get_nowait()
-            # Tensorflow get broken if we use the training data points as
-            # starting points for GPRGD. We add a small bias for the
-            # starting points. GPR_EPS default value is 0.001
-            # if the starting point is X_max, we minus a small bias to
-            # make sure it is within the range.
-            dist = sum(np.square(X_max - X_scaled[item[1]]))
-            if dist < 0.001:
-                X_samples = np.vstack((X_samples, X_scaled[item[1]] - abs(params['GPR_EPS'])))
-            else:
-                X_samples = np.vstack((X_samples, X_scaled[item[1]] + abs(params['GPR_EPS'])))
+            X_sample = X_scaled[item[1]]
+
+            if algorithm == AlgorithmType.GPR and not params['GPR_USE_GPFLOW']:
+                # For GPRGD, Tensorflow breaks when we use the existing training data points as
+                # starting points. We handle this by adding a small bias to the starting points.
+                # The bias is the GPR_EPS parameter, which is 0.001 by default. If the starting
+                # point value is close to X_max, we subtract the small bias to make sure it is 
+                # within the range. Otherwise, we add the bias to the starting point.
+                dist = sum(np.square(X_max - X_scaled[item[1]]))
+                if dist < 0.001:
+                    X_sample -= bias
+                else:
+                    X_sample += bias
+
+            X_top_samples[i, :] = X_sample
             i = i + 1
         except queue.Empty:
             break
 
+    X_samples = np.vstack([X_grid_samples, X_top_samples])
+
+    ctx_samples = None
+    if include_context:
+        # Set the context of all X_samples to the same context as the latest result
+        newest_result_row = [i for i, rl in enumerate(rowlabels) if newest_result_id in rl]
+        assert len(newest_result_row) == 1, newest_result_row
+        newest_result_row = newest_result_row[0]
+        ctx_sample = ctx_scaled[newest_result_row, :].reshape(1, -1)
+        ctx_samples = np.vstack([ctx_sample for _ in range(num_samples)])
+
+        LOG.info("NUM_SAMPLES: %s, X_samples: %s, context_samples: %s",
+                 num_samples, X_samples.shape, ctx_samples.shape)
+
     res = None
     info_msg = 'INFO: training data size is {}. '.format(X_scaled.shape[0])
     if algorithm == AlgorithmType.DNN:
-        info_msg += 'Recommended by DNN.'
+        info_msg += 'Recommended by DNN (context={}).'.format(include_context)
+        n_context = ctx_scaled.shape[1] if include_context else None
         # neural network model
         model_nn = NeuralNet(n_input=X_samples.shape[1],
+                             include_context=include_context,
+                             n_context=n_context,
                              batch_size=X_samples.shape[0],
                              explore_iters=params['DNN_EXPLORE_ITER'],
                              noise_scale_begin=params['DNN_NOISE_SCALE_BEGIN'],
@@ -903,39 +1052,91 @@ def configuration_recommendation(recommendation_input):
                              debug_interval=params['DNN_DEBUG_INTERVAL'])
         if session.dnn_model is not None:
             model_nn.set_weights_bin(session.dnn_model)
-        model_nn.fit(X_scaled, y_scaled, fit_epochs=params['DNN_TRAIN_ITER'])
+        model_nn.fit(X_scaled, y_scaled, fit_epochs=params['DNN_TRAIN_ITER'], X_context=ctx_scaled)
         res = model_nn.recommend(X_samples, X_min, X_max,
                                  explore=params['DNN_EXPLORE'],
-                                 recommend_epochs=params['DNN_GD_ITER'])
+                                 recommend_epochs=params['DNN_GD_ITER'],
+                                 X_context=ctx_samples)
         session.dnn_model = model_nn.get_weights_bin()
         session.save()
 
     elif algorithm == AlgorithmType.GPR:
-        info_msg += 'Recommended by GPR.'
+        info_msg += 'Recommended by GPR ({}, context={}).'.format(
+            'GPFLOW' if params['GPR_USE_GPFLOW'] else 'GPRGD', include_context)
         # default gpr model
         if params['GPR_USE_GPFLOW']:
-            LOG.debug("%s: Running GPR with GPFLOW.", task_name)
+            LOG.debug("%s: Running GPR with GPFLOW (context=%s).", task_name, include_context)
             res_cnt = Result.objects.filter(session=session).count()
             LOG.debug("Current session has %d results.", res_cnt)
-            model_kwargs = {}
-            model_kwargs['model_learning_rate'] = params['GPR_HP_LEARNING_RATE']
-            model_kwargs['model_maxiter'] = params['GPR_HP_MAX_ITER']
-            opt_kwargs = {}
-            opt_kwargs['learning_rate'] = params['GPR_LEARNING_RATE']
-            opt_kwargs['maxiter'] = params['GPR_MAX_ITER']
-            opt_kwargs['bounds'] = [X_min, X_max]
-            opt_kwargs['debug'] = params['GPR_DEBUG']
-            opt_kwargs['ucb_beta'] = ucb.get_ucb_beta(params['GPR_UCB_BETA'],
-                                                      scale=params['GPR_UCB_SCALE'],
-                                                      t=res_cnt, ndim=X_scaled.shape[1])
+
+            model_kwargs = dict(
+                learning_rate=params['GPR_HP_LEARNING_RATE'],
+                maxiter=params['GPR_HP_MAX_ITER'])
+            model_name = params['GPR_MODEL_NAME']
+            X_dim = X_scaled.shape[1]
+
+            if include_context:
+                ctx_dim = ctx_scaled.shape[1]
+                ndim = X_dim + ctx_dim
+                k0_dims = np.arange(0, X_dim)
+                k1_dims = np.arange(X_dim, ndim)
+                X_train = np.hstack([X_scaled, ctx_scaled])
+                model_kwargs.update(
+                    k0_active_dims=k0_dims,  # Column indices for knobs
+                    k1_active_dims=k1_dims)  # Column indices for the context (metrics)
+                LOG.info("ACTIVE DIMS: [k0: n=%s, range=(%s-%s)]   [k1: n=%s, range=(%s-%s)]",
+                         k0_dims.size, k0_dims[0], k0_dims[-1], k1_dims.size, k1_dims[0], k1_dims[-1])
+
+                if not model_name.startswith('Contextual'):
+                    default_context_model = 'ContextualGP'
+                    LOG.warning("GPFLOW model '%s' does not support context (enabled). Using model "
+                                "'%s' instead.", model_name, default_context_model)
+                    model_name = default_context_model
+
+            else:
+                X_train = X_scaled
+
+                if model_name.startswith('Contextual'):
+                    default_model = 'BasicGP'
+                    LOG.warning("GPFLOW model '%s' requires context (disabled). Using model "
+                                "'%s' instead.", model_name, default_model)
+                    model_name = default_model
+
+            model_kwargs.update(
+                model_name=model_name,
+                X=X_train,
+                y=y_scaled)
+
+            ucb_beta = ucb.get_ucb_beta(params['GPR_UCB_BETA'],
+                                        scale=params['GPR_UCB_SCALE'],
+                                        t=res_cnt, ndim=X_dim)
+            opt_kwargs = dict(
+                Xnew_arr=X_samples,
+                bounds=[X_min, X_max],
+                Xctx_arr=ctx_samples,
+                ucb_beta=ucb_beta,
+                learning_rate=params['GPR_LEARNING_RATE'],
+                maxiter=params['GPR_MAX_ITER'],
+                debug=params['GPR_DEBUG'],
+            )
+
+            LOG.info("context: %s, X_train: %s, X_samples: %s, ctx_samples: %s, "
+                     "model_name: %s, ucb_beta: %s", include_context, X_train.shape,
+                     X_samples.shape,
+                     ctx_samples.shape if ctx_samples is not None else ctx_samples,
+                     model_name, ucb_beta)
+
             tf.reset_default_graph()
             graph = tf.get_default_graph()
             gpflow.reset_default_session(graph=graph)
-            m = gpr_models.create_model(params['GPR_MODEL_NAME'], X=X_scaled, y=y_scaled,
-                                        **model_kwargs)
-            res = tf_optimize(m.model, X_samples, **opt_kwargs)
+            m = gpr_models.create_model(**model_kwargs)
+            res = tf_optimize(m.model, **opt_kwargs)
+            LOG.info("%s: next result: %s", task_name, res)
         else:
             LOG.debug("%s: Running GPR with GPRGD.", task_name)
+            if params['GPR_CONTEXT']:
+                LOG.warning("%s: GPRGD does not support context. Using standard GPRGD instead "
+                            "(no context).", task_name)
             model = GPRGD(length_scale=params['GPR_LENGTH_SCALE'],
                           magnitude=params['GPR_MAGNITUDE'],
                           max_train_size=params['GPR_MAX_TRAIN_SIZE'],
@@ -997,12 +1198,22 @@ def map_workload(map_workload_input):
     target_data, algorithm = map_workload_input
     newest_result = Result.objects.get(pk=target_data['newest_result_id'])
     session = newest_result.session
+    algorithm = session.algorithm
     task_name = _get_task_name(session, target_data['newest_result_id'])
+    params = JSONUtil.loads(session.hyperparameters)
 
     assert target_data is not None
     if target_data['status'] != 'good':
         LOG.debug('\n%s: Result = %s\n', task_name, _task_result_tostring(target_data))
         LOG.info("%s: Skipping workload mapping (status: %s).", task_name, target_data['status'])
+        return target_data, algorithm
+
+    if (algorithm == AlgorithmType.DNN and params['DNN_CONTEXT']) or \
+            (algorithm == AlgorithmType.GPR and params['GPR_CONTEXT']):
+        target_data.update(mapped_workload=None, scores=None, pipeline_run=None)
+        LOG.debug('%s: Result = %s\n', task_name, _task_result_tostring(target_data))
+        LOG.info('%s: Skipping workload mapping because the algorithm context is enabled.',
+                 task_name)
         return target_data, algorithm
 
     # Get the latest version of pipeline data that's been computed so far.
@@ -1012,7 +1223,6 @@ def map_workload(map_workload_input):
 
     LOG.info("%s: Mapping the workload...", task_name)
 
-    params = JSONUtil.loads(session.hyperparameters)
     target_workload = newest_result.workload
     X_columnlabels = np.array(target_data['X_columnlabels'])
     y_columnlabels = np.array(target_data['y_columnlabels'])

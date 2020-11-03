@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from django.core.management.base import BaseCommand, CommandError
 
+from analysis.gpr import gpr_models
 from website.models import Session
 from website.utils import JSONUtil
 
@@ -101,6 +102,14 @@ class Command(BaseCommand):
         # DNN HYPERPARAMETERS
         # ************************
         parser.add_argument(
+            '--dnn-context',
+            required=False,
+            default=None,
+            type=self.parse_bool,
+            choices=(True, False),
+            metavar='BOOL',
+            help='Default: False')
+        parser.add_argument(
             '--dnn-debug',
             required=False,
             default=None,  # True 
@@ -162,6 +171,14 @@ class Command(BaseCommand):
         # GPR HYPERPARAMETERS
         # ************************
         parser.add_argument(
+            '--gpr-context',
+            required=False,
+            default=None,
+            type=self.parse_bool,
+            choices=(True, False),
+            metavar='BOOL',
+            help='Default: False')
+        parser.add_argument(
             '--gpr-debug',
             required=False,
             default=None,  # True 
@@ -207,7 +224,8 @@ class Command(BaseCommand):
         parser.add_argument(
             '--gpr-model-name',
             required=False,
-            choices=('BasicGP', 'ExpWhiteGP'),
+            #choices=('BasicGP', 'ExpWhiteGP'),
+            choices=gpr_models._MODEL_MAP.keys(),
             default=None,  # BasicGP
             metavar='NAME',
             help='Default: BasicGP')
@@ -235,10 +253,10 @@ class Command(BaseCommand):
         parser.add_argument(
             '--top-num-config',
             required=False,
-            default=None,  # 30
+            default=None,  # 10
             type=int,
             metavar='INT',
-            help="Number of top-performing samples to use for the GPR/DNN starting points. Default: 30")
+            help="Number of top-performing samples to use for the GPR/DNN starting points. Default: 10")
         # ************************
         # UNUSED HYPERPARAMETERS
         # ************************

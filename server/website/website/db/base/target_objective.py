@@ -80,7 +80,7 @@ class BaseUserDefinedTarget(BaseTargetObjective):
 
     def __init__(self, target_name, improvement, unit='unknown', short_unit='unknown', pprint=None):
         if pprint is None:
-            pprint = 'udf.' + target_name
+            pprint = 'udm.' + target_name
         super().__init__(name=target_name, pprint=pprint, unit=unit,
                          short_unit=short_unit, improvement=improvement)
 
