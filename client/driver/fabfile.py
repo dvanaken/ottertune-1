@@ -27,7 +27,7 @@ from fabric.state import output as fabric_output
 from collectors import MySQLCollector
 
 from utils import (file_exists, get, get_content, load_driver_conf, parse_bool,
-                   put, run, run_sql_script, sudo, FabricException)
+                   put, run, run_sql_script, save_driver_envs, sudo, FabricException)
 
 # Loads the driver config file (defaults to driver_config.py)
 dconf = load_driver_conf()  # pylint: disable=invalid-name
@@ -42,8 +42,11 @@ env.hosts = [dconf.LOGIN]
 env.password = dconf.LOGIN_PASSWORD
 
 # Create local directories
-for _d in (dconf.RESULT_DIR, dconf.LOG_DIR, dconf.TEMP_DIR, dconf.CONTROLLER_DIR):
+for _d in (dconf.RESULT_DIR, dconf.LOG_DIR, dconf.TEMP_DIR, dconf.CONTROLLER_DIR,
+           dconf.OLTPBENCH_RESULTS):
     os.makedirs(_d, exist_ok=True)
+
+save_driver_envs(dconf.RESULT_DIR, dconf.OLTPBENCH_RESULTS)
 
 # Configure logging
 LOG = logging.getLogger(__name__)

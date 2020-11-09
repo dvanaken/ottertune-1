@@ -1,5 +1,7 @@
 import importlib
+import json
 import os
+from collections import OrderedDict
 
 from fabric.api import hide, local, settings, task
 from fabric.api import get as _get, put as _put, run as _run, sudo as _sudo
@@ -45,6 +47,31 @@ def load_driver_conf():
         dconf.LOGIN = login_str
 
     return dconf
+
+
+def get_driver_envs():
+    envs = {}
+    for d in (os.environ, dconf.__dict__):
+        for k, v in d.items():
+            if not k.startswith('_') and k == k.upper() and k not in ('LS_COLORS',):
+                try:
+                    json.dumps(v)
+                except TypeError:
+                    v = str(v)
+                envs[k] = v
+
+    envs = OrderedDict(sorted(envs.items()))
+    print("\nDRIVER_ENVS = {}\n".format(json.dumps(envs, indent=4)))
+    return envs
+
+
+def save_driver_envs(*savedirs, filename='driver_envs.json'):
+    env_str = json.dumps(get_driver_envs(), indent=4)
+    outfiles = [os.path.join(savedir, filename) for savedir in savedirs]
+    for outfile in outfiles:
+        with open(outfile, 'w') as f:
+            f.write(env_str)
+    print("Saved driver envs to {}.\n".format(', '.join(outfiles)))
 
 
 def parse_bool(value):
