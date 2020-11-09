@@ -95,7 +95,7 @@ class MetricDataAdmin(admin.ModelAdmin):
 
 
 class ResultAdmin(admin.ModelAdmin):
-    readonly_fields = ('dbms', 'knob_data', 'metric_data', 'session', 'workload')
+    readonly_fields = ('dbms', 'knob_data', 'metric_data', 'session')
     list_display = ('id', 'dbms', 'session', 'workload', 'creation_time')
     list_select_related = ('dbms', 'session', 'workload')
     list_filter = (('dbms', admin.RelatedOnlyFieldListFilter),

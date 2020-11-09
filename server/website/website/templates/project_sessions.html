@@ -22,7 +22,7 @@
             <td style="vertical-align:middle"><input type="checkbox" name="sessions" value="{{ session.pk }}" /></td>
             <td style="vertical-align:middle"><a href="{% url 'session' project.pk session.pk %}">{{ session.name }}</a></td>
             <td style="vertical-align:middle">{{ session.dbms.full_name }}</td>
-            <td style="vertical-align:middle">{{ session.description }}</td>
+            <td style="vertical-align:middle">{{ session.description | linebreaks }}</td>
             <td style="vertical-align:middle">{{ session.result_count }}</td>
             <td style="vertical-align:middle">{{ session.algorithm_name }}</td>
             <!-- <td style="vertical-align:middle">{{ session.creation_time }}</td> -->

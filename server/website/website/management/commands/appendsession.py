@@ -12,11 +12,11 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             'from_upload_code',
-            metavar='UPLOAD_CODE',
+            metavar='FROM_UPLOAD_CODE',
             help='Specifies the upload code of the existing session copy from.')
         parser.add_argument(
             'to_upload_code',
-            metavar='UPLOAD_CODE',
+            metavar='TO_UPLOAD_CODE',
             help='Specifies the upload code of the existing session copy to.')
 
     def handle(self, *args, **options):

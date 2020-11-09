@@ -409,7 +409,7 @@ def result_view(request, project_id, session_id, result_id):
 
     # default_metrics = {mname: metric_data[mname] * metric_meta[mname].scale
     #                    for mname in default_metrics}
-    if session.tuning_session == 'no_tuning_session':
+    if session.tuning_session == 'no_tuning_session' or target.task_ids is None:
         status = None
         next_conf = ''
         next_conf_available = False
@@ -477,6 +477,8 @@ def new_result(request):
             LOG.warning("New result form is not valid: %s", str(form.errors))
             return HttpResponse("New result form is not valid: " + str(form.errors), status=400)
         upload_code = form.cleaned_data['upload_code']
+        skip_recommend = form.cleaned_data['skip_recommend']
+        LOG.info("Skip recommend: {} (type={})".format(skip_recommend, type(skip_recommend)))
         try:
             session = Session.objects.get(upload_code=upload_code)
         except Session.DoesNotExist:
@@ -484,12 +486,12 @@ def new_result(request):
             return HttpResponse("Invalid upload code: " + upload_code, status=400)
 
         execution_times = form.cleaned_data['execution_times']
-        return handle_result_files(session, request.FILES, execution_times)
+        return handle_result_files(session, request.FILES, execution_times, skip_recommend)
     LOG.warning("Request type was not POST")
     return HttpResponse("Request type was not POST", status=400)
 
 
-def handle_result_files(session, files, execution_times=None):
+def handle_result_files(session, files, execution_times=None, skip_recommend=False):
     # Combine into contiguous files
     files = {k: b''.join(v.chunks()).decode() for k, v in list(files.items())}
 
@@ -802,7 +804,7 @@ def handle_result_files(session, files, execution_times=None):
     session.project.save()
     session.save()
 
-    if session.tuning_session == 'no_tuning_session':
+    if session.tuning_session == 'no_tuning_session' or skip_recommend:
         return HttpResponse("Result stored successfully!")
 
     celery_status = 'celery status is unknown'

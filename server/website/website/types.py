@@ -205,6 +205,15 @@ class AlgorithmType(BaseType):
     def short_name(cls, ctype):
         return cls.SHORT_NAMES[ctype]
 
+    @classmethod
+    def short_type(cls, short_name):
+        short_name = short_name.upper()
+        for stype, sname in cls.SHORT_NAMES.items():
+            if sname == short_name:
+                return stype
+        raise ValueError("Invalid short name for AlgorithmType: '{}' (expected: {}).".format(
+            short_name, ', '.join(sorted(cls.SHORT_NAMES.values()))))
+
 
 class StorageType(BaseType):
     SSD = 5

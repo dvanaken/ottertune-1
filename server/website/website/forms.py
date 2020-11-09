@@ -13,6 +13,7 @@ from .types import StorageType
 
 class NewResultForm(forms.Form):
     upload_code = forms.CharField(max_length=30)
+    skip_recommend = forms.BooleanField(initial=False, required=False)
     metrics_before = forms.FileField()
     metrics_after = forms.FileField()
     knobs = forms.FileField()
