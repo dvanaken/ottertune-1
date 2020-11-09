@@ -194,7 +194,7 @@ OLTPBENCH_CONFIG = os.environ['OLTPBENCH_CONFIG']
 OLTPBENCH_BENCH = os.environ['OLTPBENCH_BENCH']
 
 # Path to OLTPBench result directory
-OLTPBENCH_RESULTS = os.environ.get(os.path.join(OLTPBENCH_HOME, 'results'))
+OLTPBENCH_RESULTS = os.path.join(OLTPBENCH_HOME, 'results')
 
 
 ### #==========================================================
