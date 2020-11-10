@@ -2,6 +2,11 @@ import os
 from collections import OrderedDict
 
 #==========================================================
+#  DEBUG 
+#==========================================================
+DEBUG = str(os.environ.get('DEBUG', 'true')).lower() == 'true'
+
+#==========================================================
 #  HOST LOGIN
 #==========================================================
 
@@ -239,6 +244,10 @@ WEBSITE_URL = os.environ.get('WEBSITE_URL', 'http://127.0.0.1:8000')
 
 # Code for uploading new results to the website
 UPLOAD_CODE = os.environ['UPLOAD_CODE']
+
+WEBSITE_USER = 'admin'
+
+WEBSITE_PASSWORD = os.environ['WEBSITE_PASSWORD']
 
 # Name of the workload for this tuning session
 # If unset or None, OLTPBENCH_BENCH is used instead

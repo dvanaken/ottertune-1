@@ -68,6 +68,13 @@ TFileHandler = logging.FileHandler(dconf.TIMES_LOG)
 TFileHandler.setFormatter(Formatter)
 TLOG.addHandler(TFileHandler)
 
+_VALID_WEBSITE_SESSION_FIELDS = (
+    'username', 'password', 'project_name', 'name', 'dbms_type',
+    'dbms_version', 'target_objective', 'tuning_session', 'algorithm',
+    'upload_code', 'hyperparameters', 'session_knobs', 'disable_others',
+    'return_ddpg_model', 'description', 'ddpg_actor_model',
+    'ddpg_critic_model', 'ddpg_replay_memory')
+
 # Initialize sendmail
 if os.path.exists('/init.sh'):
     local('/init.sh')
@@ -1183,26 +1190,10 @@ def _http_content_to_json(content):
     return json_content, decoded
 
 
-def _modify_website_object(obj_name, action, verbose=False, **kwargs):
-    verbose = parse_bool(verbose)
-    if obj_name == 'project':
-        valid_actions = ('create', 'edit')
-    elif obj_name == 'session':
-        valid_actions = ('create', 'edit')
-    elif obj_name == 'user':
-        valid_actions = ('create', 'delete')
-    else:
-        raise ValueError('Invalid object: {}. Valid objects: project, session'.format(obj_name))
-
-    if action not in valid_actions:
-        raise ValueError('Invalid action: {}. Valid actions: {}'.format(
-            action, ', '.join(valid_actions)))
-
-    data = {}
-    for k, v in kwargs.items():
-        if isinstance(v, (dict, list, tuple)):
-            v = json.dumps(v)
-        data[k] = v
+def _modify_website_object(obj_name, action, data, verbose=False):
+    if verbose:
+        LOG.info("\n\n%s_%s_DATA = %s\n", action.upper(), obj_name.upper(),
+                 json.dumps(data, indent=4))
 
     url_path = '/{}/{}/'.format(action, obj_name)
     response = requests.post(dconf.WEBSITE_URL + url_path, data=data)
@@ -1234,23 +1225,47 @@ def delete_website_user(**kwargs):
 
 
 @task
-def create_website_project(**kwargs):
-    return _modify_website_object('project', 'create', **kwargs)
+def create_website_project(project_name, **kwargs):
+    data = dict(name=project_name, username=dconf.WEBSITE_USER, password=dconf.WEBSITE_PASSWORD)
+    data.update(**kwargs)
+    return _modify_website_object('project', 'create', data, verbose=dconf.DEBUG)
 
 
 @task
-def edit_website_project(**kwargs):
-    return _modify_website_object('project', 'edit', **kwargs)
+def edit_website_project(project_name, **kwargs):
+    if not kwargs:
+        LOG.warning("No project fields to edit.\n\nValid fields: project_name, description\n")
+        return
+    data = dict(name=project_name, username=dconf.WEBSITE_USER, password=dconf.WEBSITE_PASSWORD)
+    data.update(**kwargs)
+    return _modify_website_object('project', 'edit', data, verbose=dconf.DEBUG)
 
 
 @task
-def create_website_session(**kwargs):
-    return _modify_website_object('session', 'create', **kwargs)
+def create_website_session(session_name, project_name, **kwargs):
+    data = dict(name=session_name, project_name=project_name, username=dconf.WEBSITE_USER,
+                password=dconf.WEBSITE_PASSWORD, upload_code=dconf.UPLOAD_CODE,
+                dbms_type='mysql', dbms_version='8.0')
+    data.update(**kwargs)
+    return _modify_website_object('session', 'create', data, verbose=dconf.DEBUG)
 
 
 @task
-def edit_website_session(**kwargs):
-    return _modify_website_object('session', 'edit', **kwargs)
+def edit_website_session(upload_code=None, **kwargs):
+    if not kwargs:
+        LOG.warning("No session fields to edit.\n\nValid fields: %s\n",
+                    ', '.join(_VALID_WEBSITE_SESSION_FIELDS))
+        return
+    upload_code = upload_code or dconf.UPLOAD_CODE
+    data = dict(upload_code=upload_code)
+    data.update(**kwargs)
+    return _modify_website_object('session', 'edit', data, verbose=dconf.DEBUG)
+
+
+@task
+def print_website_session_fields():
+    print("\nVALID_WEBSITE_SESSION_FIELDS = {}\n".format(
+        json.dumps(_VALID_WEBSITE_SESSION_FIELDS, indent=4)))
 
 
 @task
@@ -1259,14 +1274,20 @@ def update_session_knobs():
         LOG.info("Updating knob ranges...")
         with open(dconf.KNOB_RANGES_FILE, 'r') as f:
             knob_ranges = f.read()  # json format
-        data = dict(
-            upload_code=dconf.UPLOAD_CODE,
-            session_knobs=knob_ranges,
-        )
-        response = requests.post(dconf.WEBSITE_URL + '/edit/session/', data=data)
-        print(response)
+        edit_website_session(session_knobs=knob_ranges)
     else:
         LOG.warning("Variable KNOB_RANGES_FILE is not set.")
+
+
+@task
+def get_website_info(obj_name, **kwargs):
+    res, json_content, _ = _modify_website_object(
+        obj_name, 'info', kwargs, verbose=dconf.DEBUG)
+    content_type = res.headers['Content-Type']
+    if content_type == 'application/json':
+        res = json_content.get('info', {})
+        assert res, json.dumps(res.json(), indent=4)
+    return res
 
 
 def wait_pipeline_data_ready(max_time_sec=800, interval_sec=10):
