@@ -435,8 +435,10 @@ def upload_result(result_dir=None, prefix=None, upload_code=None, skip_recommend
 
         files[base] = open(fpath, 'rb')
 
-    response = requests.post(dconf.WEBSITE_URL + '/new_result/', files=files,
-                             data={'upload_code': upload_code, 'skip_recommend': skip_recommend})
+    #response = requests.post(dconf.WEBSITE_URL + '/new_result/', files=files,
+    #                         data={'upload_code': upload_code, 'skip_recommend': skip_recommend})
+    response = handle_request('post', dconf.WEBSITE_URL + '/new_result/', files=files,
+                              data={'upload_code': upload_code, 'skip_recommend': skip_recommend})
     if response.status_code != 200:
         raise Exception('Error uploading result.\nStatus: {}\nMessage: {}\n'.format(
             response.status_code, get_content(response)))
@@ -460,7 +462,8 @@ def get_result(max_time_sec=180, interval_sec=5, upload_code=None):
     rout = ''
 
     while elapsed <= max_time_sec:
-        rsp = requests.get(url)
+        #rsp = requests.get(url)
+        rsp = handle_request('get', url)
         response = get_content(rsp)
         assert response != 'null'
         rout = json.dumps(response, indent=4) if isinstance(response, dict) else response
@@ -1221,7 +1224,8 @@ def _modify_website_object(obj_name, action, data, verbose=False):
                  json.dumps(data, indent=4))
 
     url_path = '/{}/{}/'.format(action, obj_name)
-    response = requests.post(dconf.WEBSITE_URL + url_path, data=data)
+    #response = requests.post(dconf.WEBSITE_URL + url_path, data=data)
+    response = handle_request('post', dconf.WEBSITE_URL + url_path, data=data)
 
     content = response.content.decode('utf-8')
     if response.status_code != 200:
@@ -1565,3 +1569,25 @@ def update_session_hyperparams(upload_code=None, **kwargs):
     with settings(host_string=host_string):
         run(cmd, remote_only=True)
         run(base + ' --print', remote_only=True)
+
+def handle_request(request_type, *args, **kwargs):
+    max_retries = kwargs.pop('max_retries', 3)
+    wait_sec = kwargs.pop('wait_sec', 15)
+    backoff = kwargs.pop('backoff', 2)
+    fn = requests.get if request_type == 'get' else requests.post
+
+    retries = 0
+    response = None
+    while True:
+        try:
+            response = fn(*args, **kwargs)
+            break
+        except requests.exceptions.ConnectionError:
+            if retries == max_retries:
+                raise
+
+            time.sleep(wait_sec)
+            wait_sec *= backoff
+            retries += 1
+
+    return response
