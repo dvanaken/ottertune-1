@@ -8,6 +8,7 @@ Created on Mar 23, 2018
 
 @author: bohan
 '''
+import copy
 import glob
 import json
 import os
@@ -74,6 +75,30 @@ _VALID_WEBSITE_SESSION_FIELDS = (
     'upload_code', 'hyperparameters', 'session_knobs', 'disable_others',
     'return_ddpg_model', 'description', 'ddpg_actor_model',
     'ddpg_critic_model', 'ddpg_replay_memory')
+
+_WEBSITE_DATA = dict(
+    username=dconf.WEBSITE_USER,
+    password=dconf.WEBSITE_PASSWORD)
+
+_PROJECT_DATA = copy.deepcopy(_WEBSITE_DATA)
+_PROJECT_DATA.update(description='')
+
+_SESSION_DATA = copy.deepcopy(_WEBSITE_DATA)
+_SESSION_DATA.update(
+    dbms_type='mysql',
+    dbms_version='8.0',
+    upload_code = dconf.UPLOAD_CODE,
+    target_objective='throughput',
+    description='')
+
+_ALGORITHM_MAP = {
+    'gpr': {'algorithm': 'Gaussian Process Bandits', 'tuning_session': 'tuning_session'},
+    'dnn': {'algorithm': 'Deep Neural Network', 'tuning_session': 'tuning_session'},
+    'ddpg': {'algorithm': 'Deep Deterministic Policy Gradients', 'tuning_session': 'tuning_session'},
+    'lhs': {'tuning_session': 'lhs'},
+    'random': {'tuning_session': 'randomly_generate'},
+    'notuning': {'tuning_session': 'no_tuning_session'},
+}
 
 # Initialize sendmail
 if os.path.exists('/init.sh'):
@@ -1226,8 +1251,8 @@ def delete_website_user(**kwargs):
 
 @task
 def create_website_project(project_name, **kwargs):
-    data = dict(name=project_name, username=dconf.WEBSITE_USER, password=dconf.WEBSITE_PASSWORD)
-    data.update(**kwargs)
+    data = copy.deepcopy(_PROJECT_DATA)
+    data.update(name=project_name, **kwargs)
     return _modify_website_object('project', 'create', data, verbose=dconf.DEBUG)
 
 
@@ -1236,28 +1261,29 @@ def edit_website_project(project_name, **kwargs):
     if not kwargs:
         LOG.warning("No project fields to edit.\n\nValid fields: project_name, description\n")
         return
-    data = dict(name=project_name, username=dconf.WEBSITE_USER, password=dconf.WEBSITE_PASSWORD)
-    data.update(**kwargs)
+    data = copy.deepcopy(_PROJECT_DATA)
+    data.update(name=project_name, **kwargs)
     return _modify_website_object('project', 'edit', data, verbose=dconf.DEBUG)
 
 
 @task
-def create_website_session(session_name, project_name, **kwargs):
-    data = dict(name=session_name, project_name=project_name, username=dconf.WEBSITE_USER,
-                password=dconf.WEBSITE_PASSWORD, upload_code=dconf.UPLOAD_CODE,
-                dbms_type='mysql', dbms_version='8.0')
-    data.update(**kwargs)
+def create_website_session(session_name, project_name, algo=None, **kwargs):
+    data = copy.deepcopy(_SESSION_DATA)
+    if algo:
+        data.update(**_ALGORITHM_MAP[algo])
+    data.update(name=session_name, project_name=project_name, **kwargs)
     return _modify_website_object('session', 'create', data, verbose=dconf.DEBUG)
 
 
 @task
-def edit_website_session(upload_code=None, **kwargs):
+def edit_website_session(upload_code=None, algo=None, **kwargs):
     if not kwargs:
         LOG.warning("No session fields to edit.\n\nValid fields: %s\n",
                     ', '.join(_VALID_WEBSITE_SESSION_FIELDS))
         return
-    upload_code = upload_code or dconf.UPLOAD_CODE
-    data = dict(upload_code=upload_code)
+    data = dict(upload_code=upload_code or dconf.UPLOAD_CODE)
+    if algo:
+        data.update(**_ALGORITHM_MAP[algo])
     data.update(**kwargs)
     return _modify_website_object('session', 'edit', data, verbose=dconf.DEBUG)
 
