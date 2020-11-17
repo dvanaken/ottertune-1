@@ -177,7 +177,7 @@ MAX_DISK_USAGE = 90
 
 # Execute this many warmup iterations before uploading the next result
 # to the website
-WARMUP_ITERATIONS = 1
+WARMUP_ITERATIONS = int(os.environ.get('WARMUP_ITERATIONS', 1))
 
 # Let the database initialize for this many seconds after it restarts
 RESTART_SLEEP_SEC = int(os.environ.get('RESTART_SLEEP_SEC', 50))

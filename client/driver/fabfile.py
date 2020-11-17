@@ -412,39 +412,53 @@ def upload_result(result_dir=None, prefix=None, upload_code=None, skip_recommend
     bases = ['summary', 'knobs', 'metrics_before', 'metrics_after']
     if dconf.ENABLE_UDM:
         bases.append('user_defined_metrics')
-    for base in bases:
-        fpath = os.path.join(result_dir, prefix + base + '.json')
 
-        # Replaces the true db version with the specified version to allow for
-        # testing versions not officially supported by OtterTune
-        if base == 'summary' and (dconf.OVERRIDE_DB_VERSION or override_workload):
-            with open(fpath, 'r') as f:
-                summary = json.load(f)
-            summary_updated = False
-            if dconf.OVERRIDE_DB_VERSION and dconf.OVERRIDE_DB_VERSION != summary['database_version']:
-                summary['real_database_version'] = summary['database_version']
-                summary['database_version'] = dconf.OVERRIDE_DB_VERSION
-                summary_updated = True
-            if override_workload and override_workload != summary['workload_name']:
-                summary['real_workload_name'] = summary['workload_name']
-                summary['workload_name'] = override_workload
-                summary_updated = True
-            if summary_updated:
-                with open(fpath, 'w') as f:
-                    json.dump(summary, f, indent=1)
+    # Replaces the true db version with the specified version to allow for
+    # testing versions not officially supported by OtterTune
+    if dconf.OVERRIDE_DB_VERSION or override_workload:
+        summary_path = os.path.join(result_dir, prefix + 'summary.json')
+        with open(summary_path, 'r') as f:
+            summary = json.load(f)
+        summary_updated = False
+        if dconf.OVERRIDE_DB_VERSION and dconf.OVERRIDE_DB_VERSION != summary['database_version']:
+            summary['real_database_version'] = summary['database_version']
+            summary['database_version'] = dconf.OVERRIDE_DB_VERSION
+            summary_updated = True
+        if override_workload and override_workload != summary['workload_name']:
+            summary['real_workload_name'] = summary['workload_name']
+            summary['workload_name'] = override_workload
+            summary_updated = True
+        if summary_updated:
+            with open(summary_path, 'w') as f:
+                json.dump(summary, f, indent=1)
 
-        files[base] = open(fpath, 'rb')
+    url = dconf.WEBSITE_URL + '/new_result/'
+    data = {'upload_code': upload_code, 'skip_recommend': skip_recommend}
 
-    #response = requests.post(dconf.WEBSITE_URL + '/new_result/', files=files,
-    #                         data={'upload_code': upload_code, 'skip_recommend': skip_recommend})
-    response = handle_request('post', dconf.WEBSITE_URL + '/new_result/', files=files,
-                              data={'upload_code': upload_code, 'skip_recommend': skip_recommend})
+    max_retries, wait_sec, backoff = 3, 15, 2
+    retries = 0
+    response = None
+    while True:
+        files = {}
+        for base in bases:
+            fpath = os.path.join(result_dir, prefix + base + '.json')
+            files[base] = open(fpath, 'rb')
+        try:
+            response = requests.post(url, files=files, data=data)
+            break
+        except requests.exceptions.ConnectionError:
+            if retries == max_retries:
+                raise
+            time.sleep(wait_sec)
+            wait_sec *= backoff
+            retries += 1
+        finally:
+            for f in files.values():  # pylint: disable=not-an-iterable
+                f.close()
+
     if response.status_code != 200:
         raise Exception('Error uploading result.\nStatus: {}\nMessage: {}\n'.format(
             response.status_code, get_content(response)))
-
-    for f in files.values():  # pylint: disable=not-an-iterable
-        f.close()
 
     LOG.info(get_content(response))
 
@@ -1043,12 +1057,13 @@ def run_loops(max_iter=10, skip_restore=False, reset_config=False):
             send_email(subject="{} DB ({}) Finished!".format(dconf.DB_TYPE, dconf.DB_HOST))
         else:
             LOG.error(tb)
-            send_email(subject="{} DB ({}) Failed!".format(dconf.DB_TYPE, dconf.DB_HOST), body=tb)
+            if 'KeyboardInterrupt' not in tb:
+                send_email(subject="{} DB ({}) Failed!".format(dconf.DB_TYPE, dconf.DB_HOST), body=tb)
         time.sleep(60)
 
 
 @task
-def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
+def run_knob_configs(iters_per_config=3, restore_db=True, iter_offset=0,  clear_results=False):
     if not dconf.KNOB_CONFIGS:
         print("'KNOB_CONFIGS' env not set or empty! Exiting...")
         return
@@ -1061,6 +1076,7 @@ def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
 
     iters_per_config = int(iters_per_config)
     restore_db = parse_bool(restore_db)
+    iter_offset = int(iter_offset)
     clear_results = parse_bool(clear_results)
 
     if clear_results:
@@ -1071,8 +1087,8 @@ def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
 
     if restore_db:
         restore_database()
-        if dconf.DB_TYPE == 'mysql':
-            run_oltpbench(outfile='warmup')
+        for j in range(dconf.WARMUP_ITERATIONS):
+            warmup()
 
     total_iters = 0
 
@@ -1113,7 +1129,8 @@ def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
             collector.close()
 
             LOG.info('Run OLTP-Bench')
-            outfile = '{}-{}-{:02d}'.format(dconf.WORKLOAD_NAME, config_name, i)
+            #outfile = '{}-{}-{:02d}'.format(dconf.WORKLOAD_NAME, config_name, i)
+            outfile = '{}-{:02d}'.format(config_name, i + iter_offset)
             start_time = time.time()
             run_oltpbench(outfile=outfile)
             end_time = time.time()
