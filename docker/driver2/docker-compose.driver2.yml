@@ -6,6 +6,7 @@ services:
         labels:
             NAME: "ottertune-driver2"
         environment:
+          DEBUG: 'true'
           CONTAINER_NAME: 'mysql'
           LOGIN_NAME: 'user'
           LOGIN_HOST: '192...'
@@ -22,10 +23,13 @@ services:
           OLTPBENCH_BENCH: 'ycsb'
           ADMIN_EMAIL: 'user@gmail.com'
           WEBSITE_URL: 'http://127.0.0.1:8008'
+          WEBSITE_PASSWORD: 'pass' 
           UPLOAD_CODE: 'abc123'
           WORKLOAD_NAME: 'updateonly'
           KNOB_RANGES_FILE: '/app/driver/knob_ranges/mysql_knob_ranges_xxl.json'
           KNOB_CONFIGS: ''
+          CLIENT_HOSTNAME: ''
+          SERVER_HOSTNAME: ''
         volumes:
          - ${HOME}/.ssh/id_rsa:/root/.ssh/id_rsa:ro
          - ${HOME}/.vimrc:/root/.vimrc:ro

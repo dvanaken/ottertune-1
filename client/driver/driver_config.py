@@ -2,6 +2,11 @@ import os
 from collections import OrderedDict
 
 #==========================================================
+#  DEBUG 
+#==========================================================
+DEBUG = str(os.environ.get('DEBUG', 'true')).lower() == 'true'
+
+#==========================================================
 #  HOST LOGIN
 #==========================================================
 
@@ -172,7 +177,7 @@ MAX_DISK_USAGE = 90
 
 # Execute this many warmup iterations before uploading the next result
 # to the website
-WARMUP_ITERATIONS = 1
+WARMUP_ITERATIONS = int(os.environ.get('WARMUP_ITERATIONS', 1))
 
 # Let the database initialize for this many seconds after it restarts
 RESTART_SLEEP_SEC = int(os.environ.get('RESTART_SLEEP_SEC', 50))
@@ -194,7 +199,7 @@ OLTPBENCH_CONFIG = os.environ['OLTPBENCH_CONFIG']
 OLTPBENCH_BENCH = os.environ['OLTPBENCH_BENCH']
 
 # Path to OLTPBench result directory
-OLTPBENCH_RESULTS = os.environ.get(os.path.join(OLTPBENCH_HOME, 'results'))
+OLTPBENCH_RESULTS = os.path.join(OLTPBENCH_HOME, 'results')
 
 
 ### #==========================================================
@@ -239,6 +244,10 @@ WEBSITE_URL = os.environ.get('WEBSITE_URL', 'http://127.0.0.1:8000')
 
 # Code for uploading new results to the website
 UPLOAD_CODE = os.environ['UPLOAD_CODE']
+
+WEBSITE_USER = 'admin'
+
+WEBSITE_PASSWORD = os.environ['WEBSITE_PASSWORD']
 
 # Name of the workload for this tuning session
 # If unset or None, OLTPBENCH_BENCH is used instead

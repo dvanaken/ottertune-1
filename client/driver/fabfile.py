@@ -8,6 +8,7 @@ Created on Mar 23, 2018
 
 @author: bohan
 '''
+import copy
 import glob
 import json
 import os
@@ -27,7 +28,7 @@ from fabric.state import output as fabric_output
 from collectors import MySQLCollector
 
 from utils import (file_exists, get, get_content, load_driver_conf, parse_bool,
-                   put, run, run_sql_script, sudo, FabricException)
+                   put, run, run_sql_script, save_driver_envs, sudo, FabricException)
 
 # Loads the driver config file (defaults to driver_config.py)
 dconf = load_driver_conf()  # pylint: disable=invalid-name
@@ -42,8 +43,11 @@ env.hosts = [dconf.LOGIN]
 env.password = dconf.LOGIN_PASSWORD
 
 # Create local directories
-for _d in (dconf.RESULT_DIR, dconf.LOG_DIR, dconf.TEMP_DIR, dconf.CONTROLLER_DIR):
+for _d in (dconf.RESULT_DIR, dconf.LOG_DIR, dconf.TEMP_DIR, dconf.CONTROLLER_DIR,
+           dconf.OLTPBENCH_RESULTS):
     os.makedirs(_d, exist_ok=True)
+
+save_driver_envs(dconf.RESULT_DIR, dconf.OLTPBENCH_RESULTS)
 
 # Configure logging
 LOG = logging.getLogger(__name__)
@@ -64,6 +68,37 @@ TLOG.setLevel(logging.INFO)
 TFileHandler = logging.FileHandler(dconf.TIMES_LOG)
 TFileHandler.setFormatter(Formatter)
 TLOG.addHandler(TFileHandler)
+
+_VALID_WEBSITE_SESSION_FIELDS = (
+    'username', 'password', 'project_name', 'name', 'dbms_type',
+    'dbms_version', 'target_objective', 'tuning_session', 'algorithm',
+    'upload_code', 'hyperparameters', 'session_knobs', 'disable_others',
+    'return_ddpg_model', 'description', 'ddpg_actor_model',
+    'ddpg_critic_model', 'ddpg_replay_memory')
+
+_WEBSITE_DATA = dict(
+    username=dconf.WEBSITE_USER,
+    password=dconf.WEBSITE_PASSWORD)
+
+_PROJECT_DATA = copy.deepcopy(_WEBSITE_DATA)
+_PROJECT_DATA.update(description='')
+
+_SESSION_DATA = copy.deepcopy(_WEBSITE_DATA)
+_SESSION_DATA.update(
+    dbms_type='mysql',
+    dbms_version='8.0',
+    upload_code = dconf.UPLOAD_CODE,
+    target_objective='throughput',
+    description='')
+
+_ALGORITHM_MAP = {
+    'gpr': {'algorithm': 'Gaussian Process Bandits', 'tuning_session': 'tuning_session'},
+    'dnn': {'algorithm': 'Deep Neural Network', 'tuning_session': 'tuning_session'},
+    'ddpg': {'algorithm': 'Deep Deterministic Policy Gradients', 'tuning_session': 'tuning_session'},
+    'lhs': {'tuning_session': 'lhs'},
+    'random': {'tuning_session': 'randomly_generate'},
+    'notuning': {'tuning_session': 'no_tuning_session'},
+}
 
 # Initialize sendmail
 if os.path.exists('/init.sh'):
@@ -377,37 +412,53 @@ def upload_result(result_dir=None, prefix=None, upload_code=None, skip_recommend
     bases = ['summary', 'knobs', 'metrics_before', 'metrics_after']
     if dconf.ENABLE_UDM:
         bases.append('user_defined_metrics')
-    for base in bases:
-        fpath = os.path.join(result_dir, prefix + base + '.json')
 
-        # Replaces the true db version with the specified version to allow for
-        # testing versions not officially supported by OtterTune
-        if base == 'summary' and (dconf.OVERRIDE_DB_VERSION or override_workload):
-            with open(fpath, 'r') as f:
-                summary = json.load(f)
-            summary_updated = False
-            if dconf.OVERRIDE_DB_VERSION and dconf.OVERRIDE_DB_VERSION != summary['database_version']:
-                summary['real_database_version'] = summary['database_version']
-                summary['database_version'] = dconf.OVERRIDE_DB_VERSION
-                summary_updated = True
-            if override_workload and override_workload != summary['workload_name']:
-                summary['real_workload_name'] = summary['workload_name']
-                summary['workload_name'] = override_workload
-                summary_updated = True
-            if summary_updated:
-                with open(fpath, 'w') as f:
-                    json.dump(summary, f, indent=1)
+    # Replaces the true db version with the specified version to allow for
+    # testing versions not officially supported by OtterTune
+    if dconf.OVERRIDE_DB_VERSION or override_workload:
+        summary_path = os.path.join(result_dir, prefix + 'summary.json')
+        with open(summary_path, 'r') as f:
+            summary = json.load(f)
+        summary_updated = False
+        if dconf.OVERRIDE_DB_VERSION and dconf.OVERRIDE_DB_VERSION != summary['database_version']:
+            summary['real_database_version'] = summary['database_version']
+            summary['database_version'] = dconf.OVERRIDE_DB_VERSION
+            summary_updated = True
+        if override_workload and override_workload != summary['workload_name']:
+            summary['real_workload_name'] = summary['workload_name']
+            summary['workload_name'] = override_workload
+            summary_updated = True
+        if summary_updated:
+            with open(summary_path, 'w') as f:
+                json.dump(summary, f, indent=1)
 
-        files[base] = open(fpath, 'rb')
+    url = dconf.WEBSITE_URL + '/new_result/'
+    data = {'upload_code': upload_code, 'skip_recommend': skip_recommend}
 
-    response = requests.post(dconf.WEBSITE_URL + '/new_result/', files=files,
-                             data={'upload_code': upload_code, 'skip_recommend': skip_recommend})
+    max_retries, wait_sec, backoff = 3, 15, 2
+    retries = 0
+    response = None
+    while True:
+        files = {}
+        for base in bases:
+            fpath = os.path.join(result_dir, prefix + base + '.json')
+            files[base] = open(fpath, 'rb')
+        try:
+            response = requests.post(url, files=files, data=data)
+            break
+        except requests.exceptions.ConnectionError:
+            if retries == max_retries:
+                raise
+            time.sleep(wait_sec)
+            wait_sec *= backoff
+            retries += 1
+        finally:
+            for f in files.values():  # pylint: disable=not-an-iterable
+                f.close()
+
     if response.status_code != 200:
         raise Exception('Error uploading result.\nStatus: {}\nMessage: {}\n'.format(
             response.status_code, get_content(response)))
-
-    for f in files.values():  # pylint: disable=not-an-iterable
-        f.close()
 
     LOG.info(get_content(response))
 
@@ -425,7 +476,8 @@ def get_result(max_time_sec=180, interval_sec=5, upload_code=None):
     rout = ''
 
     while elapsed <= max_time_sec:
-        rsp = requests.get(url)
+        #rsp = requests.get(url)
+        rsp = handle_request('get', url)
         response = get_content(rsp)
         assert response != 'null'
         rout = json.dumps(response, indent=4) if isinstance(response, dict) else response
@@ -1005,12 +1057,13 @@ def run_loops(max_iter=10, skip_restore=False, reset_config=False):
             send_email(subject="{} DB ({}) Finished!".format(dconf.DB_TYPE, dconf.DB_HOST))
         else:
             LOG.error(tb)
-            send_email(subject="{} DB ({}) Failed!".format(dconf.DB_TYPE, dconf.DB_HOST), body=tb)
+            if 'KeyboardInterrupt' not in tb:
+                send_email(subject="{} DB ({}) Failed!".format(dconf.DB_TYPE, dconf.DB_HOST), body=tb)
         time.sleep(60)
 
 
 @task
-def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
+def run_knob_configs(iters_per_config=3, restore_db=True, iter_offset=0,  clear_results=False):
     if not dconf.KNOB_CONFIGS:
         print("'KNOB_CONFIGS' env not set or empty! Exiting...")
         return
@@ -1023,6 +1076,7 @@ def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
 
     iters_per_config = int(iters_per_config)
     restore_db = parse_bool(restore_db)
+    iter_offset = int(iter_offset)
     clear_results = parse_bool(clear_results)
 
     if clear_results:
@@ -1033,8 +1087,8 @@ def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
 
     if restore_db:
         restore_database()
-        if dconf.DB_TYPE == 'mysql':
-            run_oltpbench(outfile='warmup')
+        for j in range(dconf.WARMUP_ITERATIONS):
+            warmup()
 
     total_iters = 0
 
@@ -1075,7 +1129,8 @@ def run_knob_configs(iters_per_config=4, restore_db=True, clear_results=False):
             collector.close()
 
             LOG.info('Run OLTP-Bench')
-            outfile = '{}-{}-{:02d}'.format(dconf.WORKLOAD_NAME, config_name, i)
+            #outfile = '{}-{}-{:02d}'.format(dconf.WORKLOAD_NAME, config_name, i)
+            outfile = '{}-{:02d}'.format(config_name, i + iter_offset)
             start_time = time.time()
             run_oltpbench(outfile=outfile)
             end_time = time.time()
@@ -1180,29 +1235,14 @@ def _http_content_to_json(content):
     return json_content, decoded
 
 
-def _modify_website_object(obj_name, action, verbose=False, **kwargs):
-    verbose = parse_bool(verbose)
-    if obj_name == 'project':
-        valid_actions = ('create', 'edit')
-    elif obj_name == 'session':
-        valid_actions = ('create', 'edit')
-    elif obj_name == 'user':
-        valid_actions = ('create', 'delete')
-    else:
-        raise ValueError('Invalid object: {}. Valid objects: project, session'.format(obj_name))
-
-    if action not in valid_actions:
-        raise ValueError('Invalid action: {}. Valid actions: {}'.format(
-            action, ', '.join(valid_actions)))
-
-    data = {}
-    for k, v in kwargs.items():
-        if isinstance(v, (dict, list, tuple)):
-            v = json.dumps(v)
-        data[k] = v
+def _modify_website_object(obj_name, action, data, verbose=False):
+    if verbose:
+        LOG.info("\n\n%s_%s_DATA = %s\n", action.upper(), obj_name.upper(),
+                 json.dumps(data, indent=4))
 
     url_path = '/{}/{}/'.format(action, obj_name)
-    response = requests.post(dconf.WEBSITE_URL + url_path, data=data)
+    #response = requests.post(dconf.WEBSITE_URL + url_path, data=data)
+    response = handle_request('post', dconf.WEBSITE_URL + url_path, data=data)
 
     content = response.content.decode('utf-8')
     if response.status_code != 200:
@@ -1231,23 +1271,48 @@ def delete_website_user(**kwargs):
 
 
 @task
-def create_website_project(**kwargs):
-    return _modify_website_object('project', 'create', **kwargs)
+def create_website_project(project_name, **kwargs):
+    data = copy.deepcopy(_PROJECT_DATA)
+    data.update(name=project_name, **kwargs)
+    return _modify_website_object('project', 'create', data, verbose=dconf.DEBUG)
 
 
 @task
-def edit_website_project(**kwargs):
-    return _modify_website_object('project', 'edit', **kwargs)
+def edit_website_project(project_name, **kwargs):
+    if not kwargs:
+        LOG.warning("No project fields to edit.\n\nValid fields: project_name, description\n")
+        return
+    data = copy.deepcopy(_PROJECT_DATA)
+    data.update(name=project_name, **kwargs)
+    return _modify_website_object('project', 'edit', data, verbose=dconf.DEBUG)
 
 
 @task
-def create_website_session(**kwargs):
-    return _modify_website_object('session', 'create', **kwargs)
+def create_website_session(session_name, project_name, algo=None, **kwargs):
+    data = copy.deepcopy(_SESSION_DATA)
+    if algo:
+        data.update(**_ALGORITHM_MAP[algo])
+    data.update(name=session_name, project_name=project_name, **kwargs)
+    return _modify_website_object('session', 'create', data, verbose=dconf.DEBUG)
 
 
 @task
-def edit_website_session(**kwargs):
-    return _modify_website_object('session', 'edit', **kwargs)
+def edit_website_session(upload_code=None, algo=None, **kwargs):
+    if not kwargs:
+        LOG.warning("No session fields to edit.\n\nValid fields: %s\n",
+                    ', '.join(_VALID_WEBSITE_SESSION_FIELDS))
+        return
+    data = dict(upload_code=upload_code or dconf.UPLOAD_CODE)
+    if algo:
+        data.update(**_ALGORITHM_MAP[algo])
+    data.update(**kwargs)
+    return _modify_website_object('session', 'edit', data, verbose=dconf.DEBUG)
+
+
+@task
+def print_website_session_fields():
+    print("\nVALID_WEBSITE_SESSION_FIELDS = {}\n".format(
+        json.dumps(_VALID_WEBSITE_SESSION_FIELDS, indent=4)))
 
 
 @task
@@ -1256,14 +1321,20 @@ def update_session_knobs():
         LOG.info("Updating knob ranges...")
         with open(dconf.KNOB_RANGES_FILE, 'r') as f:
             knob_ranges = f.read()  # json format
-        data = dict(
-            upload_code=dconf.UPLOAD_CODE,
-            session_knobs=knob_ranges,
-        )
-        response = requests.post(dconf.WEBSITE_URL + '/edit/session/', data=data)
-        print(response)
+        edit_website_session(session_knobs=knob_ranges)
     else:
         LOG.warning("Variable KNOB_RANGES_FILE is not set.")
+
+
+@task
+def get_website_info(obj_name, **kwargs):
+    res, json_content, _ = _modify_website_object(
+        obj_name, 'info', kwargs, verbose=dconf.DEBUG)
+    content_type = res.headers['Content-Type']
+    if content_type == 'application/json':
+        res = json_content.get('info', {})
+        assert res, json.dumps(res.json(), indent=4)
+    return res
 
 
 def wait_pipeline_data_ready(max_time_sec=800, interval_sec=10):
@@ -1515,3 +1586,25 @@ def update_session_hyperparams(upload_code=None, **kwargs):
     with settings(host_string=host_string):
         run(cmd, remote_only=True)
         run(base + ' --print', remote_only=True)
+
+def handle_request(request_type, *args, **kwargs):
+    max_retries = kwargs.pop('max_retries', 3)
+    wait_sec = kwargs.pop('wait_sec', 15)
+    backoff = kwargs.pop('backoff', 2)
+    fn = requests.get if request_type == 'get' else requests.post
+
+    retries = 0
+    response = None
+    while True:
+        try:
+            response = fn(*args, **kwargs)
+            break
+        except requests.exceptions.ConnectionError:
+            if retries == max_retries:
+                raise
+
+            time.sleep(wait_sec)
+            wait_sec *= backoff
+            retries += 1
+
+    return response

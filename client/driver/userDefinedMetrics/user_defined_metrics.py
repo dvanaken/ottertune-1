@@ -13,23 +13,27 @@ parser.add_argument("--outputfile",
                     default='outputfile')
 args = parser.parse_args()  # pylint: disable=invalid-name
 
+STRING = 1
 INTEGER = 2
+REAL = 3
+BOOL = 4
+ENUM = 5
 
 USER_DEFINED_METRICS = {
     "throughput": {
         "unit": "transaction / second",
         "short_unit": "txn/s",
-        "type": INTEGER
+        "type": REAL
     },
     "latency_99": {
         "unit": "milliseconds",
         "short_unit": "ms",
-        "type": INTEGER
+        "type": REAL
     },
     "latency_95": {
         "unit": "milliseconds",
         "short_unit": "ms",
-        "type": INTEGER
+        "type": REAL
     }
 }
 
