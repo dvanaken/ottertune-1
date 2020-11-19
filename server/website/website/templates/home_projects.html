@@ -13,6 +13,10 @@
         {% if show_descriptions %}
         <th>{{ labels.description }}</th>
         {% endif %}
+        {% if projects %}
+        <th>{{ labels.num_sessions }}</th>
+        <th>{{ labels.num_results }}</th>
+        {% endif %}
         <th>{{ labels.creation_time }}</th>
         <th>{{ labels.last_update }}</th>
     </tr>
@@ -22,6 +26,10 @@
             <td style="vertical-align:middle"><a href="{% url 'project_sessions' project.pk %}">{{ project.name }}</a></td>
             {% if show_descriptions %}
             <td style="vertical-align:middle">{{ project.description|linebreaks }}</td>
+            {% endif %}
+            {% if projects %}
+            <td style="vertical-align:middle">{{ project.num_sessions }}</td>
+            <td style="vertical-align:middle">{{ project.num_results }}</td>
             {% endif %}
             <td style="vertical-align:middle">{{ project.creation_time }}</td>
             <td style="vertical-align:middle">{{ project.last_update }}</td>

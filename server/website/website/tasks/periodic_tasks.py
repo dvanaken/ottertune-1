@@ -5,11 +5,14 @@
 #
 import copy
 import time
+import traceback
 import numpy as np
 from pytz import timezone
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from django.db import transaction
+from django.db.models import Count
 from django.utils.timezone import now
 from django.utils.datetime_safe import datetime
 from sklearn.preprocessing import StandardScaler
@@ -20,9 +23,11 @@ from analysis.lasso import LassoPath
 from analysis.preprocessing import (Bin, get_shuffle_indices,
                                     DummyEncoder,
                                     consolidate_columnlabels)
-from website.models import PipelineData, PipelineRun, Result, Workload, ExecutionTime
+from website.models import PipelineData, PipelineRun, Result, Session, Workload, ExecutionTime
 from website.settings import (ENABLE_DUMMY_ENCODER, KNOB_IDENT_USE_PRUNED_METRICS,
-                              MIN_WORKLOAD_RESULTS_COUNT, TIME_ZONE, VIEWS_FOR_PRUNING)
+                              MIN_WORKLOAD_RESULTS_COUNT, TIME_ZONE, VIEWS_FOR_PRUNING,
+                              PRUNED_METRICS_MIN_CLUSTERS, PRUNED_METRICS_MAX_CLUSTERS,
+                              BG_TASKS_PROCESS_COMBINED_DATA)
 from website.types import PipelineTaskType, WorkloadStatusType
 from website.utils import DataUtil, JSONUtil
 
@@ -37,178 +42,183 @@ def save_execution_time(start_ts, fn):
     ExecutionTime.objects.create(module="celery.periodic_tasks", function=fn, tag="",
                                  start_time=start_time, execution_time=exec_time, result=None)
 
+
+def get_workload_name(workload):
+    name = workload.name
+    if workload.project.name != workload.name:
+        name = '{}.{}'.format(workload.project.name, name)
+    return '{}@{}'.format(workload.dbms.key, name)
+
+
 @shared_task(name="run_background_tasks")
 def run_background_tasks():
     start_ts = time.time()
     LOG.info("Starting background tasks...")
-    # Find modified and not modified workloads, we only have to calculate for the
-    # modified workloads.
-    modified_workloads = Workload.objects.filter(status=WorkloadStatusType.MODIFIED)
-    num_modified = modified_workloads.count()
-    non_modified_workloads = Workload.objects.filter(status=WorkloadStatusType.PROCESSED)
-    non_modified_workloads = list(non_modified_workloads.values_list('pk', flat=True))
-    last_pipeline_run = PipelineRun.objects.get_latest()
-    LOG.debug("Workloads: # modified: %s, # processed: %s, # total: %s",
-              num_modified, len(non_modified_workloads),
-              Workload.objects.all().count())
 
-    if num_modified == 0:
-        # No previous workload data yet. Try again later.
-        LOG.info("No modified workload data yet. Ending background tasks.")
-        return
+    with transaction.atomic():
+        modified_workloads = Workload.objects.filter(status=WorkloadStatusType.MODIFIED)
+        modified_workload_ids = list(modified_workloads.values_list('id', flat=True))
+        if len(modified_workloads) == 0:
+            # No previous workload data yet. Try again later.
+            LOG.info("No modified workload data yet. Ending background tasks.")
+            return
 
-    # Create new entry in PipelineRun table to store the output of each of
-    # the background tasks
-    pipeline_run_obj = PipelineRun(start_time=now(), end_time=None)
-    pipeline_run_obj.save()
+        # Create new entry in PipelineRun table to store the output of each of
+        # the background tasks
+        pipeline_run_obj = PipelineRun.objects.create(start_time=now(), end_time=None)
+        pipeline_run_id = pipeline_run_obj.id
+        modified_workloads.update(status=WorkloadStatusType.PROCESSING)
 
-    for i, workload in enumerate(modified_workloads):
-        workload.status = WorkloadStatusType.PROCESSING
-        workload.save()
-        wkld_results = Result.objects.filter(workload=workload)
-        num_wkld_results = wkld_results.count()
-        workload_name = '{}@{}.{}'.format(workload.dbms.key, workload.project.name, workload.name)
+    LOG.info("Starting pipeline run %s (modified=%s, process_combined_data=%s)",
+             pipeline_run_id, len(modified_workload_ids), BG_TASKS_PROCESS_COMBINED_DATA)
 
-        LOG.info("Starting workload %s (%s/%s, # results: %s)...", workload_name,
-                 i + 1, num_modified, num_wkld_results)
+    try:
+        with transaction.atomic():
+            bg_wkld = Workload.objects.get(name='backgroundtasks')
+            modified_workloads = Workload.objects.filter(id__in=modified_workload_ids)
+            if BG_TASKS_PROCESS_COMBINED_DATA:
+                modified_workloads = list(modified_workloads) + [bg_wkld]
+            num_modified = len(modified_workloads)
 
-        if num_wkld_results == 0:
-            # delete the workload
-            LOG.info("Deleting workload %s because it has no results.", workload_name)
-            workload.delete()
-            continue
+            # Process modified workloads
+            LOG.info("Processing %s workloads: %s", num_modified,
+                     ', '.join(get_workload_name(w) for w in modified_workloads))
+            for i, workload in enumerate(modified_workloads):
+                workload_name = get_workload_name(workload)
 
-        if num_wkld_results < MIN_WORKLOAD_RESULTS_COUNT:
-            # Check that there are enough results in the workload
-            LOG.info("Not enough results in workload %s (# results: %s, # required: %s).",
-                     workload_name, num_wkld_results, MIN_WORKLOAD_RESULTS_COUNT)
-            workload.status = WorkloadStatusType.PROCESSED
-            workload.save()
-            continue
+                if bg_wkld == workload:
+                    wkld_results = Result.objects.all()
+                else:
+                    wkld_results = Result.objects.filter(workload=workload)
 
-        LOG.info("Aggregating data for workload %s...", workload_name)
-        # Aggregate the knob & metric data for this workload
-        knob_data, metric_data = aggregate_data(wkld_results)
-        LOG.debug("Aggregated knob data: rowlabels=%s, columnlabels=%s, data=%s.",
-                  len(knob_data['rowlabels']), len(knob_data['columnlabels']),
-                  knob_data['data'].shape)
-        LOG.debug("Aggregated metric data: rowlabels=%s, columnlabels=%s, data=%s.",
-                  len(metric_data['rowlabels']), len(metric_data['columnlabels']),
-                  metric_data['data'].shape)
-        LOG.info("Done aggregating data for workload %s.", workload_name)
+                num_wkld_results = wkld_results.count()
 
-        num_valid_results = knob_data['data'].shape[0]  # pylint: disable=unsubscriptable-object
-        if num_valid_results < MIN_WORKLOAD_RESULTS_COUNT:
-            # Check that there are enough valid results in the workload
-            LOG.info("Not enough valid results in workload %s (# valid results: "
-                     "%s, # required: %s).", workload_name, num_valid_results,
-                     MIN_WORKLOAD_RESULTS_COUNT)
-            workload.status = WorkloadStatusType.PROCESSED
-            workload.save()
-            continue
+                LOG.info("Starting workload %s (%s/%s, # results: %s)...", workload_name,
+                         i + 1, num_modified, num_wkld_results)
 
-        # Knob_data and metric_data are 2D numpy arrays. Convert them into a
-        # JSON-friendly (nested) lists and then save them as new PipelineData
-        # objects.
-        knob_data_copy = copy.deepcopy(knob_data)
-        knob_data_copy['data'] = knob_data_copy['data'].tolist()
-        knob_data_copy = JSONUtil.dumps(knob_data_copy)
-        knob_entry = PipelineData(pipeline_run=pipeline_run_obj,
-                                  task_type=PipelineTaskType.KNOB_DATA,
-                                  workload=workload,
-                                  data=knob_data_copy,
-                                  creation_time=now())
-        knob_entry.save()
+                if num_wkld_results == 0:
+                    # delete the workload
+                    LOG.info("Deleting workload %s because it has no results.", workload_name)
+                    workload.delete()
+                    continue
 
-        metric_data_copy = copy.deepcopy(metric_data)
-        metric_data_copy['data'] = metric_data_copy['data'].tolist()
-        metric_data_copy = JSONUtil.dumps(metric_data_copy)
-        metric_entry = PipelineData(pipeline_run=pipeline_run_obj,
-                                    task_type=PipelineTaskType.METRIC_DATA,
-                                    workload=workload,
-                                    data=metric_data_copy,
-                                    creation_time=now())
-        metric_entry.save()
+                if num_wkld_results < MIN_WORKLOAD_RESULTS_COUNT:
+                    # Check that there are enough results in the workload
+                    LOG.info("Not enough results in workload %s (# results: %s, # required: %s).",
+                             workload_name, num_wkld_results, MIN_WORKLOAD_RESULTS_COUNT)
+                    workload.status = WorkloadStatusType.PROCESSED
+                    workload.save()
+                    continue
 
-        # Execute the Workload Characterization task to compute the list of
-        # pruned metrics for this workload and save them in a new PipelineData
-        # object.
-        LOG.info("Pruning metrics for workload %s...", workload_name)
-        pruned_metrics = run_workload_characterization(metric_data=metric_data, dbms=workload.dbms)
-        LOG.info("Done pruning metrics for workload %s (# pruned metrics: %s).\n\n"
-                 "Pruned metrics: %s\n", workload_name, len(pruned_metrics),
-                 pruned_metrics)
-        pruned_metrics_entry = PipelineData(pipeline_run=pipeline_run_obj,
-                                            task_type=PipelineTaskType.PRUNED_METRICS,
-                                            workload=workload,
-                                            data=JSONUtil.dumps(pruned_metrics),
-                                            creation_time=now())
-        pruned_metrics_entry.save()
+                LOG.info("Aggregating data for workload %s...", workload_name)
+                # Aggregate the knob & metric data for this workload
+                knob_data, metric_data = aggregate_data(wkld_results)
+                LOG.info("Done aggregating data for workload %s.", workload_name)
 
-        # Workload target objective data
-        ranked_knob_metrics = sorted(wkld_results.distinct('session').values_list(
-            'session__target_objective', flat=True).distinct())
-        LOG.debug("Target objectives for workload %s: %s", workload_name,
-                  ', '.join(ranked_knob_metrics))
+                num_valid_results = knob_data['data'].shape[0]  # pylint: disable=unsubscriptable-object
+                if num_valid_results < MIN_WORKLOAD_RESULTS_COUNT:
+                    # Check that there are enough valid results in the workload
+                    LOG.info("Not enough valid results in workload %s (# valid results: "
+                             "%s, # required: %s).", workload_name, num_valid_results,
+                             MIN_WORKLOAD_RESULTS_COUNT)
+                    workload.status = WorkloadStatusType.PROCESSED
+                    workload.save()
+                    continue
 
-        if KNOB_IDENT_USE_PRUNED_METRICS:
-            ranked_knob_metrics = sorted(set(ranked_knob_metrics) | set(pruned_metrics))
-
-        # Use the set of metrics to filter the metric_data
-        metric_idxs = [i for i, metric_name in enumerate(metric_data['columnlabels'])
-                       if metric_name in ranked_knob_metrics]
-        ranked_metric_data = {
-            'data': metric_data['data'][:, metric_idxs],
-            'rowlabels': copy.deepcopy(metric_data['rowlabels']),
-            'columnlabels': [metric_data['columnlabels'][i] for i in metric_idxs]
-        }
-
-        # Execute the Knob Identification task to compute an ordered list of knobs
-        # ranked by their impact on the DBMS's performance. Save them in a new
-        # PipelineData object.
-        LOG.info("Ranking knobs for workload %s (use pruned metric data: %s)...",
-                 workload_name, KNOB_IDENT_USE_PRUNED_METRICS)
-        sessions = []
-        for result in wkld_results:
-            if result.session not in sessions:
-                sessions.append(result.session)
-        rank_knob_data = copy.deepcopy(knob_data)
-        rank_knob_data['data'], rank_knob_data['columnlabels'] =\
-            DataUtil.clean_knob_data(knob_data['data'], knob_data['columnlabels'], sessions)
-        ranked_knobs = run_knob_identification(knob_data=rank_knob_data,
-                                               metric_data=ranked_metric_data,
-                                               dbms=workload.dbms)
-        LOG.info("Done ranking knobs for workload %s (# ranked knobs: %s).\n\n"
-                 "Ranked knobs: %s\n", workload_name, len(ranked_knobs), ranked_knobs)
-        ranked_knobs_entry = PipelineData(pipeline_run=pipeline_run_obj,
-                                          task_type=PipelineTaskType.RANKED_KNOBS,
+                # Knob_data and metric_data are 2D numpy arrays. Convert them into a
+                # JSON-friendly (nested) lists and then save them as new PipelineData
+                # objects.
+                knob_entry = PipelineData(pipeline_run=pipeline_run_obj,
+                                          task_type=PipelineTaskType.KNOB_DATA,
                                           workload=workload,
-                                          data=JSONUtil.dumps(ranked_knobs),
+                                          data=JSONUtil.dumps(knob_data),
                                           creation_time=now())
-        ranked_knobs_entry.save()
+                knob_entry.save()
 
-        workload.status = WorkloadStatusType.PROCESSED
-        workload.save()
-        LOG.info("Done processing workload %s (%s/%s).", workload_name, i + 1,
-                 num_modified)
+                metric_entry = PipelineData(pipeline_run=pipeline_run_obj,
+                                            task_type=PipelineTaskType.METRIC_DATA,
+                                            workload=workload,
+                                            data=JSONUtil.dumps(metric_data),
+                                            creation_time=now())
+                metric_entry.save()
 
-    LOG.info("Finished processing %s modified workloads.", num_modified)
+                # Execute the Workload Characterization task to compute the list of
+                # pruned metrics for this workload and save them in a new PipelineData
+                # object.
+                LOG.info("Pruning metrics for workload %s...", workload_name)
+                pruned_metrics = run_workload_characterization(
+                    metric_data=metric_data, dbms=workload.dbms)
+                LOG.info("Done pruning metrics for workload %s (# pruned metrics: %s).\n\n"
+                         "Pruned metrics: %s\n", workload_name, len(pruned_metrics),
+                         pruned_metrics)
+                pruned_metrics_entry = PipelineData(pipeline_run=pipeline_run_obj,
+                                                    task_type=PipelineTaskType.PRUNED_METRICS,
+                                                    workload=workload,
+                                                    data=JSONUtil.dumps(pruned_metrics),
+                                                    creation_time=now())
+                pruned_metrics_entry.save()
 
-    non_modified_workloads = Workload.objects.filter(pk__in=non_modified_workloads)
-    # Update the latest pipeline data for the non modified workloads to have this pipeline run
-    PipelineData.objects.filter(workload__in=non_modified_workloads,
-                                pipeline_run=last_pipeline_run)\
-        .update(pipeline_run=pipeline_run_obj)
+                ranked_knobs = run_knob_identification(knob_data,
+                                                       metric_data,
+                                                       wkld_results,
+                                                       pruned_metrics,
+                                                       workload_name=workload_name)
+                LOG.info("Done ranking knobs for workload %s (# ranked knobs: %s).\n\n"
+                         "Ranked knobs: %s\n", workload_name, len(ranked_knobs), ranked_knobs)
+                ranked_knobs_entry = PipelineData(pipeline_run=pipeline_run_obj,
+                                                  task_type=PipelineTaskType.RANKED_KNOBS,
+                                                  workload=workload,
+                                                  data=JSONUtil.dumps(ranked_knobs),
+                                                  creation_time=now())
+                ranked_knobs_entry.save()
 
-    # Set the end_timestamp to the current time to indicate that we are done running
-    # the background tasks
-    pipeline_run_obj.end_time = now()
-    pipeline_run_obj.save()
+                workload.status = WorkloadStatusType.PROCESSED
+                workload.save()
+                LOG.info("Done processing workload %s (%s/%s).", workload_name, i + 1,
+                         num_modified)
+
+            LOG.info("Finished processing %s modified workloads.", num_modified)
+
+            exclude_ids = modified_workload_ids + [bg_wkld.id]
+            if bg_wkld.id not in exclude_ids:
+                exclude_ids.append(bg_wkld.id)
+
+            non_modified_workloads = Workload.objects.exclude(id__in=exclude_ids)
+            for wkld in non_modified_workloads:
+                run_id = PipelineData.objects.filter(workload=wkld).values(
+                    'pipeline_run').annotate(total=Count('pipeline_run')).filter(
+                        total=4).order_by('pipeline_run').values_list(
+                            'pipeline_run',flat=True).first()    
+                if run_id is not None:
+                    PipelineData.objects.filter(workload=wkld, pipeline_run__id=run_id).update(
+                        pipeline_run=pipeline_run_obj)
+
+            # Set the end_timestamp to the current time to indicate that we are done running
+            # the background tasks
+            pipeline_run_obj.end_time = now()
+            pipeline_run_obj.save()
+            LOG.info("Saved pipeline run end time: %s", pipeline_run_obj.end_time)
+
+    finally:
+        tb = traceback.format_exc()
+        if tb.startswith('NoneType'):
+            LOG.info("No exceptions") 
+        else:
+            LOG.error(tb)
+        pipeline_run_obj = PipelineRun.objects.get(id=pipeline_run_id)
+        if pipeline_run_obj.end_time is None:
+            LOG.warning("PipelineRun %s failed (end_time=None). Deleting...", pipeline_run_id)
+            for workload in modified_workloads:
+                if workload.status == WorkloadStatusType.PROCESSING:
+                    workload.status = WorkloadStatusType.MODIFIED
+                    workload.save()
+            pipeline_run_obj.delete()
+
     save_execution_time(start_ts, "run_background_tasks")
     LOG.info("Finished background tasks (%.0f seconds).", time.time() - start_ts)
 
 
-def aggregate_data(wkld_results):
+def aggregate_data(wkld_results, combine_duplicate_rows=True):
     # Aggregates both the knob & metric data for the given workload.
     #
     # Parameters:
@@ -231,20 +241,33 @@ def aggregate_data(wkld_results):
     #   - 'y_columnlabels': a list of the metric names corresponding to the
     #         columns in the metric_data matrix
     start_ts = time.time()
-    aggregated_data = DataUtil.aggregate_data(wkld_results, ignore=['range_test', 'default', '*'])
+    agg_data = DataUtil.aggregate_data(
+        wkld_results, ignore=['range_test', 'default', '*'])
+
+    X, y = agg_data['X_matrix'], agg_data['y_matrix']
+    X_cls, y_cls = agg_data['X_columnlabels'], agg_data['y_columnlabels']
+    rls = agg_data['rowlabels']
+
+    X, y, rls = DataUtil.combine_duplicate_rows(X, y, np.array(rls), dup_test='Xy')
+    if isinstance(rls, np.ndarray):
+        rls = rls.tolist()
+
+    LOG.debug("Aggregated data: X_matrix=%s, y_matrix=%s, X_columnlabels=%s, "
+              "y_columnlabels=%s, rowlabels=%s", X.shape, y.shape, len(X_cls),
+              len(y_cls), len(rls))
 
     # Separate knob & workload data into two "standard" dictionaries of the
     # same form
     knob_data = {
-        'data': aggregated_data['X_matrix'],
-        'rowlabels': aggregated_data['rowlabels'],
-        'columnlabels': aggregated_data['X_columnlabels']
+        'data': X,
+        'rowlabels': rls,
+        'columnlabels': X_cls 
     }
 
     metric_data = {
-        'data': aggregated_data['y_matrix'],
-        'rowlabels': copy.deepcopy(aggregated_data['rowlabels']),
-        'columnlabels': aggregated_data['y_columnlabels']
+        'data': y,
+        'rowlabels': copy.deepcopy(rls),
+        'columnlabels': y_cls 
     }
 
     # Return the knob & metric data
@@ -312,8 +335,8 @@ def run_workload_characterization(metric_data, dbms=None):
     # Run Kmeans for # clusters k in range(1, num_nonduplicate_metrics - 1)
     # K should be much smaller than n_cols in detK, For now max_cluster <= 20
     kmeans_models = KMeansClusters()
-    kmeans_models.fit(components, min_cluster=1,
-                      max_cluster=min(n_cols - 1, 20),
+    kmeans_models.fit(components, min_cluster=PRUNED_METRICS_MIN_CLUSTERS,
+                      max_cluster=min(n_cols - 1, PRUNED_METRICS_MAX_CLUSTERS),
                       sample_labels=unique_columnlabels,
                       estimator_params={'n_init': 50})
 
@@ -332,7 +355,8 @@ def run_workload_characterization(metric_data, dbms=None):
     return pruned_metrics
 
 
-def run_knob_identification(knob_data, metric_data, dbms):
+def run_knob_identification(knob_data, metric_data, results, pruned_metrics,
+                            workload_name=None):
     # Performs knob identification on the knob & metric data and returns
     # a set of ranked knobs.
     #
@@ -349,11 +373,39 @@ def run_knob_identification(knob_data, metric_data, dbms):
     # dependent variables (y).
     start_ts = time.time()
 
-    knob_matrix = knob_data['data']
-    knob_columnlabels = knob_data['columnlabels']
+    workload_name = workload_name or results.first().workload.name
+    dbms = results.first().dbms
 
-    metric_matrix = metric_data['data']
-    metric_columnlabels = metric_data['columnlabels']
+    ranked_knob_metrics = sorted(results.values_list(
+        'session__target_objective', flat=True).distinct())
+    LOG.debug("Target objectives for workload %s: %s", workload_name,
+              ', '.join(ranked_knob_metrics))
+
+    if KNOB_IDENT_USE_PRUNED_METRICS:
+        ranked_knob_metrics = sorted(set(ranked_knob_metrics) | set(pruned_metrics))
+
+    # Use the set of metrics to filter the metric_data
+    metric_idxs = [i for i, metric_name in enumerate(metric_data['columnlabels'])
+                   if metric_name in ranked_knob_metrics]
+    rank_metric_data = {
+        'data': metric_data['data'][:, metric_idxs],
+        'rowlabels': copy.deepcopy(metric_data['rowlabels']),
+        'columnlabels': [metric_data['columnlabels'][i] for i in metric_idxs]
+    }
+
+    LOG.info("Ranking knobs for workload %s (use pruned metric data: %s)...",
+             workload_name, KNOB_IDENT_USE_PRUNED_METRICS)
+    sessions = [r.session for r in results.distinct('session')]
+
+    rank_knob_data = copy.deepcopy(knob_data)
+    rank_knob_data['data'], rank_knob_data['columnlabels'] =\
+        DataUtil.clean_knob_data(knob_data['data'], knob_data['columnlabels'], sessions)
+
+    knob_matrix = rank_knob_data['data']
+    knob_columnlabels = rank_knob_data['columnlabels']
+
+    metric_matrix = rank_metric_data['data']
+    metric_columnlabels = rank_metric_data['columnlabels']
 
     # remove constant columns from knob_matrix and metric_matrix
     nonconst_knob_matrix = []

@@ -30,11 +30,12 @@ from analysis.gpr.predict import gpflow_predict
 from analysis.preprocessing import Bin, DummyEncoder
 from analysis.constraints import ParamConstraintHelper
 from website.models import (PipelineData, PipelineRun, Result, Workload, SessionKnob,
-                            MetricCatalog, ExecutionTime, KnobCatalog)
+                            MetricCatalog, ExecutionTime, KnobCatalog, ModelData)
 from website import db
-from website.types import PipelineTaskType, AlgorithmType, VarType
+from website.types import PipelineTaskType, AlgorithmType, VarType, DBMSType
 from website.utils import DataUtil, JSONUtil
-from website.settings import ENABLE_DUMMY_ENCODER, TIME_ZONE, VIEWS_FOR_DDPG, OVERRIDE_PRUNED_METRICS
+from website.settings import (ENABLE_DUMMY_ENCODER, TIME_ZONE, VIEWS_FOR_DDPG,
+                              OVERRIDE_PRUNED_METRICS, CONTEXT_METRICS)
 
 
 LOG = get_task_logger(__name__)
@@ -420,12 +421,36 @@ def gen_lhs_samples(knobs, nsamples):
     return lhs_samples
 
 
+def do_model_checkpoint(task_name, res_iter, params):
+    do_checkpoint = params['CHECKPOINT'] and res_iter >= params['CHECKPOINT_START'] and \
+            res_iter % params['CHECKPOINT_INTERVAL'] == 0
+    LOG.info("%s: CHECKPOINT(enabled=%s, start=%s, interval=%s, iter=%s) = %s",
+             task_name, params['CHECKPOINT'], params['CHECKPOINT_START'],
+             params['CHECKPOINT_INTERVAL'], res_iter, str(do_checkpoint).upper())
+    return do_checkpoint
+
+
+def checkpoint_model(task_name, result, res_iter, **kwargs):
+    if not kwargs:
+        raise ValueError('{}: No checkpointing data provided!'.format(task_name))
+
+    LOG.info("%s: checkpointing model (data: %s)", task_name, ', '.join(sorted(kwargs.keys())))
+    try:
+        mdata = ModelData.objects.get(result=result)
+        mdata.iteration = res_iter
+        for k, v in kwargs.items():
+            setattr(mdata, k, v)
+        mdata.save()
+    except ModelData.DoesNotExist:
+        ModelData.objects.create(result=result, iteration=res_iter, **kwargs)
+
+
 @shared_task(base=IgnoreResultTask, name='train_ddpg')
 def train_ddpg(train_ddpg_input):
     start_ts = time.time()
     result_id, algorithm, target_data = train_ddpg_input
-    result = Result.objects.get(pk=result_id)
-    session = result.session
+    latest_result = Result.objects.get(pk=result_id)
+    session = latest_result.session
     dbms = session.dbms
     task_name = _get_task_name(session, result_id)
 
@@ -440,7 +465,7 @@ def train_ddpg(train_ddpg_input):
 
     params = JSONUtil.loads(session.hyperparameters)
     session_results = Result.objects.filter(session=session,
-                                            creation_time__lt=result.creation_time).order_by('pk')
+                                            creation_time__lt=latest_result.creation_time).order_by('pk')
 
     results_cnt = len(session_results)
     first_valid_result = -1
@@ -464,6 +489,8 @@ def train_ddpg(train_ddpg_input):
         prev_result_id = session_results[last_valid_result].pk
     base_result = Result.objects.filter(pk=base_result_id)
     prev_result = Result.objects.filter(pk=prev_result_id)
+    LOG.info("%s: result_id: %s, base_result_id: %s, prev_result_id: %s",
+             task_name, result_id, base_result_id, prev_result_id)
 
     agg_data = DataUtil.aggregate_data(result, ignore)
     prev_agg_data = DataUtil.aggregate_data(prev_result, ignore)
@@ -488,15 +515,24 @@ def train_ddpg(train_ddpg_input):
     LOG.info('Target objective value:  current: %s, base: %s, previous: %s',
              objective, base_objective, prev_objective)
 
+    context_metrics = get_model_context(params['CONTEXT_METRICS'], dbms.type)
+    if context_metrics:
+        if target_objective not in context_metrics:
+            context_metrics.append(target_objective)
+    LOG.info("%s: context_metrics: %s", task_name,
+             context_metrics if context_metrics is None else len(context_metrics))
+
     # Clean metric data
     views = VIEWS_FOR_DDPG.get(dbms.type, None)
     metric_data, _ = DataUtil.clean_metric_data(agg_data['y_matrix'],
-                                                agg_data['y_columnlabels'], views)
+                                                agg_data['y_columnlabels'],
+                                                views, context_metrics)
     metric_data = metric_data.flatten()
     metric_scalar = MinMaxScaler().fit(metric_data.reshape(1, -1))
     normalized_metric_data = metric_scalar.transform(metric_data.reshape(1, -1))[0]
     prev_metric_data, _ = DataUtil.clean_metric_data(prev_agg_data['y_matrix'],
-                                                     prev_agg_data['y_columnlabels'], views)
+                                                     prev_agg_data['y_columnlabels'],
+                                                     views, context_metrics)
     prev_metric_data = prev_metric_data.flatten()
     prev_metric_scalar = MinMaxScaler().fit(prev_metric_data.reshape(1, -1))
     prev_normalized_metric_data = prev_metric_scalar.transform(prev_metric_data.reshape(1, -1))[0]
@@ -554,12 +590,29 @@ def train_ddpg(train_ddpg_input):
         ddpg.set_model(session.ddpg_actor_model, session.ddpg_critic_model)
     if session.ddpg_reply_memory:
         ddpg.replay_memory.set(session.ddpg_reply_memory)
+    y_columnlabels = agg_data['y_columnlabels']
+    LOG.info("norm_metric_data: %s, prev_norm_metric_data: %s, y_columnlabels: %s, "
+             "target_obj in y_columnlabels: %s",
+             normalized_metric_data.shape, prev_normalized_metric_data.shape,
+             len(y_columnlabels), target_objective in y_columnlabels)
     ddpg.add_sample(prev_normalized_metric_data, knob_data, reward, normalized_metric_data)
     for _ in range(params['DDPG_UPDATE_EPOCHS']):
         ddpg.update()
     session.ddpg_actor_model, session.ddpg_critic_model = ddpg.get_model()
     session.ddpg_reply_memory = ddpg.replay_memory.get()
     session.save()
+
+    res_iter = Result.objects.filter(session=latest_result.session, id__lte=latest_result.id).count() 
+    do_checkpoint = do_model_checkpoint(task_name, res_iter, params)
+
+    if do_checkpoint:
+        actor_model, critic_model = ddpg.get_model(compress=True)
+        replay_memory = ddpg.replay_memory.get(compress=True)
+        checkpoint_model(task_name, latest_result, res_iter,
+                         ddpg_actor_model=actor_model,
+                         ddpg_critic_model=critic_model,
+                         ddpg_replay_memory=replay_memory)
+
     exec_time = save_execution_time(start_ts, "train_ddpg", result.first())
     LOG.debug("\n%s: Result = %s\n", task_name, _task_result_tostring(target_data))
     LOG.info('%s: Done training ddpg (%.1f seconds).', task_name, exec_time)
@@ -627,12 +680,29 @@ def configuration_recommendation_ddpg(recommendation_ddpg_input):  # pylint: dis
         return target_data_res
 
     LOG.info('%s: Recommendation the next configuration (DDPG)...', task_name)
-
+    target_objective = session.target_objective
     params = JSONUtil.loads(session.hyperparameters)
     agg_data = DataUtil.aggregate_data(result_list)
+
+    y_matrix = agg_data['y_matrix']
+    y_columnlabels = agg_data['y_columnlabels']
+
+    LOG.info("%s: y_matrix.shape: %s, y_columnlabels.shape: %s, "
+             "target_obj in y_columnlabels: %s", task_name,
+             agg_data['y_matrix'].shape, len(agg_data['y_columnlabels']),
+             target_objective in agg_data['y_columnlabels'])
+    context_metrics = get_model_context(params['CONTEXT_METRICS'], dbms.type)
+    if context_metrics:
+        if target_objective not in context_metrics:
+            context_metrics.append(target_objective)
+    LOG.info("%s: context_metrics: %s", task_name,
+             context_metrics if context_metrics is None else len(context_metrics))
+
     views = VIEWS_FOR_DDPG.get(dbms.type, None)
     metric_data, _ = DataUtil.clean_metric_data(agg_data['y_matrix'],
-                                                agg_data['y_columnlabels'], views)
+                                                agg_data['y_columnlabels'],
+                                                views, context_metrics)
+    LOG.info("%s: metric_data.shape: %s", task_name, metric_data.shape)
     metric_data = metric_data.flatten()
     metric_scalar = MinMaxScaler().fit(metric_data.reshape(1, -1))
     normalized_metric_data = metric_scalar.transform(metric_data.reshape(1, -1))[0]
@@ -761,6 +831,12 @@ def process_training_data(target_data):
 
     # Combine target & workload Xs for preprocessing
     X_matrix = np.vstack([X_target, X_workload])
+    LOG.info("rowlabels_target: %s, rowlabels_workload: %s",
+             rowlabels_target.shape, rowlabels_workload.shape)
+    rowlabels_target = rowlabels_target.flatten()
+    rowlabels_workload = rowlabels_workload.flatten()
+    LOG.info("After flatten: rowlabels_target: %s, rowlabels_workload: %s",
+             rowlabels_target.shape, rowlabels_workload.shape)
     rowlabels = np.concatenate([rowlabels_target, rowlabels_workload])
 
     # Dummy encode categorial variables
@@ -854,7 +930,7 @@ def process_training_data(target_data):
         dummy_encoder, constraint_helper, pipeline_data_knob, pipeline_data_metric
 
 
-def process_training_data_with_context(target_data):
+def process_training_data_with_context(target_data, context_metrics=None):
     import csv
     newest_result = Result.objects.get(pk=target_data['newest_result_id'])
     session = newest_result.session
@@ -912,6 +988,13 @@ def process_training_data_with_context(target_data):
     LOG.info("FILTER TARGET: y_target: %s, context: %s, y_target_labels: %s, context_labels: %s, rowlabels: %s",
              y_target.shape, context.shape, y_target_labels.shape, context_labels.shape, rowlabels.shape)
 
+    if context_metrics: 
+        ctx_idxs = [i for i, l in enumerate(context_labels) if l in context_metrics]
+        context = context[:, ctx_idxs]
+        context_labels = context_labels[ctx_idxs]
+        LOG.info("FILTER CONTEXT METRICS: context: %s, context_labels: %s",
+                 context.shape, context_labels.shape)
+    
     X_scaler = StandardScaler()
     X_scaled = X_scaler.fit_transform(X_matrix)
     y_scaler = StandardScaler()
@@ -949,6 +1032,22 @@ def process_training_data_with_context(target_data):
     return X_columnlabels, X_scaler, X_scaled, y_scaled, ctx_scaled, rowlabels, X_max, X_min
 
 
+def get_model_context(context_metrics, dbms_type):
+    if context_metrics:
+        if dbms_type not in CONTEXT_METRICS:
+            LOG.warning("No context metrics found for DBMS '%s'. Using all metrics for context.",
+                        DBMSType.name(dbms_type))
+            context_metrics = None
+        else:
+            context_metrics = CONTEXT_METRICS[dbms_type][context_metrics]
+        #if isinstance(context_metrics, str):
+        #    if context_metrics.lower() == 'context16':
+        #        context_metrics = CONTEXT16_METRICS
+        #    else:
+        #        raise ValueError("Invalid context metrics name: '{}'".format(context_metrics))
+    return context_metrics
+
+
 @shared_task(base=ConfigurationRecommendation, name='configuration_recommendation')
 def configuration_recommendation(recommendation_input):
     start_ts = time.time()
@@ -973,8 +1072,16 @@ def configuration_recommendation(recommendation_input):
         (algorithm == AlgorithmType.DNN and params['DNN_CONTEXT'])
 
     if include_context:
+        context_metrics = get_model_context(params['CONTEXT_METRICS'], newest_result.dbms.type)
+        #context_metrics = params['CONTEXT_METRICS']
+        #if context_metrics:
+        #    if isinstance(context_metrics, str):
+        #        if context_metrics.lower() == 'context16':
+        #            context_metrics = CONTEXT16_METRICS
+        #        else:
+        #            raise ValueError("Invalid context metrics name: '{}'".format(context_metrics))
         X_columnlabels, X_scaler, X_scaled, y_scaled, ctx_scaled, rowlabels, X_max, X_min =\
-            process_training_data_with_context(target_data)
+            process_training_data_with_context(target_data, context_metrics=context_metrics)
         dummy_encoder, constraint_helper = None, None
         pipeline_knobs, pipeline_metrics = None, None
     else:
@@ -1059,6 +1166,13 @@ def configuration_recommendation(recommendation_input):
                                  X_context=ctx_samples)
         session.dnn_model = model_nn.get_weights_bin()
         session.save()
+
+        res_iter = Result.objects.filter(session=newest_result.session, id__lte=newest_result.id).count() 
+        do_checkpoint = do_model_checkpoint(task_name, res_iter, params)
+
+        if do_checkpoint:
+            checkpoint_model(task_name, newest_result, res_iter,
+                             dnn_model=model_nn.get_weights_bin(compress=True))
 
     elif algorithm == AlgorithmType.GPR:
         info_msg += 'Recommended by GPR ({}, context={}).'.format(
@@ -1194,6 +1308,8 @@ def load_data_helper(filtered_pipeline_data, workload, task_type):
 
 @shared_task(base=MapWorkloadTask, name='map_workload')
 def map_workload(map_workload_input):
+    from sklearn.preprocessing import Normalizer # TODO
+    from sklearn.metrics.pairwise import cosine_similarity
     start_ts = time.time()
     target_data, algorithm = map_workload_input
     newest_result = Result.objects.get(pk=target_data['newest_result_id'])
@@ -1251,11 +1367,13 @@ def map_workload(map_workload_input):
         if newest_result.workload.pk == unique_workload:
             continue
         workload_obj = Workload.objects.get(pk=unique_workload)
-        wkld_results = Result.objects.filter(workload=workload_obj)
-        if wkld_results.exists() is False:
-            # delete the workload
-            workload_obj.delete()
+        if workload_obj.name.startswith('test'):
             continue
+        #wkld_results = Result.objects.filter(workload=workload_obj)
+        #if wkld_results.exists() is False:
+        #    # delete the workload
+        #    workload_obj.delete()
+        #    continue
 
         # Load knob & metric data for this workload
         knob_data = load_data_helper(pipeline_data, unique_workload, PipelineTaskType.KNOB_DATA)
@@ -1305,6 +1423,10 @@ def map_workload(map_workload_input):
                  task_name)
         return target_data, algorithm
 
+    # Filter the target's y data by the pruned metrics.
+    X_target = target_data['X_matrix']
+    y_target = target_data['y_matrix'][:, pruned_metric_idxs]
+
     # Stack all X & y matrices for preprocessing
     Xs = np.vstack([entry['X_matrix'] for entry in list(workload_data.values())])
     ys = np.vstack([entry['y_matrix'] for entry in list(workload_data.values())])
@@ -1314,14 +1436,14 @@ def map_workload(map_workload_input):
     X_scaler.fit(Xs)
     y_scaler = StandardScaler(copy=False)
     y_scaler.fit_transform(ys)
+    # TODO
     y_binner = Bin(bin_start=1, axis=0)
+    #y_binner = MinMaxScaler()
+    #y_binner = Normalizer()
     y_binner.fit(ys)
     del Xs
     del ys
 
-    X_target = target_data['X_matrix']
-    # Filter the target's y data by the pruned metrics.
-    y_target = target_data['y_matrix'][:, pruned_metric_idxs]
 
     # Now standardize the target's data and bin it by the deciles we just
     # calculated
@@ -1363,9 +1485,21 @@ def map_workload(map_workload_input):
         # compute the score (i.e., distance) between the target workload
         # and each of the known workloads
         predictions = y_binner.transform(predictions)
+        LOG.info("%s: predictions=%s, y_target=%s", task_name,
+                 predictions.shape, y_target.shape)
+        # TODO
         dists = np.sqrt(np.sum(np.square(
             np.subtract(predictions, y_target)), axis=1))
-        scores[workload_id] = np.mean(dists)
+        # TODO: COSINE SIMILARITY
+        #dists = []
+        #for i, (row1, row2) in enumerate(zip(predictions, y_target)):
+        #    row1 = row1.reshape(1, -1)
+        #    row2 = row2.reshape(1, -1)
+        #    cs = cosine_similarity(row1, row2)
+        #    dists.append(np.asscalar(cs))
+        wkld_score = np.mean(dists)
+        scores[workload_id] = wkld_score
+        LOG.info("%s: dists=%s, mean(dists)=%s", task_name, dists, wkld_score)
 
     # Find the best (minimum) score
     best_score = np.inf

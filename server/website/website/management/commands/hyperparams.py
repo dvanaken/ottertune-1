@@ -224,11 +224,18 @@ class Command(BaseCommand):
         parser.add_argument(
             '--gpr-model-name',
             required=False,
-            #choices=('BasicGP', 'ExpWhiteGP'),
             choices=gpr_models._MODEL_MAP.keys(),
             default=None,  # BasicGP
             metavar='NAME',
             help='Default: BasicGP')
+        parser.add_argument(
+            '--gpr-optimize-model',
+            required=False,
+            default=None,
+            type=self.parse_bool,
+            choices=(True, False),
+            metavar='BOOL',
+            help='Default: False')
         parser.add_argument(
             '--gpr-ucb-beta',
             required=False,
@@ -239,17 +246,26 @@ class Command(BaseCommand):
         parser.add_argument(
             '--gpr-ucb-scale',
             required=False,
-            default=None,  # 0.2
+            default=None,  # 5.0
             type=float,
             metavar='FLOAT',
-            help='Default: 0.2')
+            help='Default: 5.0')
+        # ************************
+        # COMMON HYPERPARAMETERS
+        # ************************
+        parser.add_argument(
+            '--context-metrics',
+            required=False,
+            default=None,
+            metavar='VALUE',
+            help='Default: None')
         parser.add_argument(
             '--num-samples',
             required=False,
-            default=None,  # 30
+            default=None,  # 100
             type=int,
             metavar='INT',
-            help="Number of grid samples to use for the GPR/DNN starting points. Default: 30")
+            help="Number of grid samples to use for the GPR/DNN starting points. Default: 100")
         parser.add_argument(
             '--top-num-config',
             required=False,
@@ -257,6 +273,28 @@ class Command(BaseCommand):
             type=int,
             metavar='INT',
             help="Number of top-performing samples to use for the GPR/DNN starting points. Default: 10")
+        parser.add_argument(
+            '--checkpoint',
+            required=False,
+            default=None,
+            type=self.parse_bool,
+            choices=(True, False),
+            metavar='BOOL',
+            help='Checkpoint the ML model. Default: False')
+        parser.add_argument(
+            '--checkpoint-interval',
+            required=False,
+            default=None,  # 5
+            type=int,
+            metavar='INT',
+            help="Model checkpoint frequency. Default: 5")
+        parser.add_argument(
+            '--checkpoint-start',
+            required=False,
+            default=None,  # 15
+            type=int,
+            metavar='INT',
+            help="Model checkpoint start iteration. Default: 15")
         # ************************
         # UNUSED HYPERPARAMETERS
         # ************************

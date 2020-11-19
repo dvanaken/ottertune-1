@@ -139,7 +139,17 @@ def home_projects_view(request):
         'button_delete': 'delete selected projects',
     }))
     form_labels['title'] = 'Your Projects'
+    form_labels['num_sessions'] = "Sessions"
+    form_labels['num_results'] = "Results"
     projects = Project.objects.filter(user=request.user).order_by('-creation_time')
+    for proj in projects:
+        sessions = Session.objects.filter(project=proj)
+        proj.num_sessions = len(sessions)
+        num_results = 0
+        for sess in sessions:
+            num_results += Result.objects.filter(session=sess).count()
+        proj.num_results = num_results
+
     show_descriptions = any([proj.description for proj in projects])
     context = {
         "projects": projects,
@@ -204,7 +214,7 @@ def project_sessions_view(request, project_id):
         'button_delete': 'delete selected session',
         'button_create': 'create a new session',
     }))
-    form_labels['title'] = "Your Sessions"
+    form_labels['title'] = "Your Sessions for Project '{}'".format(project.name)
     form_labels['description'] = "Description"
     form_labels['result_count'] = "# Result"
     for session in sessions:

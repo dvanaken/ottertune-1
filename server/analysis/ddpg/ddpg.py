@@ -8,6 +8,7 @@
 # deep reinforcement learning." Proceedings of the 2019 International Conference
 # on Management of Data. ACM, 2019
 
+import gzip
 import pickle
 import torch
 import torch.nn as nn
@@ -260,9 +261,17 @@ class DDPG(object):
         action += self.noise.noise()
         return action.clip(0, 1)
 
-    def set_model(self, actor_dict, critic_dict):
+    def set_model(self, actor_dict, critic_dict, decompress=False):
+        if decompress:
+            actor_dict = gzip.decompress(actor_dict)
+            critic_dict = gzip.decompress(critic_dict)
         self.actor.load_state_dict(pickle.loads(actor_dict))
         self.critic.load_state_dict(pickle.loads(critic_dict))
 
-    def get_model(self):
-        return pickle.dumps(self.actor.state_dict()), pickle.dumps(self.critic.state_dict())
+    def get_model(self, compress=False):
+        actor = pickle.dumps(self.actor.state_dict())
+        critic = pickle.dumps(self.critic.state_dict())
+        if compress:
+            actor = gzip.compress(actor)
+            critic = gzip.compress(critic)
+        return actor, critic

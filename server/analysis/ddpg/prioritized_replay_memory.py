@@ -8,6 +8,7 @@
 # deep reinforcement learning." Proceedings of the 2019 International Conference
 # on Management of Data. ACM, 2019
 
+import gzip
 import random
 import pickle
 import numpy as np
@@ -125,8 +126,13 @@ class PrioritizedReplayMemory(object):
             _memory = pickle.load(f)
         self.tree = _memory['tree']
 
-    def get(self):
-        return pickle.dumps({"tree": self.tree})
+    def get(self, compress=False):
+        binary = pickle.dumps({"tree": self.tree})
+        if compress:
+            binary = gzip.compress(binary)
+        return binary
 
-    def set(self, binary):
+    def set(self, binary, decompress=False):
+        if decompress:
+            binary = gzip.decompress(binary)
         self.tree = pickle.loads(binary)['tree']
