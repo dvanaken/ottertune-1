@@ -1063,7 +1063,8 @@ def run_loops(max_iter=10, skip_restore=False, reset_config=False):
 
 
 @task
-def run_knob_configs(iters_per_config=3, restore_db=True, iter_offset=0,  clear_results=False):
+def run_knob_configs(iters_per_config=3, restore_db=True, iter_offset=0, prepend_workload=False,
+                     clear_results=False):
     if not dconf.KNOB_CONFIGS:
         print("'KNOB_CONFIGS' env not set or empty! Exiting...")
         return
@@ -1077,6 +1078,7 @@ def run_knob_configs(iters_per_config=3, restore_db=True, iter_offset=0,  clear_
     iters_per_config = int(iters_per_config)
     restore_db = parse_bool(restore_db)
     iter_offset = int(iter_offset)
+    prepend_workload = parse_bool(prepend_workload)
     clear_results = parse_bool(clear_results)
 
     if clear_results:
@@ -1129,8 +1131,10 @@ def run_knob_configs(iters_per_config=3, restore_db=True, iter_offset=0,  clear_
             collector.close()
 
             LOG.info('Run OLTP-Bench')
-            #outfile = '{}-{}-{:02d}'.format(dconf.WORKLOAD_NAME, config_name, i)
             outfile = '{}-{:02d}'.format(config_name, i + iter_offset)
+            if prepend_workload:
+                outfile = '{}-{}'.format(dconf.WORKLOAD_NAME, outfile)
+
             start_time = time.time()
             run_oltpbench(outfile=outfile)
             end_time = time.time()

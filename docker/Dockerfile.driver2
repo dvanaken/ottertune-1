@@ -14,6 +14,12 @@ RUN rm -rf /app/controller \
     && apt-get purge -y --autoremove gcc g++ git \
     && rm -rf /var/lib/apt/lists/* \
     && cd /app/oltpbench \
+    && sed -i 's/(rand, i)/(i)/' src/com/oltpbenchmark/benchmarks/wikipedia/WikipediaLoader.java \
+    && sed -i 's/(rand, pageId)/(pageId)/' src/com/oltpbenchmark/benchmarks/wikipedia/WikipediaLoader.java \
+    && sed -i 's/(this\.rng(), page_id)/(page_id)/' src/com/oltpbenchmark/benchmarks/wikipedia/WikipediaWorker.java \
+    && sed -i 's/revCommentLen + 1/revCommentLen/' src/com/oltpbenchmark/benchmarks/wikipedia/WikipediaWorker.java \
+    && sed -i 's/(Random rand, int page_id)/(int page_id)/' src/com/oltpbenchmark/benchmarks/wikipedia/util/WikipediaUtil.java \
+    && sed -i '/rand.setSeed/i \ \ \ \ \ \ \ \ Random rand = new Random();' src/com/oltpbenchmark/benchmarks/wikipedia/util/WikipediaUtil.java \
     && ant bootstrap \
     && ant resolve \
     && chmod +x /init.sh
