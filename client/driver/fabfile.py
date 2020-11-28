@@ -339,7 +339,7 @@ def run_oltpbench(outfile='outputfile'):
         raise Exception(msg)
     set_oltpbench_config()
     bench = 'chbenchmark,tpcc' if dconf.OLTPBENCH_BENCH == 'chbenchmark' else dconf.OLTPBENCH_BENCH
-    cmd = "./oltpbenchmark -b {} -c {} --execute=true --output-raw=false -s 5 -o {}".\
+    cmd = "./oltpbenchmark -b {} -c {} --execute=true --output-raw=false -s 5 -o {} --histograms".\
           format(bench, dconf.OLTPBENCH_CONFIG, outfile)
     with lcd(dconf.OLTPBENCH_HOME):  # pylint: disable=not-context-manager
         local(cmd)
