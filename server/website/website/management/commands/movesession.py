@@ -1,13 +1,11 @@
 import string
 
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from website.models import (KnobData, MetricData, ModelData, Project, Result, Session,
-                            SessionKnob, Workload)
-from website.types import AlgorithmType, WorkloadStatusType
-from website.utils import MediaUtil
+from website.models import Result, Session
+from website.types import WorkloadStatusType
 
 
 class Command(BaseCommand):
@@ -18,14 +16,19 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             'upload_code',
-            metavar='UPLOAD_CODE',
+            metavar='SRC_UPLOAD_CODE',
             help='Specifies the upload code of the existing session to be copied.')
+        parser.add_argument(
+            'new_upload_code',
+            metavar='NEW_UPLOAD_CODE',
+            type=self.upload_code_type,
+            help='Specifies the upload code for the new session.')
         parser.add_argument(
             'results',
             metavar='RESULTS',
             type=int,
             nargs='*',
-            help='Copy only these result IDs.')
+            help='Move and delete only these result IDs.')
         parser.add_argument(
             '-s',
             '--sessionname',
@@ -39,15 +42,6 @@ class Command(BaseCommand):
             default=None,
             help='Specifies which existing project the new session will belong to. '
                  'Default: same as project name of original session.')
-        parser.add_argument(
-            '-u',
-            '--uploadcode',
-            metavar='UPLOAD_CODE',
-            default=None,
-            type=self.upload_code_type,
-            help='Specifies the upload code for the new session. '
-                 'Default: SESSIONNAME with invalid chars removed, or '
-                 '[unique_id] + SESSIONNAME if it already exists.')
         parser.add_argument(
             '-t',
             '--target-obj',
@@ -79,72 +73,39 @@ class Command(BaseCommand):
             default=WorkloadStatusType.name(WorkloadStatusType.MODIFIED),
             help='Specifies the workload status. Default: MODIFIED.'.format(
                 WorkloadStatusType.name(WorkloadStatusType.MODIFIED)))
-        parser.add_argument(
-            '-q',
-            '--quiet',
-            action='store_true',
-            help="Quiet execution")
 
     def handle(self, *args, **options):
         upload_code = options['upload_code']
-        new_sessionname = options['sessionname']
-        projectname = options['projectname']
-        new_upload_code = options['uploadcode']
-        target_obj = options['target_obj']
-        algorithm = options['algorithm']
-        quiet = options['quiet']
+        new_upload_code = options['new_upload_code']
+        results = options['results']
 
         with transaction.atomic():
-            session = Session.objects.get(upload_code=upload_code)
-            session_knobs = SessionKnob.objects.filter(session=session)
-
-            session.pk = None
-            if new_sessionname:
-                session.name = new_sessionname
-
-            if not new_upload_code:
-                new_upload_code = self.get_upload_code(session.name)
-            session.upload_code = new_upload_code
-
-            if target_obj:
-                session.target_objective = target_obj
-
-            if algorithm:
-                session.algorithm = AlgorithmType.short_type(algorithm)
-
-            if projectname and projectname != session.project.name:
-                project = Project.objects.get(name=projectname)
-                session.project = project
-
-            session.save()
-
-            for knob in session_knobs:
-                knob.pk = None
-                knob.session = session
-                knob.save()
-
-            call_command('appendsession', upload_code, new_upload_code, *options['results'],
-                         '--quiet', workload=options['workload'],
+            call_command('copysession',
+                         upload_code, 
+                         *results,
+                         '--quiet',
+                         sessionname=options['sessionname'],
+                         projectname=options['projectname'],
+                         uploadcode=new_upload_code,
+                         target_obj=options['target_obj'],
+                         algorithm=options['algorithm'],
+                         workload=options['workload'],
                          workload_status=options['workload_status'])
+            orig_session = Session.objects.get(upload_code=upload_code)
+            orig_sessionname='{}.{}'.format(orig_session.project.name, orig_session.name)
+            #orig_nresults = Result.objects.filter(session=orig_session).count()
+            new_session = Session.objects.get(upload_code=new_upload_code)
+            new_sessionname='{}.{}'.format(new_session.project.name, new_session.name)
+            new_nresults = Result.objects.filter(session=new_session).count()
+            if results:
+                call_command('deleteresults', *results)
+            else:
+                orig_session.delete()
 
-        if not quiet:
-            self.stdout.write(self.style.SUCCESS(
-                "Successfully created session '{}.{}'\n  upload_code: {}\n  num_results: {}".format(
-                    session.project, session.name, session.upload_code,
-                    Result.objects.filter(session=session).count())))
-
-    def get_upload_code(self, sessionname):
-        max_len = self.upload_code_max_length
-        upload_code = ''.join(c for c in sessionname if c in self.upload_code_valid_chars)[:max_len]
-        i = 0
-        while True:
-            exists = Session.objects.filter(upload_code=upload_code).exists()
-            if not exists:
-                break
-            upload_code = '{}{}'.format(i, upload_code)[:max_len] 
-            i += 1
-
-        return upload_code
+        s = '{} results from '.format(len(results)) if results else ''
+        self.stdout.write(self.style.SUCCESS(
+            "Successfully moved {}session '{}' to '{}'\n  upload_code: {}\n  num_results: {}".format(
+                s, orig_sessionname, new_sessionname, new_upload_code, new_nresults)))
 
     def upload_code_type(self, s):
         # Note: this method is only called if the user explicitly sets the --uploadcode option so

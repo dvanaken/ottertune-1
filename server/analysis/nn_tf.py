@@ -7,6 +7,7 @@ Created on Sep 16, 2019
 @author: Bohan Zhang
 '''
 
+import gzip
 import pickle
 import numpy as np
 import tensorflow as tf
@@ -99,16 +100,21 @@ class NeuralNet(object):
         except Exception:  # pylint: disable=broad-except
             LOG.info('Weights file does not match neural network model, train model from scratch')
 
-    def get_weights_bin(self):
+    def get_weights_bin(self, compress=False):
         with self.graph.as_default():
             with self.session.as_default():  # pylint: disable=not-context-manager
                 weights = self.model.get_weights()
-                return pickle.dumps(weights)
+                weights = pickle.dumps(weights)
+                if compress:
+                    weights = gzip.compress(weights)
+                return weights
 
-    def set_weights_bin(self, weights):
+    def set_weights_bin(self, weights, decompress=False):
         try:
             with self.graph.as_default():
                 with self.session.as_default():  # pylint: disable=not-context-manager
+                    if decompress:
+                        weights = gzip.decompress(weights)
                     self.model.set_weights(pickle.loads(weights))
             if self.debug:
                 LOG.info('Neural Network Model weights exists, load the existing weights')

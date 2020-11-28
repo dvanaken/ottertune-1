@@ -12,10 +12,10 @@ from djcelery import models as djcelery_models
 
 from .models import (BackupData, DBMSCatalog, ExecutionTime,
                      KnobCatalog, KnobData, MetricCatalog,
-                     MetricData, PipelineData, PipelineRun,
+                     MetricData, ModelData, PipelineData, PipelineRun,
                      Project, Result, Session, Workload, Hardware,
                      SessionKnob)
-from .types import VarType, WorkloadStatusType
+from .types import AlgorithmType, VarType, WorkloadStatusType
 
 
 class DBMSCatalogAdmin(admin.ModelAdmin):
@@ -110,9 +110,10 @@ class BackupDataAdmin(admin.ModelAdmin):
 
 
 class PipelineDataAdmin(admin.ModelAdmin):
-    readonly_fields = ('pipeline_run',)
+    #readonly_fields = ('pipeline_run',)
     list_display = ('id', 'pipeline_run', 'task_type', 'workload_name', 'creation_time')
-    list_filter = ('task_type', ('workload', admin.RelatedOnlyFieldListFilter))
+    list_filter = ('task_type', ('workload', admin.RelatedOnlyFieldListFilter),
+                   ('workload__project', admin.RelatedOnlyFieldListFilter))
     ordering = ('pipeline_run', 'creation_time')
 
     def workload_name(self, instance):  # pylint: disable=no-self-use
@@ -199,6 +200,41 @@ class ExecutionTimeAdmin(admin.ModelAdmin):
     exec_time.short_description = 'Execution Time'
 
 
+class ModelDataAdmin(admin.ModelAdmin):
+    list_display = ('name', 'session', 'workload', 'algorithm', 'iteration', 'saved_models', 'model_size') 
+    list_filter = ('result__session__algorithm', 'result__session',)
+    ordering = ('result__session__name', 'result__id')
+    model_field_names = ('ddpg_actor_model', 'ddpg_critic_model',
+                         'ddpg_replay_memory', 'dnn_model', 'gpr_model')
+
+    def session(self, instance):  # pylint: disable=no-self-use
+        return instance.result.session.name
+
+    def saved_models(self, instance):
+        saved = []
+        for model in self.model_field_names:
+            if getattr(instance, model) is not None:
+                saved.append(model)
+        return ', '.join(saved)
+
+    def model_size(self, instance):
+        size = 0
+        for model in self.model_field_names:
+            m = getattr(instance, model)
+            if m is not None:
+                size += len(m)
+        return '{} bytes'.format(size)
+
+    def workload(self, instance):
+        return instance.result.workload.name
+
+    def algorithm(self, instance):
+        return AlgorithmType.short_name(instance.result.session.algorithm)
+
+    def name(self, instance):
+        return '{}#{}'.format(self.session(instance), instance.result.id)
+
+
 # Admin classes for website models
 admin.site.register(DBMSCatalog, DBMSCatalogAdmin)
 admin.site.register(KnobCatalog, KnobCatalogAdmin)
@@ -215,6 +251,7 @@ admin.site.register(Workload, WorkloadAdmin)
 admin.site.register(SessionKnob, SessionKnobAdmin)
 admin.site.register(Hardware, HardwareAdmin)
 admin.site.register(ExecutionTime, ExecutionTimeAdmin)
+admin.site.register(ModelData, ModelDataAdmin)
 
 # Admin classes for 3rd party models
 admin.site.unregister(StatusLog)

@@ -113,11 +113,11 @@ class Project(BaseModel):
     creation_time = models.DateTimeField()
     last_update = models.DateTimeField()
 
-    def delete(self, using=DEFAULT_DB_ALIAS, keep_parents=False):
-        sessions = Session.objects.filter(project=self)
-        for x in sessions:
-            x.delete()
-        super(Project, self).delete(using, keep_parents)
+    #def delete(self, using=DEFAULT_DB_ALIAS, keep_parents=False):
+    #    sessions = Session.objects.filter(project=self)
+    #    for x in sessions:
+    #        x.delete()
+    #    super(Project, self).delete(using, keep_parents)
 
     class Meta:  # pylint: disable=no-init
         unique_together = ('user', 'name')
@@ -206,16 +206,21 @@ class Session(BaseModel):
     "GPR_MAX_TRAIN_SIZE": 7000,
     "GPR_MU_MULTIPLIER": 1.0,
     "GPR_MODEL_NAME": "BasicGP",
+    "GPR_OPTIMIZE_MODEL": false,
     "GPR_HP_LEARNING_RATE": 0.001,
-    "GPR_HP_MAX_ITER": 5000,
+    "GPR_HP_MAX_ITER": 500,
     "GPR_RIDGE": 1.0,
     "GPR_SIGMA_MULTIPLIER": 1.0,
-    "GPR_UCB_SCALE": 0.2,
+    "GPR_UCB_SCALE": 5.0,
     "GPR_USE_GPFLOW": true,
     "GPR_UCB_BETA": "get_beta_td",
+    "CONTEXT_METRICS": null,
     "IMPORTANT_KNOB_NUMBER": 10000,
     "INIT_FLIP_PROB": 0.3,
-    "NUM_SAMPLES": 30,
+    "NUM_SAMPLES": 100,
+    "CHECKPOINT": true,
+    "CHECKPOINT_INTERVAL": 5,
+    "CHECKPOINT_START": 15,
     "TF_NUM_THREADS": 4,
     "TOP_NUM_CONFIG": 10}''')
 
@@ -223,14 +228,14 @@ class Session(BaseModel):
         if self.target_objective is None:
             self.target_objective = target_objectives.default()
 
-    def delete(self, using=DEFAULT_DB_ALIAS, keep_parents=False):
-        SessionKnob.objects.get(session=self).delete()
-        results = Result.objects.filter(session=self)
-        for r in results:
-            r.knob_data.delete()
-            r.metric_data.delete()
-            r.delete()
-        super(Session, self).delete(using=DEFAULT_DB_ALIAS, keep_parents=False)
+    #def delete(self, using=DEFAULT_DB_ALIAS, keep_parents=False):
+    #    SessionKnob.objects.get(session=self).delete()
+    #    results = Result.objects.filter(session=self)
+    #    for r in results:
+    #        r.knob_data.delete()
+    #        r.metric_data.delete()
+    #        r.delete()
+    #    super(Session, self).delete(using=DEFAULT_DB_ALIAS, keep_parents=False)
 
     class Meta:  # pylint: disable=no-init
         unique_together = ('user', 'project', 'name')
@@ -509,6 +514,16 @@ class Result(BaseModel):
     def __unicode__(self):
         return str(self.pk)
 
+    def get_metric_data(self, *metric_names, numeric=True):
+        from .utils import JSONUtil
+        metrics = JSONUtil.loads(self.metric_data.data if numeric else self.metric_data.metrics)
+        if metric_names:
+            metrics = OrderedDict([(k, v) for k, v in metrics.items() if k in metric_names])
+        return metrics
+
+    def get_target_objective(self, numeric=True):
+        return self.get_metric_data(numeric=numeric)[self.session.target_objective]
+
 
 class BackupData(BaseModel):
     result = models.ForeignKey(Result)
@@ -538,3 +553,13 @@ class ExecutionTime(models.Model):
             self.start_time = datetime.fromtimestamp(int(self.start_time), timezone(TIME_ZONE))
         super().save(force_insert=force_insert, force_update=force_update, using=using,
                      update_fields=update_fields)
+
+
+class ModelData(models.Model):
+    result = models.ForeignKey(Result)
+    iteration = models.IntegerField()
+    ddpg_actor_model = models.BinaryField(null=True, blank=True, default=None)
+    ddpg_critic_model = models.BinaryField(null=True, blank=True, default=None)
+    ddpg_replay_memory = models.BinaryField(null=True, blank=True, default=None)
+    dnn_model = models.BinaryField(null=True, blank=True, default=None)
+    gpr_model = models.BinaryField(null=True, blank=True, default=None)

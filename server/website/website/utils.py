@@ -27,7 +27,8 @@ from djcelery.models import TaskMeta
 
 from .models import DBMSCatalog, MetricCatalog, KnobCatalog, Result, Session, SessionKnob
 from .settings import common
-from .types import LabelStyleType, VarType
+from .settings import PROJECT_ROOT
+from .types import DBMSType, LabelStyleType, VarType
 
 LOG = logging.getLogger(__name__)
 
@@ -286,17 +287,27 @@ class DataUtil(object):
         return X_unique, y_unique, rowlabels_unique
 
     @staticmethod
-    def clean_metric_data(metric_matrix, metric_labels, useful_views):
+    def clean_metric_data(metric_matrix, metric_labels, useful_views, filter_labels=None):
         # Make metric_labels identical to useful_labels (if not None)
-        if useful_views is None:
+        if useful_views is None and filter_labels is None:
             return metric_matrix, metric_labels
 
-        useful_labels = []
-        for label in metric_labels:
-            for view in useful_views:
-                if view in label:
+        if useful_views is None:
+            view_labels = list(metric_labels)
+        else:
+            view_labels = []
+            for label in metric_labels:
+                for view in useful_views:
+                    if view in label:
+                        view_labels.append(label)
+                        break
+        if filter_labels is None:
+            useful_labels = view_labels
+        else:
+            useful_labels = []
+            for label in view_labels:
+                if label in filter_labels:
                     useful_labels.append(label)
-                    break
 
         missing_columns = sorted(set(useful_labels) - set(metric_labels))
         unused_columns = set(metric_labels) - set(useful_labels)
@@ -320,29 +331,30 @@ class DataUtil(object):
     def clean_knob_data(knob_matrix, knob_labels, sessions):
         # Filter and amend knob_matrix and knob_labels according to the tunable knobs in the session
         knob_matrix = np.array(knob_matrix)
-        session_knobs = []
-        knob_cat = []
-        for session in sessions:
-            knobs_for_this_session = SessionKnob.objects.get_knobs_for_session(session)
-            for knob in knobs_for_this_session:
-                if knob['name'] not in knob_cat:
-                    session_knobs.append(knob)
-            knob_cat = [k['name'] for k in session_knobs]
 
-        if len(knob_cat) == 0 or knob_cat == knob_labels:
+        joint_knobs = OrderedDict()
+        for session in sessions:
+            session_knobs = SessionKnob.objects.get_knobs_for_session(session)
+            for knob in session_knobs:
+                if knob['tunable'] and knob['name'] not in joint_knobs:
+                    joint_knobs[knob['name']] = knob
+
+        joint_set = set(joint_knobs.keys())
+        label_set = set(knob_labels)
+        if len(joint_knobs) == 0 or joint_set == label_set:
             # Nothing to do!
             return knob_matrix, knob_labels
 
-        LOG.info("session_knobs: %s, knob_labels: %s, missing: %s, extra: %s", len(knob_cat),
-                 len(knob_labels), len(set(knob_cat) - set(knob_labels)),
-                 len(set(knob_labels) - set(knob_cat)))
+        num_expected = len(joint_knobs)
+        LOG.info("joint_knobs: %s, knob_labels: %s, missing: %s, extra: %s",
+                 num_expected, len(knob_labels), len(joint_set - label_set),
+                 len(label_set - joint_set))
 
         nrows = knob_matrix.shape[0]  # pylint: disable=unsubscriptable-object
         new_labels = []
         new_columns = []
 
-        for knob in session_knobs:
-            knob_name = knob['name']
+        for knob_name, knob in joint_knobs.items():
             if knob_name not in knob_labels:
                 # Add missing column initialized to knob's default value
                 default_val = knob['default']
@@ -371,12 +383,13 @@ class DataUtil(object):
         LOG.debug("Cleaned matrix: %s, knobs (%s): %s", new_matrix.shape,
                   len(new_labels), new_labels)
 
-        assert new_labels == knob_cat, \
+        expected = list(joint_knobs.keys())
+        assert new_labels == expected, \
             "Expected knobs: {}\nActual knobs:  {}\n".format(
-                knob_cat, new_labels)
-        assert new_matrix.shape == (nrows, len(knob_cat)), \
+                expected, new_labels)
+        assert new_matrix.shape == (nrows, num_expected), \
             "Expected shape: {}, Actual shape:  {}".format(
-                (nrows, len(knob_cat)), new_matrix.shape)
+                (nrows, num_expected), new_matrix.shape)
 
         return new_matrix, new_labels
 
@@ -428,6 +441,29 @@ class DataUtil(object):
                             'noncat_columnlabels': noncat_knob_names,
                             'binary_vars': binary_knob_indices}
         return categorical_info
+
+    @staticmethod
+    def get_metric_data(*results, metric_names=None, numeric=True, flatten=False):
+        if not results:
+            LOG.warning("No results passed in. Returning...")
+            return
+        metric_names = metric_names or []
+        flatten_data = len(metric_names) == 1 and flatten
+        metric_data = []
+        for result in results:
+            mdata = result.get_metric_data(*metric_names, numeric=numeric)
+            if flatten_data:
+                mdata = mdata[metric_names[0]]
+            metric_data.append(mdata)
+
+    @staticmethod
+    def get_target_objective_data(*results, numeric=True):
+        if not results:
+            LOG.warning("No results passed in. Returning...")
+            return
+        target_obj_name = results[0].session.target_objective
+        return DataUtil.get_metric_data(
+            *results, metric_names=[target_obj_name], numeric=numeric, flatten=True) 
 
 
 class ConversionUtil(object):

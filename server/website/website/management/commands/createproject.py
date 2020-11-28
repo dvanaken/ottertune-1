@@ -19,16 +19,24 @@ class Command(BaseCommand):
             metavar='NAME',
             help='Specifies the name of the project.')
         parser.add_argument(
+            '-u',
             '--username',
             metavar='USERNAME',
             default='admin',
             help='Specifies the login for the user. Default: admin')
+        parser.add_argument(
+            '-d',
+            '--description',
+            metavar='DESCRIPTION',
+            default='',
+            help='Description for the project. Default: admin')
 
     def handle(self, *args, **options):
         name = options['name']
         user = User.objects.get(username=options['username'])
+        desc = options['description']
         ts = now()
 
-        project = Project(name=name, user=user, creation_time=ts, last_update=ts)
+        project = Project(name=name, user=user, description=desc, creation_time=ts, last_update=ts)
         project.save()
         self.stdout.write(self.style.SUCCESS("Successfully created project '{}'.".format(name)))

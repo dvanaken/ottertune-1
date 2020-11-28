@@ -44,7 +44,7 @@ function renderPlot(data, div_id) {
             label: 'Date',
             labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
             tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-            tickOptions:{formatString:'%#m/%#d %H:%M', angle:-40},
+            tickOptions:{formatString:'%#m/%#d %H:%M', angle:-40, fontSize: '8pt'},
             autoscale: true,
             rendererOptions:{sortMergedLabels:true}
         }
